@@ -2,62 +2,276 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101d">
 <title>SL WORLD</title>
+
 <style>
 *{box-sizing:border-box}
+
+:root{
+ --bg:#07101d;
+ --panel:#101b2b;
+ --panel2:#15243a;
+ --line:#263954;
+ --text:#fff;
+ --muted:#91a3c0;
+ --blue:#80adf2;
+ --gold:#f2c963;
+ --green:#55d391;
+ --red:#ff7c7c;
+}
+
 body{
- margin:0;background:#07101d;color:#fff;
- font-family:-apple-system,BlinkMacSystemFont,sans-serif;
- padding-bottom:90px
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ padding-bottom:105px;
 }
-header{padding:35px 20px 20px}
-.logo{font-size:32px;font-weight:900}
-.sub{color:#8294b0;font-size:11px;letter-spacing:2px}
+
+header{padding:42px 20px 24px}
+
+.logo{
+ font-size:34px;
+ font-weight:900;
+ letter-spacing:.02em
+}
+
+.sub{
+ color:var(--muted);
+ font-size:11px;
+ letter-spacing:3px
+}
+
 .badge{
- display:inline-block;margin-top:14px;padding:6px 10px;
- background:#16263d;border-radius:20px;color:#a9c7f5;font-size:12px
+ display:inline-block;
+ margin-top:18px;
+ background:#162943;
+ padding:7px 11px;
+ border-radius:20px;
+ color:#b5cdf2;
+ font-size:12px
 }
-main{padding:0 15px}
+
+main{padding:0 15px 20px}
+
 .hero,.card{
- background:#101b2b;border:1px solid #20334f;
- border-radius:20px;padding:18px;margin-bottom:12px
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:20px;
+ padding:18px;
+ margin-bottom:13px
 }
-.hero{background:linear-gradient(135deg,#162b4b,#101b2b)}
-.label{font-size:11px;color:#7daaf0;letter-spacing:2px}
-h1{font-size:26px;margin:8px 0}
+
+.hero{
+ background:linear-gradient(135deg,#172d4e,#101b2b)
+}
+
+.label{
+ color:#82aff4;
+ font-size:11px;
+ letter-spacing:2px
+}
+
+h1{font-size:25px;margin:8px 0}
 h2{font-size:18px;margin:0 0 12px}
-p{color:#9fb0c8;line-height:1.6}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+h3{font-size:15px;margin:0 0 10px}
+
+p{
+ color:var(--muted);
+ line-height:1.6;
+ margin:7px 0
+}
+
+small{color:var(--muted)}
+
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px
+}
+
 .stat{
- background:#101b2b;border:1px solid #20334f;
- border-radius:16px;padding:15px
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:17px;
+ padding:15px
 }
-.big{font-size:25px;font-weight:bold}
-.gold{color:#f2c963}
-.green{color:#55d391}
+
+.big{font-size:27px;font-weight:900}
+.gold{color:var(--gold)}
+.green{color:var(--green)}
+
 .item{
- padding:13px 0;border-bottom:1px solid #25364d
+ padding:13px 0;
+ border-bottom:1px solid #25364d
 }
+
 .item:last-child{border:0}
+
 .tag{
- font-size:10px;background:#173b28;color:#7de0a5;
- padding:4px 7px;border-radius:10px
+ display:inline-block;
+ font-size:10px;
+ background:#173b28;
+ color:#83dfa9;
+ padding:4px 7px;
+ border-radius:10px;
+ margin-bottom:4px
 }
+
 .view{display:none}
 .view.active{display:block}
+
+input,select{
+ width:100%;
+ background:#091524;
+ border:1px solid #304665;
+ color:#fff;
+ border-radius:12px;
+ padding:12px;
+ font-size:15px;
+ outline:none
+}
+
+.formlabel{
+ display:block;
+ color:#9eb0ca;
+ font-size:12px;
+ margin:13px 0 5px
+}
+
+.resultgrid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px
+}
+
+button.primary{
+ width:100%;
+ background:#3278dd;
+ color:#fff;
+ border:0;
+ border-radius:13px;
+ padding:13px;
+ font-weight:800;
+ font-size:15px;
+ margin-top:15px
+}
+
+button.secondary{
+ border:1px solid #39506e;
+ background:#15243a;
+ color:#dbe7f8;
+ border-radius:10px;
+ padding:8px 10px
+}
+
+button.danger{
+ border:1px solid #63353b;
+ background:#2b191d;
+ color:#ff9ca3;
+ border-radius:10px;
+ padding:8px 10px
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:14px
+}
+
+th,td{
+ padding:10px 5px;
+ border-bottom:1px solid #25364d
+}
+
+th{
+ color:#879bb9;
+ text-align:left;
+ font-size:11px
+}
+
+th:last-child,td:last-child{text-align:right}
+
+.rank1 td{color:var(--gold);font-weight:800}
+
+.tournament{
+ border:1px solid #263a57;
+ border-radius:14px;
+ padding:12px;
+ margin:8px 0;
+ background:#0c1726
+}
+
+.tournamentTop{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:8px
+}
+
+.score{
+ font-size:21px;
+ font-weight:900;
+ color:var(--gold)
+}
+
+.empty{
+ color:#6f829e;
+ text-align:center;
+ padding:20px 0
+}
+
+.rule{
+ display:flex;
+ justify-content:space-between;
+ border-bottom:1px solid #25364d;
+ padding:9px 0
+}
+
+.rule:last-child{border:0}
+
 nav{
- position:fixed;bottom:0;left:0;right:0;
- display:grid;grid-template-columns:repeat(5,1fr);
- background:#091321eF;border-top:1px solid #263851;
- padding:8px 4px 18px;backdrop-filter:blur(15px)
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ background:rgba(7,16,29,.96);
+ border-top:1px solid #263851;
+ padding:8px 4px calc(16px + env(safe-area-inset-bottom));
+ backdrop-filter:blur(16px);
+ z-index:20
 }
+
 nav button{
- border:0;background:none;color:#7589a8;
- font-size:11px;padding:8px 2px
+ border:0;
+ background:none;
+ color:#7589a8;
+ font-size:11px;
+ padding:8px 1px
 }
-nav button.active{color:#fff;font-weight:bold}
-.icon{font-size:20px;display:block;margin-bottom:3px}
+
+nav button.active{
+ color:#fff;
+ font-weight:800
+}
+
+.icon{
+ font-size:20px;
+ display:block;
+ margin-bottom:3px
+}
+
+.notice{
+ border-left:3px solid #4b8be8;
+ padding-left:11px;
+ color:#aebed4;
+ font-size:13px;
+ line-height:1.6
+}
 </style>
 </head>
 
@@ -76,10 +290,11 @@ nav button.active{color:#fff;font-weight:bold}
  <div class="hero">
   <div class="label">SL TODAY</div>
   <h1>第34回スーパーリーグへ</h1>
-  <p>王者デビルスターズを中心に、新たなシーズンが動き始める。</p>
+  <p>試合結果を記録しながら、第34回SLの正史を作っていく。</p>
  </div>
 
  <div class="grid">
+
   <div class="stat">
    <small>現最高優勝</small>
    <div class="big gold">Devils</div>
@@ -93,9 +308,9 @@ nav button.active{color:#fff;font-weight:bold}
   </div>
 
   <div class="stat">
-   <small>シーズン</small>
-   <div class="big">#34</div>
-   <small>開幕前</small>
+   <small>第34回大会</small>
+   <div id="todayEventCount" class="big">0 / 10</div>
+   <small>終了</small>
   </div>
 
   <div class="stat">
@@ -103,6 +318,7 @@ nav button.active{color:#fff;font-weight:bold}
    <div class="big green">LIVE</div>
    <small>正史管理中</small>
   </div>
+
  </div>
 
  <br>
@@ -112,119 +328,605 @@ nav button.active{color:#fff;font-weight:bold}
 
   <div class="item">
    <span class="tag">正史</span>
-   <strong> 納東一、超大型補強</strong>
-   <p>A・ジャッジ、スタンリッジをヤンキースから獲得。</p>
+   <strong>納東一、超大型補強</strong>
+   <p>A・ジャッジ、スタンリッジを獲得。</p>
   </div>
 
   <div class="item">
    <span class="tag">正史</span>
-   <strong> 明日川、デビルスターズへ</strong>
+   <strong>明日川、デビルスターズへ</strong>
    <p>日本体育大荏原から移籍。移籍金18.5億。</p>
   </div>
 
   <div class="item">
    <span class="tag">正史</span>
-   <strong> クラウド復帰へ</strong>
-   <p>国王杯は欠場。SL開幕戦での復帰に期待。</p>
+   <strong>クラウド、SL開幕復帰の可能性</strong>
+   <p>国王杯は欠場。</p>
   </div>
- </div>
 
-</section>
-
-<section id="games" class="view">
- <div class="hero">
-  <div class="label">TOURNAMENT</div>
-  <h1>大会</h1>
-  <p>第34回SLの大会結果・ポイント・順位を管理。</p>
  </div>
 
  <div class="card">
-  <h2>SLポイント</h2>
-  <p>優勝　5pt</p>
-  <p>準優勝　4pt</p>
-  <p>3位　3pt</p>
-  <p>ベスト8　1pt</p>
-  <p>前回王者撃破　+1pt</p>
-  <p>大会連覇　+1pt</p>
+  <h2>第34回 暫定首位</h2>
+  <div id="todayLeader" class="big">開幕前</div>
+  <p id="todayLeaderPt">0 pt</p>
  </div>
+
 </section>
 
+
+<section id="games" class="view">
+
+ <div class="hero">
+  <div class="label">TOURNAMENT</div>
+  <h1>第34回 大会管理</h1>
+  <p>外部ゲームで行った大会結果をここへ登録。</p>
+ </div>
+
+ <div class="card">
+
+  <h2>大会結果を登録</h2>
+
+  <label class="formlabel">大会</label>
+  <select id="eventNo">
+   <option value="1">第1大会</option>
+   <option value="2">第2大会</option>
+   <option value="3">第3大会</option>
+   <option value="4">第4大会</option>
+   <option value="5">第5大会</option>
+   <option value="6">第6大会</option>
+   <option value="7">第7大会</option>
+   <option value="8">第8大会</option>
+   <option value="9">第9大会</option>
+   <option value="10">第10大会</option>
+  </select>
+
+  <label class="formlabel">優勝</label>
+  <input id="winner" list="teamlist" placeholder="チーム名">
+
+  <label class="formlabel">準優勝</label>
+  <input id="runner" list="teamlist" placeholder="チーム名">
+
+  <label class="formlabel">3位</label>
+  <div class="resultgrid">
+   <input id="third1" list="teamlist" placeholder="3位①">
+   <input id="third2" list="teamlist" placeholder="3位②">
+  </div>
+
+  <label class="formlabel">ベスト8</label>
+  <div class="resultgrid">
+   <input id="qf1" list="teamlist" placeholder="ベスト8①">
+   <input id="qf2" list="teamlist" placeholder="ベスト8②">
+   <input id="qf3" list="teamlist" placeholder="ベスト8③">
+   <input id="qf4" list="teamlist" placeholder="ベスト8④">
+  </div>
+
+  <label class="formlabel">前回大会王者を倒したチーム</label>
+  <input id="beatChampion" list="teamlist"
+   placeholder="該当なしなら空欄">
+
+  <p class="notice">
+   第1大会、前回王者が不参加、または実際に倒していない場合は空欄。
+  </p>
+
+  <button class="primary" onclick="saveTournament()">
+   この大会を正史として保存
+  </button>
+
+ </div>
+
+
+ <div class="card">
+
+  <h2>SLポイント規定</h2>
+
+  <div class="rule"><span>優勝</span><strong>5 pt</strong></div>
+  <div class="rule"><span>準優勝</span><strong>4 pt</strong></div>
+  <div class="rule"><span>3位</span><strong>3 pt</strong></div>
+  <div class="rule"><span>ベスト8</span><strong>1 pt</strong></div>
+  <div class="rule"><span>前回王者撃破</span><strong>+1 pt</strong></div>
+  <div class="rule"><span>大会連覇</span><strong>+1 pt</strong></div>
+
+ </div>
+
+
+ <div class="card">
+
+  <h2>第34回 暫定順位</h2>
+
+  <table>
+   <thead>
+    <tr>
+     <th>順位</th>
+     <th>チーム</th>
+     <th>Pt</th>
+    </tr>
+   </thead>
+   <tbody id="standings"></tbody>
+  </table>
+
+ </div>
+
+
+ <div class="card">
+
+  <h2>大会履歴</h2>
+
+  <div id="historyList"></div>
+
+ </div>
+
+</section>
+
+
 <section id="market" class="view">
+
  <div class="hero">
   <div class="label">TRANSFER MARKET</div>
   <h1>#34 移籍市場</h1>
-  <p>SL史上最大級の移籍市場が進行中。</p>
+  <p>新シーズンを前に勢力図が大きく動く。</p>
  </div>
 
  <div class="card">
-  <div class="item"><strong>明日川</strong><p>日本体育大荏原 → デビルスターズ</p></div>
-  <div class="item"><strong>天方</strong><p>デビルスターズ → 納東一</p></div>
-  <div class="item"><strong>落合</strong><p>デビルスターズ → 壮青学院</p></div>
-  <div class="item"><strong>天馬</strong><p>納東一 → 大阪桐蔭</p></div>
-  <div class="item"><strong>太田</strong><p>納東一 → 大阪桐蔭</p></div>
-  <div class="item"><strong>A・ジャッジ</strong><p>ヤンキース → 納東一</p></div>
-  <div class="item"><strong>スタンリッジ</strong><p>ヤンキース → 納東一</p></div>
+
+  <div class="item">
+   <strong>明日川</strong>
+   <p>日本体育大荏原 → デビルスターズ</p>
+  </div>
+
+  <div class="item">
+   <strong>天方</strong>
+   <p>デビルスターズ → 納東一</p>
+  </div>
+
+  <div class="item">
+   <strong>落合</strong>
+   <p>デビルスターズ → 壮青学院</p>
+  </div>
+
+  <div class="item">
+   <strong>天馬</strong>
+   <p>納東一 → 大阪桐蔭</p>
+  </div>
+
+  <div class="item">
+   <strong>太田</strong>
+   <p>納東一 → 大阪桐蔭</p>
+  </div>
+
+  <div class="item">
+   <strong>A・ジャッジ</strong>
+   <p>ヤンキース → 納東一</p>
+  </div>
+
+  <div class="item">
+   <strong>スタンリッジ</strong>
+   <p>ヤンキース → 納東一</p>
+  </div>
+
  </div>
+
 </section>
 
+
 <section id="news" class="view">
+
  <div class="hero">
   <div class="label">SL NEWS</div>
   <h1>ニュース</h1>
-  <p>リーグ内で起きている出来事を記録。</p>
+  <p>SL世界で起きている出来事。</p>
  </div>
 
  <div class="card">
-  <div class="item"><strong>納東一・佐藤監督</strong><p>「SL史上最強のチームを作る」</p></div>
-  <div class="item"><strong>頭取商</strong><p>第34回はAチーム残留を懸けた条件付きシーズンへ。</p></div>
-  <div class="item"><strong>デビルスターズ</strong><p>柳田・村上・岡本をトップチームへ昇格。</p></div>
+
+  <div class="item">
+   <strong>納東一・佐藤監督</strong>
+   <p>「SL史上最強のチームを作る」</p>
+  </div>
+
+  <div class="item">
+   <strong>頭取商</strong>
+   <p>第34回はAチーム残留を懸けた条件付きシーズン。</p>
+  </div>
+
+  <div class="item">
+   <strong>デビルスターズ</strong>
+   <p>柳田・村上・岡本をトップチームへ昇格。</p>
+  </div>
+
  </div>
+
 </section>
 
-<section id="history" class="view">
+
+<section id="archive" class="view">
+
  <div class="hero">
   <div class="label">SL ARCHIVES</div>
-  <h1>歴史</h1>
-  <p>スーパーリーグ正史を保存するアーカイブ。</p>
+  <h1>SL正史</h1>
+  <p>スーパーリーグの歴史を保存する。</p>
  </div>
 
  <div class="card">
-  <h2>最高優勝</h2>
-  <div class="item"><strong>第33回</strong><p>デビルスターズ</p></div>
-  <div class="item"><strong>第32回</strong><p>日本体育大荏原</p></div>
-  <div class="item"><strong>第31回</strong><p>デビルスターズ</p></div>
-  <div class="item"><strong>第30回</strong><p>デビルスターズ・四冠</p></div>
+
+  <h2>直近の最高優勝</h2>
+
+  <div class="item">
+   <strong>第33回</strong>
+   <p>デビルスターズ・四冠</p>
+  </div>
+
+  <div class="item">
+   <strong>第32回</strong>
+   <p>日本体育大荏原</p>
+  </div>
+
+  <div class="item">
+   <strong>第31回</strong>
+   <p>デビルスターズ・四冠</p>
+  </div>
+
+  <div class="item">
+   <strong>第30回</strong>
+   <p>デビルスターズ・四冠</p>
+  </div>
+
  </div>
+
 </section>
 
 </main>
 
+
+<datalist id="teamlist">
+ <option value="デビルスターズ">
+ <option value="大阪桐蔭">
+ <option value="納東一">
+ <option value="東海大相模">
+ <option value="壮青学院">
+ <option value="日本体育大荏原">
+ <option value="威伏">
+ <option value="西東国">
+ <option value="武勇館">
+ <option value="明訓">
+ <option value="頭取商">
+ <option value="知位学園">
+</datalist>
+
+
 <nav>
-<button class="active" onclick="show('today',this)">
- <span class="icon">⌂</span>Today
+
+<button class="active" onclick="showView('today',this)">
+ <span class="icon">⌂</span>
+ Today
 </button>
-<button onclick="show('games',this)">
- <span class="icon">◆</span>大会
+
+<button onclick="showView('games',this)">
+ <span class="icon">◆</span>
+ 大会
 </button>
-<button onclick="show('market',this)">
- <span class="icon">⇄</span>移籍
+
+<button onclick="showView('market',this)">
+ <span class="icon">⇄</span>
+ 移籍
 </button>
-<button onclick="show('news',this)">
- <span class="icon">▤</span>News
+
+<button onclick="showView('news',this)">
+ <span class="icon">▤</span>
+ News
 </button>
-<button onclick="show('history',this)">
- <span class="icon">★</span>歴史
+
+<button onclick="showView('archive',this)">
+ <span class="icon">★</span>
+ 歴史
 </button>
+
 </nav>
 
+
 <script>
-function show(id,b){
- document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
- document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- b.classList.add('active');
+
+const baseTeams=[
+ "デビルスターズ",
+ "大阪桐蔭",
+ "納東一",
+ "東海大相模",
+ "壮青学院",
+ "日本体育大荏原",
+ "威伏",
+ "西東国",
+ "武勇館",
+ "明訓",
+ "頭取商",
+ "知位学園"
+];
+
+let tournaments=
+ JSON.parse(localStorage.getItem("sl34_tournaments") || "[]");
+
+
+function showView(id,button){
+
+ document.querySelectorAll(".view")
+ .forEach(x=>x.classList.remove("active"));
+
+ document.querySelectorAll("nav button")
+ .forEach(x=>x.classList.remove("active"));
+
+ document.getElementById(id).classList.add("active");
+
+ button.classList.add("active");
+
  window.scrollTo(0,0);
 }
+
+
+function clean(id){
+ return document.getElementById(id).value.trim();
+}
+
+
+function saveTournament(){
+
+ const no=Number(document.getElementById("eventNo").value);
+
+ const data={
+  no:no,
+  winner:clean("winner"),
+  runner:clean("runner"),
+  third1:clean("third1"),
+  third2:clean("third2"),
+  qf1:clean("qf1"),
+  qf2:clean("qf2"),
+  qf3:clean("qf3"),
+  qf4:clean("qf4"),
+  beatChampion:clean("beatChampion")
+ };
+
+ if(!data.winner || !data.runner){
+  alert("優勝と準優勝を入力してください");
+  return;
+ }
+
+ if(data.winner===data.runner){
+  alert("優勝と準優勝が同じチームになっています");
+  return;
+ }
+
+ const existing=tournaments.findIndex(x=>x.no===no);
+
+ if(existing>=0){
+
+  if(!confirm(
+   "第"+no+"大会は既に登録されています。上書きしますか？"
+  )) return;
+
+  tournaments[existing]=data;
+
+ }else{
+
+  tournaments.push(data);
+
+ }
+
+ tournaments.sort((a,b)=>a.no-b.no);
+
+ localStorage.setItem(
+  "sl34_tournaments",
+  JSON.stringify(tournaments)
+ );
+
+ clearForm();
+
+ renderAll();
+
+ alert("第"+no+"大会を保存しました");
+}
+
+
+function clearForm(){
+
+ [
+  "winner","runner",
+  "third1","third2",
+  "qf1","qf2","qf3","qf4",
+  "beatChampion"
+ ].forEach(id=>{
+  document.getElementById(id).value="";
+ });
+
+}
+
+
+function deleteTournament(no){
+
+ if(!confirm(
+  "第"+no+"大会の記録を削除しますか？"
+ )) return;
+
+ tournaments=tournaments.filter(x=>x.no!==no);
+
+ localStorage.setItem(
+  "sl34_tournaments",
+  JSON.stringify(tournaments)
+ );
+
+ renderAll();
+}
+
+
+function calculatePoints(){
+
+ const points={};
+
+ baseTeams.forEach(t=>points[t]=0);
+
+ tournaments.forEach((t,index)=>{
+
+  function add(team,pt){
+   if(!team)return;
+   if(points[team]===undefined)points[team]=0;
+   points[team]+=pt;
+  }
+
+  add(t.winner,5);
+  add(t.runner,4);
+
+  add(t.third1,3);
+  add(t.third2,3);
+
+  add(t.qf1,1);
+  add(t.qf2,1);
+  add(t.qf3,1);
+  add(t.qf4,1);
+
+  if(t.beatChampion){
+   add(t.beatChampion,1);
+  }
+
+  const previous=
+   tournaments
+   .filter(x=>x.no<t.no)
+   .sort((a,b)=>b.no-a.no)[0];
+
+  if(previous && previous.winner===t.winner){
+   add(t.winner,1);
+  }
+
+ });
+
+ return points;
+}
+
+
+function renderStandings(){
+
+ const points=calculatePoints();
+
+ const ranking=
+  Object.entries(points)
+  .sort((a,b)=>{
+   if(b[1]!==a[1])return b[1]-a[1];
+   return a[0].localeCompare(b[0],"ja");
+  });
+
+ const body=document.getElementById("standings");
+
+ body.innerHTML=ranking.map((x,i)=>{
+
+  return `
+   <tr class="${i===0 && x[1]>0 ? "rank1":""}">
+    <td>${i+1}</td>
+    <td>${x[0]}</td>
+    <td>${x[1]}</td>
+   </tr>
+  `;
+
+ }).join("");
+
+ if(ranking.length && ranking[0][1]>0){
+
+  document.getElementById("todayLeader").textContent=
+   ranking[0][0];
+
+  document.getElementById("todayLeaderPt").textContent=
+   ranking[0][1]+" pt";
+
+ }else{
+
+  document.getElementById("todayLeader").textContent=
+   "開幕前";
+
+  document.getElementById("todayLeaderPt").textContent=
+   "0 pt";
+
+ }
+
+}
+
+
+function renderHistory(){
+
+ const box=document.getElementById("historyList");
+
+ if(!tournaments.length){
+
+  box.innerHTML=
+   '<div class="empty">まだ大会記録はありません</div>';
+
+  return;
+ }
+
+ box.innerHTML=
+  [...tournaments]
+  .sort((a,b)=>b.no-a.no)
+  .map(t=>{
+
+   const previous=
+    tournaments
+    .filter(x=>x.no<t.no)
+    .sort((a,b)=>b.no-a.no)[0];
+
+   const repeat=
+    previous && previous.winner===t.winner;
+
+   return `
+    <div class="tournament">
+
+     <div class="tournamentTop">
+      <div>
+       <small>第${t.no}大会</small>
+       <div class="score">${t.winner}</div>
+      </div>
+
+      <button
+       class="danger"
+       onclick="deleteTournament(${t.no})">
+       削除
+      </button>
+     </div>
+
+     <p>準優勝：${t.runner}</p>
+
+     ${repeat
+      ? '<span class="tag">連覇 +1</span>'
+      : ''
+     }
+
+     ${t.beatChampion
+      ? '<span class="tag">前回王者撃破 '+t.beatChampion+' +1</span>'
+      : ''
+     }
+
+    </div>
+   `;
+
+  }).join("");
+
+}
+
+
+function renderEventCount(){
+
+ document.getElementById("todayEventCount").textContent=
+  tournaments.length+" / 10";
+
+}
+
+
+function renderAll(){
+
+ renderStandings();
+
+ renderHistory();
+
+ renderEventCount();
+
+}
+
+
+renderAll();
+
 </script>
 
 </body>
