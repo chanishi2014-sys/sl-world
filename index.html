@@ -2,38 +2,230 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SL WORLD</title>
 <style>
+*{box-sizing:border-box}
 body{
-  margin:0;
-  background:#07101d;
-  color:white;
-  font-family:-apple-system,sans-serif;
-  text-align:center;
+ margin:0;background:#07101d;color:#fff;
+ font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+ padding-bottom:90px
 }
-main{padding:80px 20px}
-h1{font-size:42px;margin-bottom:5px}
-p{color:#9fb0c8}
-.box{
-  margin:40px auto;
-  padding:25px;
-  max-width:350px;
-  background:#101b2b;
-  border-radius:20px;
+header{padding:35px 20px 20px}
+.logo{font-size:32px;font-weight:900}
+.sub{color:#8294b0;font-size:11px;letter-spacing:2px}
+.badge{
+ display:inline-block;margin-top:14px;padding:6px 10px;
+ background:#16263d;border-radius:20px;color:#a9c7f5;font-size:12px
 }
+main{padding:0 15px}
+.hero,.card{
+ background:#101b2b;border:1px solid #20334f;
+ border-radius:20px;padding:18px;margin-bottom:12px
+}
+.hero{background:linear-gradient(135deg,#162b4b,#101b2b)}
+.label{font-size:11px;color:#7daaf0;letter-spacing:2px}
+h1{font-size:26px;margin:8px 0}
+h2{font-size:18px;margin:0 0 12px}
+p{color:#9fb0c8;line-height:1.6}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{
+ background:#101b2b;border:1px solid #20334f;
+ border-radius:16px;padding:15px
+}
+.big{font-size:25px;font-weight:bold}
+.gold{color:#f2c963}
+.green{color:#55d391}
+.item{
+ padding:13px 0;border-bottom:1px solid #25364d
+}
+.item:last-child{border:0}
+.tag{
+ font-size:10px;background:#173b28;color:#7de0a5;
+ padding:4px 7px;border-radius:10px
+}
+.view{display:none}
+.view.active{display:block}
+nav{
+ position:fixed;bottom:0;left:0;right:0;
+ display:grid;grid-template-columns:repeat(5,1fr);
+ background:#091321eF;border-top:1px solid #263851;
+ padding:8px 4px 18px;backdrop-filter:blur(15px)
+}
+nav button{
+ border:0;background:none;color:#7589a8;
+ font-size:11px;padding:8px 2px
+}
+nav button.active{color:#fff;font-weight:bold}
+.icon{font-size:20px;display:block;margin-bottom:3px}
 </style>
 </head>
-<body>
-<main>
-<h1>SL WORLD</h1>
-<p>SUPER LEAGUE WORLD ENGINE</p>
 
-<div class="box">
-<h2>第34回スーパーリーグ</h2>
-<p>開幕前</p>
-<p>⚾ SL WORLD 起動成功 ⚾</p>
-</div>
+<body>
+
+<header>
+ <div class="logo">SL WORLD</div>
+ <div class="sub">SUPER LEAGUE WORLD ENGINE</div>
+ <div class="badge">第34回・開幕前</div>
+</header>
+
+<main>
+
+<section id="today" class="view active">
+
+ <div class="hero">
+  <div class="label">SL TODAY</div>
+  <h1>第34回スーパーリーグへ</h1>
+  <p>王者デビルスターズを中心に、新たなシーズンが動き始める。</p>
+ </div>
+
+ <div class="grid">
+  <div class="stat">
+   <small>現最高優勝</small>
+   <div class="big gold">Devils</div>
+   <small>第33回</small>
+  </div>
+
+  <div class="stat">
+   <small>通算最高優勝</small>
+   <div class="big">27</div>
+   <small>Devils</small>
+  </div>
+
+  <div class="stat">
+   <small>シーズン</small>
+   <div class="big">#34</div>
+   <small>開幕前</small>
+  </div>
+
+  <div class="stat">
+   <small>WORLD STATE</small>
+   <div class="big green">LIVE</div>
+   <small>正史管理中</small>
+  </div>
+ </div>
+
+ <br>
+
+ <div class="card">
+  <h2>🔥 HEADLINE</h2>
+
+  <div class="item">
+   <span class="tag">正史</span>
+   <strong> 納東一、超大型補強</strong>
+   <p>A・ジャッジ、スタンリッジをヤンキースから獲得。</p>
+  </div>
+
+  <div class="item">
+   <span class="tag">正史</span>
+   <strong> 明日川、デビルスターズへ</strong>
+   <p>日本体育大荏原から移籍。移籍金18.5億。</p>
+  </div>
+
+  <div class="item">
+   <span class="tag">正史</span>
+   <strong> クラウド復帰へ</strong>
+   <p>国王杯は欠場。SL開幕戦での復帰に期待。</p>
+  </div>
+ </div>
+
+</section>
+
+<section id="games" class="view">
+ <div class="hero">
+  <div class="label">TOURNAMENT</div>
+  <h1>大会</h1>
+  <p>第34回SLの大会結果・ポイント・順位を管理。</p>
+ </div>
+
+ <div class="card">
+  <h2>SLポイント</h2>
+  <p>優勝　5pt</p>
+  <p>準優勝　4pt</p>
+  <p>3位　3pt</p>
+  <p>ベスト8　1pt</p>
+  <p>前回王者撃破　+1pt</p>
+  <p>大会連覇　+1pt</p>
+ </div>
+</section>
+
+<section id="market" class="view">
+ <div class="hero">
+  <div class="label">TRANSFER MARKET</div>
+  <h1>#34 移籍市場</h1>
+  <p>SL史上最大級の移籍市場が進行中。</p>
+ </div>
+
+ <div class="card">
+  <div class="item"><strong>明日川</strong><p>日本体育大荏原 → デビルスターズ</p></div>
+  <div class="item"><strong>天方</strong><p>デビルスターズ → 納東一</p></div>
+  <div class="item"><strong>落合</strong><p>デビルスターズ → 壮青学院</p></div>
+  <div class="item"><strong>天馬</strong><p>納東一 → 大阪桐蔭</p></div>
+  <div class="item"><strong>太田</strong><p>納東一 → 大阪桐蔭</p></div>
+  <div class="item"><strong>A・ジャッジ</strong><p>ヤンキース → 納東一</p></div>
+  <div class="item"><strong>スタンリッジ</strong><p>ヤンキース → 納東一</p></div>
+ </div>
+</section>
+
+<section id="news" class="view">
+ <div class="hero">
+  <div class="label">SL NEWS</div>
+  <h1>ニュース</h1>
+  <p>リーグ内で起きている出来事を記録。</p>
+ </div>
+
+ <div class="card">
+  <div class="item"><strong>納東一・佐藤監督</strong><p>「SL史上最強のチームを作る」</p></div>
+  <div class="item"><strong>頭取商</strong><p>第34回はAチーム残留を懸けた条件付きシーズンへ。</p></div>
+  <div class="item"><strong>デビルスターズ</strong><p>柳田・村上・岡本をトップチームへ昇格。</p></div>
+ </div>
+</section>
+
+<section id="history" class="view">
+ <div class="hero">
+  <div class="label">SL ARCHIVES</div>
+  <h1>歴史</h1>
+  <p>スーパーリーグ正史を保存するアーカイブ。</p>
+ </div>
+
+ <div class="card">
+  <h2>最高優勝</h2>
+  <div class="item"><strong>第33回</strong><p>デビルスターズ</p></div>
+  <div class="item"><strong>第32回</strong><p>日本体育大荏原</p></div>
+  <div class="item"><strong>第31回</strong><p>デビルスターズ</p></div>
+  <div class="item"><strong>第30回</strong><p>デビルスターズ・四冠</p></div>
+ </div>
+</section>
+
 </main>
+
+<nav>
+<button class="active" onclick="show('today',this)">
+ <span class="icon">⌂</span>Today
+</button>
+<button onclick="show('games',this)">
+ <span class="icon">◆</span>大会
+</button>
+<button onclick="show('market',this)">
+ <span class="icon">⇄</span>移籍
+</button>
+<button onclick="show('news',this)">
+ <span class="icon">▤</span>News
+</button>
+<button onclick="show('history',this)">
+ <span class="icon">★</span>歴史
+</button>
+</nav>
+
+<script>
+function show(id,b){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ b.classList.add('active');
+ window.scrollTo(0,0);
+}
+</script>
+
 </body>
 </html>
