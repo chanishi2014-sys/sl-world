@@ -1,3 +1,4 @@
+<!-- ===== SL WORLD STABLE 1/3 START ===== -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -11,373 +12,569 @@
 <title>SL WORLD</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box
+}
+
 :root{
---bg:#07101d;
---panel:#101b2b;
---panel2:#15243a;
---line:#263954;
---text:#f7f9fc;
---muted:#91a3c0;
---blue:#82aff4;
---gold:#f2c963;
---green:#55d391;
---red:#ff8585;
+  --bg:#07101d;
+  --panel:#101b2b;
+  --panel2:#15243a;
+  --line:#263954;
+  --text:#f7f9fc;
+  --muted:#91a3c0;
+  --blue:#82aff4;
+  --gold:#f2c963;
+  --green:#55d391;
+  --red:#ff8585;
 }
+
 html,body{
-margin:0;
-min-height:100%;
-background:var(--bg);
-color:var(--text);
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
 }
+
 body{
-padding-bottom:105px;
-background:radial-gradient(circle at top right,#15325a 0,#07101d 34%)
+  padding-bottom:110px;
+  background:
+    radial-gradient(circle at top right,#15325a 0,#07101d 34%)
 }
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
+
+button,input,select,textarea{
+  font:inherit
+}
+
+button{
+  cursor:pointer
+}
+
 header{
-max-width:900px;
-margin:auto;
-padding:calc(25px + env(safe-area-inset-top)) 20px 20px
+  max-width:900px;
+  margin:auto;
+  padding:calc(24px + env(safe-area-inset-top)) 18px 18px
 }
-.headerTop,.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px
+
+.headerTop,
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px
 }
-.logo{font-size:35px;font-weight:950}
-.sub{font-size:10px;color:var(--muted);letter-spacing:3px}
+
+.logo{
+  font-size:34px;
+  font-weight:950
+}
+
+.sub{
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:3px
+}
+
 .admin{
-border:1px solid #345070;
-background:#13243b;
-color:#e0ebfa;
-border-radius:13px;
-padding:9px 11px
+  border:1px solid #345070;
+  background:#13243b;
+  color:#e0ebfa;
+  border-radius:13px;
+  padding:9px 11px
 }
+
 .status{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-top:16px
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:16px
 }
+
 .badge{
-background:#162943;
-color:#b8cff1;
-padding:7px 11px;
-border-radius:999px;
-font-size:12px
+  background:#162943;
+  color:#b8cff1;
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px
 }
-.version{color:#6d83a4;font-size:11px}
-main{max-width:900px;margin:auto;padding:0 15px 30px}
-.view{display:none}
-.view.active{display:block}
-.hero,.card{
-background:rgba(16,27,43,.98);
-border:1px solid var(--line);
-border-radius:20px;
-padding:18px;
-margin-bottom:13px
+
+.version{
+  color:#6d83a4;
+  font-size:11px
 }
-.hero{background:linear-gradient(135deg,#18325a,#101b2b)}
+
+main{
+  max-width:900px;
+  margin:auto;
+  padding:0 14px 30px
+}
+
+.view{
+  display:none
+}
+
+.view.active{
+  display:block
+}
+
+.hero,
+.card{
+  background:rgba(16,27,43,.98);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:17px;
+  margin-bottom:13px
+}
+
+.hero{
+  background:
+    linear-gradient(135deg,#18325a,#101b2b)
+}
+
 .label{
-color:var(--blue);
-font-size:11px;
-font-weight:850;
-letter-spacing:2px
+  color:var(--blue);
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:2px
 }
-h1{font-size:26px;margin:8px 0}
-h2{font-size:19px;margin:0 0 12px}
-h3{font-size:16px;margin:5px 0 7px}
-p{color:var(--muted);line-height:1.6;margin:7px 0}
-small{color:var(--muted)}
+
+h1{
+  font-size:26px;
+  margin:8px 0
+}
+
+h2{
+  font-size:19px;
+  margin:0 0 12px
+}
+
+h3{
+  font-size:16px;
+  margin:5px 0 7px
+}
+
+p{
+  color:var(--muted);
+  line-height:1.6;
+  margin:7px 0
+}
+
+small{
+  color:var(--muted)
+}
+
 .grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px
 }
+
 .stat{
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:17px;
-padding:14px
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:14px
 }
-.big{font-size:27px;font-weight:900}
-.goldText{color:var(--gold)}
-.green{color:var(--green)}
+
+.big{
+  font-size:27px;
+  font-weight:900
+}
+
+.goldText{
+  color:var(--gold)
+}
+
+.green{
+  color:var(--green)
+}
+
+.red{
+  color:var(--red)
+}
+
 .sectionTitle{
-font-size:11px;
-font-weight:850;
-letter-spacing:2px;
-color:#7f96b8;
-margin:20px 3px 9px
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:2px;
+  color:#7f96b8;
+  margin:20px 3px 9px
 }
+
 .item{
-padding:13px 0;
-border-bottom:1px solid #25364d
+  padding:13px 0;
+  border-bottom:1px solid #25364d
 }
-.item:last-child{border-bottom:0}
-input,select,textarea{
-width:100%;
-background:#091524;
-border:1px solid #304665;
-color:#fff;
-border-radius:12px;
-padding:12px;
-outline:none
+
+.item:last-child{
+  border-bottom:0
 }
-textarea{resize:vertical;min-height:100px}
+
+input,
+select,
+textarea{
+  width:100%;
+  background:#091524;
+  border:1px solid #304665;
+  color:#fff;
+  border-radius:12px;
+  padding:12px;
+  outline:none
+}
+
+textarea{
+  resize:vertical;
+  min-height:100px
+}
+
 .formLabel{
-display:block;
-color:#9eb0ca;
-font-size:12px;
-margin:13px 0 5px;
-font-weight:750
+  display:block;
+  color:#9eb0ca;
+  font-size:12px;
+  margin:13px 0 5px;
+  font-weight:750
 }
+
 .two{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px
 }
+
 .primary{
-width:100%;
-border:0;
-background:#3278dd;
-color:#fff;
-border-radius:13px;
-padding:13px;
-margin-top:14px;
-font-weight:850
+  width:100%;
+  border:0;
+  background:#3278dd;
+  color:#fff;
+  border-radius:13px;
+  padding:13px;
+  margin-top:14px;
+  font-weight:850
 }
-.secondary,.danger{
-border-radius:10px;
-padding:8px 10px;
-font-size:12px
-}
-.secondary{
-border:1px solid #39506e;
-background:#15243a;
-color:#dbe7f8
-}
+
+.secondary,
 .danger{
-border:1px solid #63353b;
-background:#2b191d;
-color:#ff9ca3
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:12px
 }
+
+.secondary{
+  border:1px solid #39506e;
+  background:#15243a;
+  color:#dbe7f8
+}
+
+.danger{
+  border:1px solid #63353b;
+  background:#2b191d;
+  color:#ff9ca3
+}
+
 .tag{
-display:inline-block;
-padding:4px 7px;
-border-radius:9px;
-font-size:10px;
-font-weight:850;
-margin-right:4px
+  display:inline-block;
+  padding:4px 7px;
+  border-radius:9px;
+  font-size:10px;
+  font-weight:850;
+  margin-right:4px
 }
-.canon{background:#173b28;color:#83dfa9}
-.hold{background:#413319;color:#ffd681}
-.reject{background:#3a2025;color:#ff9da5}
-.memory{background:#203451;color:#afd0ff}
-.unknown{background:#2b2f39;color:#adb6c4}
-.big6{background:#463919;color:#f4d778}
-.warn{background:#432823;color:#ffb795}
+
+.canon{
+  background:#173b28;
+  color:#83dfa9
+}
+
+.memory{
+  background:#203451;
+  color:#afd0ff
+}
+
+.hold{
+  background:#413319;
+  color:#ffd681
+}
+
+.unknown{
+  background:#2b2f39;
+  color:#adb6c4
+}
+
+.big6{
+  background:#463919;
+  color:#f4d778
+}
+
+.warn{
+  background:#432823;
+  color:#ffb795
+}
+
 .notice{
-border-left:3px solid #4b8be8;
-padding-left:11px;
-color:#aebed4;
-font-size:13px;
-line-height:1.6
+  border-left:3px solid #4b8be8;
+  padding-left:11px;
+  color:#aebed4;
+  font-size:13px;
+  line-height:1.6
 }
+
 .alert{
-background:#31231a;
-border:1px solid #67462f;
-border-radius:14px;
-padding:13px;
-color:#ffd3a4;
-margin-top:10px
+  background:#31231a;
+  border:1px solid #67462f;
+  border-radius:14px;
+  padding:13px;
+  color:#ffd3a4;
+  margin-top:10px
 }
+
 .rule{
-display:flex;
-justify-content:space-between;
-padding:9px 0;
-border-bottom:1px solid #25364d
+  display:flex;
+  justify-content:space-between;
+  padding:9px 0;
+  border-bottom:1px solid #25364d
 }
+
 table{
-width:100%;
-border-collapse:collapse;
-font-size:14px
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px
 }
-th,td{
-padding:10px 5px;
-border-bottom:1px solid #25364d
+
+th,
+td{
+  padding:10px 5px;
+  border-bottom:1px solid #25364d
 }
-th{text-align:left;color:#879bb9;font-size:11px}
-th:last-child,td:last-child{text-align:right}
-.first td{color:var(--gold);font-weight:850}
-.cut td{border-bottom:2px solid #607493}
+
+th{
+  text-align:left;
+  color:#879bb9;
+  font-size:11px
+}
+
+th:last-child,
+td:last-child{
+  text-align:right
+}
+
+.first td{
+  color:var(--gold);
+  font-weight:850
+}
+
+.cut td{
+  border-bottom:2px solid #607493
+}
+
 .box{
-border:1px solid #263a57;
-border-radius:14px;
-padding:13px;
-margin:9px 0;
-background:#0c1726
+  border:1px solid #263a57;
+  border-radius:14px;
+  padding:13px;
+  margin:9px 0;
+  background:#0c1726
 }
+
 .score{
-font-size:21px;
-font-weight:900;
-color:var(--gold)
+  font-size:21px;
+  font-weight:900;
+  color:var(--gold)
 }
+
 .empty{
-color:#6f829e;
-text-align:center;
-padding:20px 0
+  color:#6f829e;
+  text-align:center;
+  padding:20px 0
 }
-.newsCard{cursor:pointer}
+
+.newsCard{
+  cursor:pointer
+}
+
 .newsCat{
-color:#83b3fa;
-font-size:10px;
-font-weight:850;
-letter-spacing:1px
+  color:#83b3fa;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:1px
 }
+
 .newsTitle{
-font-size:16px;
-font-weight:850;
-margin-top:5px;
-line-height:1.45
+  font-size:16px;
+  font-weight:850;
+  margin-top:5px;
+  line-height:1.45
 }
+
 .newsSummary{
-color:#9eafc8;
-font-size:13px;
-margin-top:6px;
-line-height:1.5
+  color:#9eafc8;
+  font-size:13px;
+  margin-top:6px;
+  line-height:1.5
 }
+
 .readmore{
-font-size:11px;
-color:#7eb0fa;
-margin-top:9px
+  font-size:11px;
+  color:#7eb0fa;
+  margin-top:9px
 }
+
 .archiveTabs{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:6px;
-margin-bottom:14px
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-bottom:14px
 }
+
 .archiveTab{
-border:1px solid #304665;
-background:#101d30;
-color:#8196b4;
-border-radius:11px;
-padding:9px 3px;
-font-size:11px
+  border:1px solid #304665;
+  background:#101d30;
+  color:#8196b4;
+  border-radius:11px;
+  padding:9px 3px;
+  font-size:11px
 }
+
 .archiveTab.active{
-background:#285fae;
-color:#fff;
-font-weight:850
+  background:#285fae;
+  color:#fff;
+  font-weight:850
 }
-.archiveSection{display:none}
-.archiveSection.active{display:block}
+
+.archiveSection{
+  display:none
+}
+
+.archiveSection.active{
+  display:block
+}
+
 .timeline{
-border-left:2px solid #315074;
-margin-left:7px;
-padding-left:16px
+  border-left:2px solid #315074;
+  margin-left:7px;
+  padding-left:16px
 }
+
 .timelineItem{
-position:relative;
-padding:0 0 18px
+  position:relative;
+  padding:0 0 18px
 }
+
 .timelineItem:before{
-content:"";
-position:absolute;
-left:-22px;
-top:5px;
-width:10px;
-height:10px;
-border-radius:50%;
-background:#4f8fe8
+  content:"";
+  position:absolute;
+  left:-22px;
+  top:5px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#4f8fe8
 }
+
 .relationship{
-display:grid;
-grid-template-columns:1fr auto;
-gap:10px;
-align-items:center;
-padding:11px 0;
-border-bottom:1px solid #25364d
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:11px 0;
+  border-bottom:1px solid #25364d
 }
+
 .modal{
-display:none;
-position:fixed;
-inset:0;
-z-index:100;
-background:rgba(0,0,0,.78);
-padding:18px;
-align-items:center;
-justify-content:center
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.78);
+  padding:18px;
+  align-items:center;
+  justify-content:center
 }
-.modal.open{display:flex}
+
+.modal.open{
+  display:flex
+}
+
 .modalBox{
-width:min(100%,620px);
-max-height:88vh;
-overflow:auto;
-background:#101b2b;
-border:1px solid #344b6b;
-border-radius:21px;
-padding:18px
+  width:min(100%,620px);
+  max-height:88vh;
+  overflow:auto;
+  background:#101b2b;
+  border:1px solid #344b6b;
+  border-radius:21px;
+  padding:18px
 }
+
 .modalHead{
-display:flex;
-justify-content:space-between;
-align-items:flex-start;
-gap:12px
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px
 }
+
 .close{
-width:35px;
-height:35px;
-border:0;
-border-radius:50%;
-background:#26364d;
-color:#fff;
-font-size:18px
+  width:35px;
+  height:35px;
+  border:0;
+  border-radius:50%;
+  background:#26364d;
+  color:#fff;
+  font-size:18px
 }
+
 .article{
-white-space:pre-wrap;
-color:#c2ccda;
-line-height:1.85;
-font-size:15px
+  white-space:pre-wrap;
+  color:#c2ccda;
+  line-height:1.85;
+  font-size:15px
 }
+
 nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-z-index:20;
-display:grid;
-grid-template-columns:repeat(6,1fr);
-background:rgba(7,16,29,.97);
-border-top:1px solid #263851;
-padding:8px 4px calc(14px + env(safe-area-inset-bottom));
-backdrop-filter:blur(16px)
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:20;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  background:rgba(7,16,29,.97);
+  border-top:1px solid #263851;
+  padding:8px 4px calc(14px + env(safe-area-inset-bottom));
+  backdrop-filter:blur(16px)
 }
+
 nav button{
-border:0;
-background:none;
-color:#7589a8;
-font-size:10px;
-padding:8px 1px
+  border:0;
+  background:none;
+  color:#7589a8;
+  font-size:10px;
+  padding:8px 1px
 }
+
 nav button.active{
-color:#fff;
-font-weight:850
+  color:#fff;
+  font-weight:850
 }
+
 .icon{
-display:block;
-font-size:19px;
-margin-bottom:3px
+  display:block;
+  font-size:19px;
+  margin-bottom:3px
 }
+
 @media(min-width:700px){
-.grid{grid-template-columns:repeat(4,1fr)}
-.archiveTabs{grid-template-columns:repeat(6,1fr)}
-nav{max-width:900px;margin:auto}
+  .grid{
+    grid-template-columns:repeat(4,1fr)
+  }
+
+  .archiveTabs{
+    grid-template-columns:repeat(6,1fr)
+  }
+
+  nav{
+    max-width:900px;
+    margin:auto
+  }
 }
 </style>
 </head>
@@ -385,1461 +582,4446 @@ nav{max-width:900px;margin:auto}
 <body>
 
 <header>
-<div class="headerTop">
-<div>
-<div class="logo">SL WORLD</div>
-<div class="sub">SUPER LEAGUE WORLD ENGINE</div>
-</div>
-<button class="admin" onclick="showView('admin',null)">⚙ 管理</button>
-</div>
+  <div class="headerTop">
+    <div>
+      <div class="logo">SL WORLD</div>
+      <div class="sub">SUPER LEAGUE WORLD ENGINE</div>
+    </div>
 
-<div class="status">
-<div class="badge">第34回スーパーリーグ</div>
-<div class="version">v1.2 ARCHIVES</div>
-</div>
+    <button class="admin" onclick="showView('admin',null)">
+      ⚙ 管理
+    </button>
+  </div>
+
+  <div class="status">
+    <div class="badge">第34回スーパーリーグ</div>
+    <div class="version">v1.3 STABLE</div>
+  </div>
 </header>
 
 <main>
 
 <section id="today" class="view active">
 
-<div class="hero">
-<div class="label">SL TODAY</div>
-<h1>第34回スーパーリーグ</h1>
-<p>大会・移籍・ニュース・SL正史を一つの世界記録へ。</p>
-</div>
+  <div class="hero">
+    <div class="label">SL TODAY</div>
+    <h1>第34回スーパーリーグ</h1>
+    <p>大会・移籍・ニュース・歴史を、一つのSL世界記録へ。</p>
+  </div>
 
-<div class="grid">
-<div class="stat">
-<small>現最高優勝</small>
-<div class="big goldText">Devils</div>
-<small>第33回</small>
-</div>
+  <div class="grid">
 
-<div class="stat">
-<small>通算最高優勝</small>
-<div class="big">27</div>
-<small>Devils</small>
-</div>
+    <div class="stat">
+      <small>現最高優勝</small>
+      <div class="big goldText">Devils</div>
+      <small>第33回</small>
+    </div>
 
-<div class="stat">
-<small>終了大会</small>
-<div id="todayCount" class="big">0 / 10</div>
-<small>第34回SL</small>
-</div>
+    <div class="stat">
+      <small>通算最高優勝</small>
+      <div class="big">27</div>
+      <small>Devils</small>
+    </div>
 
-<div class="stat">
-<small>WORLD STATE</small>
-<div class="big green">LIVE</div>
-<small>正史管理中</small>
-</div>
-</div>
+    <div class="stat">
+      <small>終了大会</small>
+      <div id="todayCount" class="big">0 / 10</div>
+      <small>第34回SL</small>
+    </div>
 
-<div class="sectionTitle">SEASON STATUS</div>
+    <div class="stat">
+      <small>WORLD STATE</small>
+      <div class="big green">LIVE</div>
+      <small>正史管理中</small>
+    </div>
 
-<div class="card">
-<h2>第34回 暫定首位</h2>
-<div id="todayLeader" class="big">開幕前</div>
-<p id="todayLeaderPt">0 pt</p>
-<div id="todayTie"></div>
-</div>
+  </div>
 
-<div class="sectionTitle">CC CARRYOVER</div>
+  <div class="sectionTitle">SEASON STATUS</div>
 
-<div class="card">
-<h2>第33回CC → 第34回</h2>
-<div id="carryList"></div>
-</div>
+  <div class="card">
+    <h2>第34回 暫定首位</h2>
+    <div id="todayLeader" class="big">開幕前</div>
+    <p id="todayLeaderPt">0 pt</p>
+    <div id="todayTie"></div>
+  </div>
 
-<div class="sectionTitle">HEADLINES</div>
-<div id="todayNews" class="card"></div>
+  <div class="sectionTitle">CC CARRYOVER</div>
 
-<div class="sectionTitle">TRANSFER MARKET</div>
-<div id="todayTransfers" class="card"></div>
+  <div class="card">
+    <h2>第33回CC → 第34回</h2>
+    <div id="carryList"></div>
+  </div>
 
-<div class="sectionTitle">WORLD MEMO</div>
+  <div class="sectionTitle">HEADLINES</div>
+  <div id="todayNews" class="card"></div>
 
-<div class="card">
-<textarea id="worldMemo" placeholder="設定、今後の展開、保留事項など"></textarea>
-<button class="primary" onclick="saveMemo()">世界状態メモを保存</button>
-</div>
+  <div class="sectionTitle">TRANSFER MARKET</div>
+  <div id="todayTransfers" class="card"></div>
+
+  <div class="sectionTitle">WORLD MEMO</div>
+
+  <div class="card">
+    <textarea
+      id="worldMemo"
+      placeholder="設定、今後の展開、保留事項など"
+    ></textarea>
+
+    <button class="primary" onclick="saveMemo()">
+      世界状態メモを保存
+    </button>
+  </div>
 
 </section>
 
 
 <section id="games" class="view">
 
-<div class="hero">
-<div class="label">TOURNAMENT</div>
-<h1>第34回 大会運営</h1>
-<p>外部ゲームで行った実際の大会結果を入力します。</p>
-</div>
+  <div class="hero">
+    <div class="label">TOURNAMENT</div>
+    <h1>第34回 大会運営</h1>
+    <p>外部ゲームで行った実際の大会結果を入力します。</p>
+  </div>
 
-<div class="card">
+  <div class="card">
 
-<div class="row">
-<h2>大会結果</h2>
-<button class="secondary" onclick="clearForm()">入力リセット</button>
-</div>
+    <div class="row">
+      <h2>大会結果</h2>
+      <button class="secondary" onclick="clearForm()">
+        入力リセット
+      </button>
+    </div>
 
-<label class="formLabel">大会</label>
-<select id="eventNo"></select>
+    <label class="formLabel">大会</label>
+    <select id="eventNo"></select>
 
-<label class="formLabel">優勝</label>
-<input id="winner" list="teamsList">
+    <label class="formLabel">優勝</label>
+    <input id="winner" list="teamsList">
 
-<label class="formLabel">準優勝</label>
-<input id="runner" list="teamsList">
+    <label class="formLabel">準優勝</label>
+    <input id="runner" list="teamsList">
 
-<label class="formLabel">3位</label>
-<div class="two">
-<input id="third1" list="teamsList">
-<input id="third2" list="teamsList">
-</div>
+    <label class="formLabel">3位</label>
+    <div class="two">
+      <input id="third1" list="teamsList">
+      <input id="third2" list="teamsList">
+    </div>
 
-<label class="formLabel">ベスト8</label>
-<div class="two">
-<input id="qf1" list="teamsList">
-<input id="qf2" list="teamsList">
-<input id="qf3" list="teamsList">
-<input id="qf4" list="teamsList">
-</div>
+    <label class="formLabel">ベスト8</label>
+    <div class="two">
+      <input id="qf1" list="teamsList">
+      <input id="qf2" list="teamsList">
+      <input id="qf3" list="teamsList">
+      <input id="qf4" list="teamsList">
+    </div>
 
-<label class="formLabel">前回大会王者を実際に倒したチーム</label>
-<input id="beatChampion" list="teamsList" placeholder="該当なしなら空欄">
+    <label class="formLabel">
+      前回大会王者を実際に倒したチーム
+    </label>
 
-<p class="notice">
-第1大会には王者撃破ボーナスはありません。
-連覇ボーナスと王者撃破ボーナスは直前の大会だけを参照します。
-</p>
+    <input
+      id="beatChampion"
+      list="teamsList"
+      placeholder="該当なしなら空欄"
+    >
 
-<button class="primary" onclick="saveTournament()">この大会を正史として保存</button>
+    <p class="notice">
+      第1大会には王者撃破ボーナスはありません。
+      連覇ボーナスと王者撃破ボーナスは、
+      直前の大会だけを参照します。
+    </p>
 
-</div>
+    <button class="primary" onclick="saveTournament()">
+      この大会を正史として保存
+    </button>
 
-<div class="card">
+  </div>
 
-<h2>SLポイント</h2>
+  <div class="card">
+    <h2>SLポイント</h2>
 
-<div class="rule"><span>優勝</span><strong>5 pt</strong></div>
-<div class="rule"><span>準優勝</span><strong>4 pt</strong></div>
-<div class="rule"><span>3位</span><strong>3 pt</strong></div>
-<div class="rule"><span>ベスト8</span><strong>1 pt</strong></div>
-<div class="rule"><span>前回王者撃破</span><strong>+1 pt</strong></div>
-<div class="rule"><span>大会連覇</span><strong>+1 pt</strong></div>
+    <div class="rule">
+      <span>優勝</span>
+      <strong>5 pt</strong>
+    </div>
 
-</div>
+    <div class="rule">
+      <span>準優勝</span>
+      <strong>4 pt</strong>
+    </div>
 
-<div class="card">
+    <div class="rule">
+      <span>3位</span>
+      <strong>3 pt</strong>
+    </div>
 
-<h2>第34回 暫定順位</h2>
+    <div class="rule">
+      <span>ベスト8</span>
+      <strong>1 pt</strong>
+    </div>
 
-<table>
-<thead>
-<tr>
-<th>順位</th>
-<th>チーム</th>
-<th>Pt</th>
-</tr>
-</thead>
-<tbody id="standings"></tbody>
-</table>
+    <div class="rule">
+      <span>前回王者撃破</span>
+      <strong>+1 pt</strong>
+    </div>
 
-<div id="tieAlert"></div>
+    <div class="rule">
+      <span>大会連覇</span>
+      <strong>+1 pt</strong>
+    </div>
+  </div>
 
-</div>
+  <div class="card">
+    <h2>第34回 暫定順位</h2>
 
-<div class="card">
-<h2>大会履歴</h2>
-<div id="tournamentHistory"></div>
-</div>
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>順位</th>
+            <th>チーム</th>
+            <th>Pt</th>
+          </tr>
+        </thead>
+
+        <tbody id="standingsBody"></tbody>
+      </table>
+    </div>
+
+    <div id="playoffNotice"></div>
+  </div>
+
+  <div class="sectionTitle">REGISTERED EVENTS</div>
+
+  <div id="eventHistory" class="card"></div>
 
 </section>
 
 
 <section id="teams" class="view">
 
-<div class="hero">
-<div class="label">CLUB DATABASE</div>
-<h1>チーム</h1>
-<p>SL所属チームと監督、クラブ関係。</p>
-</div>
+  <div class="hero">
+    <div class="label">CLUBS</div>
+    <h1>SL所属チーム</h1>
+    <p>クラブ、監督、関係性、世界設定を管理します。</p>
+  </div>
 
-<div class="card">
-<h2>SL所属チーム</h2>
-<div id="teamList"></div>
-</div>
+  <div id="teamCards"></div>
 
-<div class="card">
-<h2>クラブ関係</h2>
-<div id="relations"></div>
-</div>
+  <div class="sectionTitle">CLUB RELATIONSHIPS</div>
+
+  <div class="card">
+    <h2>クラブ間関係</h2>
+    <div id="relationshipList"></div>
+  </div>
 
 </section>
 
 
-<section id="market" class="view">
+<section id="transfers" class="view">
 
-<div class="hero">
-<div class="label">TRANSFER MARKET</div>
-<h1>第34回 移籍市場</h1>
-</div>
+  <div class="hero">
+    <div class="label">TRANSFER MARKET</div>
+    <h1>移籍市場</h1>
+    <p>確定移籍・レンタル・内部昇格とは分けて記録します。</p>
+  </div>
 
-<div class="card">
+  <div class="card">
 
-<label class="formLabel">選手</label>
-<input id="transferPlayer">
+    <h2>移籍を登録</h2>
 
-<label class="formLabel">移動</label>
-<input id="transferMove" placeholder="移籍元 → 移籍先">
+    <label class="formLabel">選手</label>
+    <input id="transferPlayer">
 
-<label class="formLabel">メモ</label>
-<input id="transferNote">
+    <label class="formLabel">移籍元</label>
+    <input id="transferFrom">
 
-<label class="formLabel">状態</label>
-<select id="transferStatus">
-<option value="canon">正史</option>
-<option value="hold">保留</option>
-<option value="reject">却下</option>
-</select>
+    <label class="formLabel">移籍先</label>
+    <input id="transferTo">
 
-<button class="primary" onclick="addTransfer()">登録</button>
+    <label class="formLabel">種別</label>
 
-</div>
+    <select id="transferType">
+      <option value="完全移籍">完全移籍</option>
+      <option value="レンタル">レンタル</option>
+      <option value="復帰">レンタル復帰</option>
+      <option value="加入">加入</option>
+      <option value="退団">退団</option>
+      <option value="引退">引退</option>
+    </select>
 
-<div class="card">
-<h2>移籍一覧</h2>
-<div id="transferList"></div>
-</div>
+    <label class="formLabel">メモ</label>
+    <textarea
+      id="transferMemo"
+      placeholder="移籍金、契約、背景など"
+    ></textarea>
+
+    <button class="primary" onclick="addTransfer()">
+      移籍記録を追加
+    </button>
+
+  </div>
+
+  <div class="card">
+    <h2>移籍履歴</h2>
+    <div id="transferList"></div>
+  </div>
 
 </section>
 
 
 <section id="news" class="view">
 
-<div class="hero">
-<div class="label">SL NEWS</div>
-<h1>ニュース編集室</h1>
-<p>見出しを押すと記事全文を表示します。</p>
-</div>
+  <div class="hero">
+    <div class="label">SL NEWS</div>
+    <h1>ニュース</h1>
+    <p>現在のニュースとSL史に残る記事を管理します。</p>
+  </div>
 
-<div class="card">
+  <div class="card">
 
-<label class="formLabel">カテゴリー</label>
-<input id="newsCategory" placeholder="移籍 / 大会 / クラブ / 負傷">
+    <h2>ニュース作成</h2>
 
-<label class="formLabel">見出し</label>
-<input id="newsTitle">
+    <label class="formLabel">カテゴリー</label>
 
-<label class="formLabel">一覧用要約</label>
-<textarea id="newsSummary" style="min-height:70px"></textarea>
+    <select id="newsCategory">
+      <option value="速報">速報</option>
+      <option value="移籍">移籍</option>
+      <option value="大会">大会</option>
+      <option value="クラブ">クラブ</option>
+      <option value="選手">選手</option>
+      <option value="運営">運営</option>
+      <option value="歴史">歴史</option>
+    </select>
 
-<label class="formLabel">記事本文</label>
-<textarea id="newsBody"></textarea>
+    <label class="formLabel">タイトル</label>
+    <input id="newsTitle">
 
-<label class="formLabel">状態</label>
-<select id="newsStatus">
-<option value="canon">正史</option>
-<option value="hold">保留</option>
-<option value="reject">却下</option>
-</select>
+    <label class="formLabel">概要</label>
+    <textarea id="newsSummary"></textarea>
 
-<button class="primary" onclick="addNews()">ニュースを登録</button>
+    <label class="formLabel">本文</label>
+    <textarea id="newsBody"></textarea>
 
-</div>
+    <button class="primary" onclick="addNews()">
+      ニュースを公開
+    </button>
 
-<div class="card">
-<h2>SL NEWS</h2>
-<div id="newsList"></div>
-</div>
+  </div>
 
-</section>
+  <div class="sectionTitle">CURRENT NEWS</div>
+  <div id="newsList"></div>
 
-
-<section id="archive" class="view">
-
-<div class="hero">
-<div class="label">SL ARCHIVES</div>
-<h1>スーパーリーグ正史</h1>
-<p>SL最高優勝、CC、JC、国王杯、年表、伝説・記録。</p>
-</div>
-
-<div class="archiveTabs">
-
-<button class="archiveTab active" onclick="showArchive('sl',this)">SL</button>
-<button class="archiveTab" onclick="showArchive('cc',this)">CC</button>
-<button class="archiveTab" onclick="showArchive('jc',this)">JC</button>
-<button class="archiveTab" onclick="showArchive('king',this)">国王杯</button>
-<button class="archiveTab" onclick="showArchive('timeline',this)">年表</button>
-<button class="archiveTab" onclick="showArchive('legend',this)">伝説</button>
-
-</div>
-
-<div id="arch-sl" class="archiveSection active">
-<div class="card">
-<h2>SL最高優勝史</h2>
-<div id="champions"></div>
-</div>
-</div>
-
-<div id="arch-cc" class="archiveSection">
-<div class="card">
-<h2>Champions Cup</h2>
-<p class="notice">
-SL最終順位1〜8位による8チーム制。
-第16回以降、優勝3・準優勝2・3位2チーム各1ポイントを翌季へ持ち越し。
-<br><br>
-延長15回 / コールドなし / 風なし / エラーあり
-</p>
-<div id="ccList"></div>
-</div>
-</div>
-
-<div id="arch-jc" class="archiveSection">
-<div class="card">
-<h2>Japan Cup</h2>
-<p class="notice">
-第9回SLから開始。
-前半5大会終了時点の上位4チームが出場。
-優勝4・準優勝3・3位2チーム各2ポイント。
-<br><br>
-延長12回 / 10点コールド / 風なし / エラーあり
-</p>
-
-<div class="box">
-<span class="tag unknown">記録確認中</span>
-<h3>歴代JC結果</h3>
-<p>
-各回の確定結果は、正史資料が確認できたものから追加します。
-未確認部分は自動で補完しません。
-</p>
-</div>
-
-</div>
-</div>
-
-<div id="arch-king" class="archiveSection">
-<div class="card">
-<h2>国王杯</h2>
-<p class="notice">
-第30回SLから開始した32チーム大会。
-延長なし / 10点コールド / 風なし / エラーなし
-</p>
-<div id="kingList"></div>
-</div>
-</div>
-
-<div id="arch-timeline" class="archiveSection">
-<div class="card">
-<h2>SL WORLD 年表</h2>
-<div id="timeline" class="timeline"></div>
-</div>
-</div>
-
-<div id="arch-legend" class="archiveSection">
-<div class="card">
-<h2>伝説・記録</h2>
-<div id="legends"></div>
-</div>
-</div>
+  <div class="sectionTitle">HISTORICAL NEWS</div>
+  <div id="historicalNewsList"></div>
 
 </section>
 
+
+<section id="history" class="view">
+
+  <div class="hero">
+    <div class="label">SL ARCHIVES</div>
+    <h1>SL全史</h1>
+    <p>
+      最高優勝、CC、JC、国王杯、年表、伝説・記録を保存します。
+    </p>
+  </div>
+
+  <div class="archiveTabs">
+
+    <button
+      class="archiveTab active"
+      data-archive="sl"
+      onclick="showArchive('sl',this)"
+    >
+      SL
+    </button>
+
+    <button
+      class="archiveTab"
+      data-archive="cc"
+      onclick="showArchive('cc',this)"
+    >
+      CC
+    </button>
+
+    <button
+      class="archiveTab"
+      data-archive="jc"
+      onclick="showArchive('jc',this)"
+    >
+      JC
+    </button>
+
+    <button
+      class="archiveTab"
+      data-archive="king"
+      onclick="showArchive('king',this)"
+    >
+      国王杯
+    </button>
+
+    <button
+      class="archiveTab"
+      data-archive="timeline"
+      onclick="showArchive('timeline',this)"
+    >
+      年表
+    </button>
+
+    <button
+      class="archiveTab"
+      data-archive="legend"
+      onclick="showArchive('legend',this)"
+    >
+      伝説
+    </button>
+
+  </div>
+
+  <div id="archive-sl" class="archiveSection active">
+    <div class="card">
+      <h2>SL最高優勝</h2>
+      <div id="slChampionArchive"></div>
+    </div>
+  </div>
+
+  <div id="archive-cc" class="archiveSection">
+    <div class="card">
+      <h2>Champions Cup</h2>
+      <div id="ccArchive"></div>
+    </div>
+  </div>
+
+  <div id="archive-jc" class="archiveSection">
+    <div class="card">
+      <h2>Japan Cup</h2>
+      <div id="jcArchive"></div>
+    </div>
+  </div>
+
+  <div id="archive-king" class="archiveSection">
+    <div class="card">
+      <h2>国王杯</h2>
+      <div id="kingArchive"></div>
+    </div>
+  </div>
+
+  <div id="archive-timeline" class="archiveSection">
+    <div class="card">
+      <h2>SL年表</h2>
+      <div id="timelineArchive"></div>
+    </div>
+  </div>
+
+  <div id="archive-legend" class="archiveSection">
+    <div class="card">
+      <h2>伝説・記録</h2>
+      <div id="legendArchive"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== SL WORLD STABLE 1/3 END ===== -->
+<!-- ===== SL WORLD STABLE 2/3 START ===== -->
 
 <section id="admin" class="view">
 
-<div class="hero">
-<div class="label">ADMIN / DATA</div>
-<h1>SL WORLD 管理</h1>
-</div>
+  <div class="hero">
+    <div class="label">ADMIN / GOD MODE</div>
+    <h1>SL WORLD 管理</h1>
+    <p>世界データの保存・復元・確認を行います。</p>
+  </div>
 
-<div class="card">
-<h2>バックアップ</h2>
-<button class="primary" onclick="exportData()">JSONバックアップ作成</button>
-<textarea id="backupBox"></textarea>
-</div>
+  <div class="card">
+    <h2>データバックアップ</h2>
 
-<div class="card">
-<h2>復元</h2>
-<textarea id="restoreBox" placeholder="バックアップJSONを貼り付け"></textarea>
-<button class="primary" onclick="importData()">復元</button>
-</div>
+    <p class="notice">
+      大会結果・ニュース・移籍・クラブ関係・世界メモを
+      JSON形式でバックアップできます。
+    </p>
+
+    <button class="primary" onclick="exportBackup()">
+      バックアップJSONを表示
+    </button>
+
+    <label class="formLabel">バックアップ / 復元データ</label>
+
+    <textarea
+      id="backupArea"
+      placeholder="ここにJSONデータが表示されます"
+    ></textarea>
+
+    <button class="secondary" onclick="importBackup()">
+      このJSONから復元
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>WORLD DATA STATUS</h2>
+
+    <div class="rule">
+      <span>SL最高優勝史</span>
+      <strong>第1〜33回</strong>
+    </div>
+
+    <div class="rule">
+      <span>Champions Cup</span>
+      <strong>第1〜33回</strong>
+    </div>
+
+    <div class="rule">
+      <span>Japan Cup</span>
+      <strong>第1〜25回</strong>
+    </div>
+
+    <div class="rule">
+      <span>国王杯</span>
+      <strong>第1〜4回</strong>
+    </div>
+
+    <div class="rule">
+      <span>現行シーズン</span>
+      <strong>第34回</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>記録ポリシー</h2>
+
+    <p>
+      <span class="tag canon">正史</span>
+      ユーザーによって確定されたSL世界の事実
+    </p>
+
+    <p>
+      <span class="tag memory">記憶</span>
+      記憶に基づき、今後確認する可能性がある記録
+    </p>
+
+    <p>
+      <span class="tag hold">推定</span>
+      周辺資料から考えられるが未確定の情報
+    </p>
+
+    <p>
+      <span class="tag unknown">記録なし</span>
+      現存資料では確認できない情報
+    </p>
+  </div>
 
 </section>
 
 </main>
 
 
-<datalist id="teamsList">
-<option value="デビルスターズ">
-<option value="大阪桐蔭">
-<option value="納東一">
-<option value="東海大相模">
-<option value="壮青学院">
-<option value="日本体育大荏原">
-<option value="威伏">
-<option value="西東国">
-<option value="武勇館">
-<option value="明訓">
-<option value="頭取商">
-<option value="知位学園">
-</datalist>
+<datalist id="teamsList"></datalist>
+
+
+<div id="articleModal" class="modal">
+  <div class="modalBox">
+
+    <div class="modalHead">
+
+      <div>
+        <div id="modalCategory" class="newsCat"></div>
+        <h2 id="modalTitle"></h2>
+      </div>
+
+      <button class="close" onclick="closeArticle()">
+        ×
+      </button>
+
+    </div>
+
+    <div id="modalSummary" class="newsSummary"></div>
+
+    <hr
+      style="
+        border:0;
+        border-top:1px solid #2a3d58;
+        margin:16px 0
+      "
+    >
+
+    <div id="modalBody" class="article"></div>
+
+  </div>
+</div>
 
 
 <nav>
 
-<button class="active" onclick="showView('today',this)">
-<span class="icon">⌂</span>
-Today
-</button>
+  <button
+    class="navBtn active"
+    data-view="today"
+    onclick="showView('today',this)"
+  >
+    <span class="icon">⌂</span>
+    Today
+  </button>
 
-<button onclick="showView('games',this)">
-<span class="icon">◆</span>
-大会
-</button>
+  <button
+    class="navBtn"
+    data-view="games"
+    onclick="showView('games',this)"
+  >
+    <span class="icon">◆</span>
+    大会
+  </button>
 
-<button onclick="showView('teams',this)">
-<span class="icon">♜</span>
-チーム
-</button>
+  <button
+    class="navBtn"
+    data-view="teams"
+    onclick="showView('teams',this)"
+  >
+    <span class="icon">♜</span>
+    チーム
+  </button>
 
-<button onclick="showView('market',this)">
-<span class="icon">⇄</span>
-移籍
-</button>
+  <button
+    class="navBtn"
+    data-view="transfers"
+    onclick="showView('transfers',this)"
+  >
+    <span class="icon">⇄</span>
+    移籍
+  </button>
 
-<button onclick="showView('news',this)">
-<span class="icon">▤</span>
-News
-</button>
+  <button
+    class="navBtn"
+    data-view="news"
+    onclick="showView('news',this)"
+  >
+    <span class="icon">▤</span>
+    News
+  </button>
 
-<button onclick="showView('archive',this)">
-<span class="icon">★</span>
-歴史
-</button>
+  <button
+    class="navBtn"
+    data-view="history"
+    onclick="showView('history',this)"
+  >
+    <span class="icon">★</span>
+    歴史
+  </button>
 
 </nav>
 
 
-<div id="newsModal" class="modal">
-
-<div class="modalBox">
-
-<div class="modalHead">
-
-<div>
-<div id="modalCategory" class="newsCat"></div>
-<h2 id="modalTitle"></h2>
-</div>
-
-<button class="close" onclick="closeNews()">×</button>
-
-</div>
-
-<div id="modalStatus"></div>
-
-<div id="modalBody" class="article"></div>
-
-</div>
-
-</div>
-
-
 <script>
 
-const $=id=>document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-const teams=[
-"デビルスターズ",
-"大阪桐蔭",
-"納東一",
-"東海大相模",
-"壮青学院",
-"日本体育大荏原",
-"威伏",
-"西東国",
-"武勇館",
-"明訓",
-"頭取商",
-"知位学園"
+
+/* =========================================================
+   SL WORLD CORE DATA
+========================================================= */
+
+const teams = [
+  "デビルスターズ",
+  "大阪桐蔭",
+  "納東一",
+  "東海大相模",
+  "壮青学院",
+  "日本体育大荏原",
+  "威伏",
+  "西東国",
+  "武勇館",
+  "明訓",
+  "頭取商",
+  "知位学園"
 ];
 
-const big6=[
-"デビルスターズ",
-"大阪桐蔭",
-"納東一",
-"東海大相模",
-"壮青学院",
-"日本体育大荏原"
-];
 
-const managers={
-"デビルスターズ":"海堂",
-"大阪桐蔭":"島田",
-"納東一":"佐藤",
-"東海大相模":"由井",
-"壮青学院":"朝比奈",
-"日本体育大荏原":"加々美",
-"威伏":"田倉",
-"西東国":"サントス",
-"武勇館":"山本",
-"明訓":"徳川",
-"頭取商":"高橋",
-"知位学園":"太田"
+const managers = {
+  "デビルスターズ":"海堂",
+  "大阪桐蔭":"島田",
+  "納東一":"佐藤",
+  "東海大相模":"由井",
+  "壮青学院":"朝比奈",
+  "日本体育大荏原":"加々美",
+  "威伏":"田倉",
+  "西東国":"サントス",
+  "武勇館":"山本",
+  "明訓":"徳川",
+  "頭取商":"高橋",
+  "知位学園":"太田"
 };
 
-const championHistory=[
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"納東一",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"納東一",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"デビルスターズ",
-"納東一",
-"デビルスターズ",
-"日本体育大荏原",
-"デビルスターズ",
-"日本体育大荏原",
-"デビルスターズ",
-"デビルスターズ",
-"日本体育大荏原",
-"デビルスターズ"
+
+const big6Teams = [
+  "デビルスターズ",
+  "大阪桐蔭",
+  "納東一",
+  "東海大相模",
+  "壮青学院",
+  "日本体育大荏原"
 ];
 
-const ccHistory=[
-["東海大相模","大阪桐蔭"],
-["東海大相模","明訓"],
-["デビルスターズ","西東国"],
-["東海大相模","大阪桐蔭"],
-["デビルスターズ","納東一"],
-["納東一","頭取商"],
-["デビルスターズ","納東一"],
-["デビルスターズ","納東一"],
-["デビルスターズ","納東一"],
-["デビルスターズ","壮青学院"],
-["デビルスターズ","東海大相模"],
-["デビルスターズ","明訓"],
-["デビルスターズ","東海大相模"],
-["デビルスターズ","明訓"],
-["デビルスターズ","大阪桐蔭"],
-["東海大相模","壮青学院","デビルスターズ","納東一"],
-["納東一","西東国","大阪桐蔭","日本体育大荏原"],
-["デビルスターズ","壮青学院","大阪桐蔭","納東一"],
-["デビルスターズ","東海大相模","納東一","大阪桐蔭"],
-["東海大相模","デビルスターズ","日本体育大荏原","明訓"],
-["壮青学院","デビルスターズ","納東一","西東国"],
-["納東一","デビルスターズ","東海大相模","西東国"],
-["デビルスターズ","大阪桐蔭","壮青学院","東海大相模"],
-["納東一","日本体育大荏原","大阪桐蔭","東海大相模"],
-["壮青学院","大阪桐蔭","日本体育大荏原","東海大相模"],
-["日本体育大荏原","東海大相模","デビルスターズ","威伏"],
-["納東一","デビルスターズ","日本体育大荏原","東海大相模"],
-["日本体育大荏原","大阪桐蔭","デビルスターズ","納東一"],
-["日本体育大荏原","デビルスターズ","壮青学院","納東一"],
-["デビルスターズ","大阪桐蔭","壮青学院","威伏"],
-["デビルスターズ","日本体育大荏原","大阪桐蔭","東海大相模"],
-["デビルスターズ","日本体育大荏原","納東一","大阪桐蔭"],
-["デビルスターズ","納東一","大阪桐蔭","壮青学院"]
-];
 
-const ccCarry={
-"デビルスターズ":3,
-"納東一":2,
-"大阪桐蔭":1,
-"壮青学院":1
+const carryover = {
+  "デビルスターズ":3,
+  "納東一":2,
+  "大阪桐蔭":1,
+  "壮青学院":1
 };
 
-const kingCup=[
-{
-no:1,
-winner:"デビルスターズ",
-runner:"日本体育大荏原",
-third:["威伏","邦成"]
-},
-{
-no:2,
-winner:"デビルスターズ",
-runner:"大阪桐蔭",
-third:["日本体育大荏原","東海大相模"]
-},
-{
-no:3,
-winner:"納東一",
-runner:"将駈",
-third:["壮青学院","宇霧一"]
-},
-{
-no:4,
-winner:"デビルスターズ",
-runner:"東海大相模",
-third:["日本体育大荏原","西東国"]
-}
+
+/* =========================================================
+   SL最高優勝
+========================================================= */
+
+const slChampions = [
+
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+
+  "納東一",
+
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+
+  "納東一",
+
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+  "デビルスターズ",
+
+  "納東一",
+
+  "デビルスターズ",
+
+  "日本体育大荏原",
+
+  "デビルスターズ",
+
+  "日本体育大荏原",
+
+  "デビルスターズ",
+  "デビルスターズ",
+
+  "日本体育大荏原",
+
+  "デビルスターズ"
+
 ];
 
-const timelineData=[
-["前史","絶対勝利学園高校、全日本野球選手権時代を経て、後のスーパーリーグ世界が形成された。プロペラ団はデビルスターズの前身組織へ強い影響力を持った。","memory"],
-["SL創設","スーパーリーグ創設時点でデビルスターズはすでに成熟した巨大クラブとして存在。","canon"],
-["第1〜8回","デビルスターズがSL最高優勝8連覇。絶対王者としてリーグ初期を支配。","canon"],
-["第9回","納東一が初のSL最高優勝。デビルスターズの連覇を止める。Japan Cup開始。","canon"],
-["第13回","納東一が再びSL最高優勝。","canon"],
-["第19回","デビルスターズが三冠。SL最高優勝6連続、通算17回。","canon"],
-["第22回","威伏と能体工がAチームへ昇格。大型新人世代も登場。","canon"],
-["第23回","デビルスターズ三冠・10連覇・通算21回。加々美がシーズン後に退任。","canon"],
-["第24回","海堂がデビルスターズ監督へ。加々美は日本体育大荏原監督へ。","canon"],
-["第25回","納東一がSL最高優勝。能体工はAチームから降格。","canon"],
-["第27回","デビルスターズと日本体育大荏原が38ポイントで同率。プレーオフを日体荏原が3対1で制し初のSL最高優勝。大阪桐蔭は9位となり亀田監督が退任。","canon"],
-["第28回","藤浪が大阪桐蔭監督に就任。SL初の元NPB監督。","canon"],
-["第30回","国王杯開始。海堂率いるデビルスターズが初の四冠を達成。","canon"],
-["第31回","デビルスターズが2季連続四冠。市若大商がAチームから降格。","canon"],
-["第32回","日本体育大荏原がSL最高優勝。","canon"],
-["第33回","デビルスターズと大阪桐蔭が1位タイ。プレーオフをデビルスターズが制して通算27回目。四冠も達成。東西オールスターとベスト監督賞が開始。","canon"],
-["第34回開幕前","デビルスターズが明日川を獲得。納東一はA・ジャッジとスタンリッジを大型契約で獲得。移籍市場が大きく動く。","canon"]
+
+/* =========================================================
+   CHAMPIONS CUP
+========================================================= */
+
+const ccHistory = [
+
+  ["東海大相模","大阪桐蔭"],
+  ["東海大相模","明訓"],
+  ["デビルスターズ","西東国"],
+  ["東海大相模","大阪桐蔭"],
+  ["デビルスターズ","納東一"],
+  ["納東一","頭取商"],
+  ["デビルスターズ","納東一"],
+  ["デビルスターズ","納東一"],
+  ["デビルスターズ","納東一"],
+  ["デビルスターズ","壮青学院"],
+  ["デビルスターズ","東海大相模"],
+  ["デビルスターズ","明訓"],
+  ["デビルスターズ","東海大相模"],
+  ["デビルスターズ","明訓"],
+  ["デビルスターズ","大阪桐蔭"],
+
+  [
+    "東海大相模",
+    "壮青学院",
+    "デビルスターズ",
+    "納東一"
+  ],
+
+  [
+    "納東一",
+    "西東国",
+    "大阪桐蔭",
+    "日体荏原"
+  ],
+
+  [
+    "デビルスターズ",
+    "壮青学院",
+    "大阪桐蔭",
+    "納東一"
+  ],
+
+  [
+    "デビルスターズ",
+    "東海大相模",
+    "納東一",
+    "大阪桐蔭"
+  ],
+
+  [
+    "東海大相模",
+    "デビルスターズ",
+    "日体荏原",
+    "明訓"
+  ],
+
+  [
+    "壮青学院",
+    "デビルスターズ",
+    "納東一",
+    "西東国"
+  ],
+
+  [
+    "納東一",
+    "デビルスターズ",
+    "東海大相模",
+    "西東国"
+  ],
+
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "壮青学院",
+    "東海大相模"
+  ],
+
+  [
+    "納東一",
+    "日体荏原",
+    "大阪桐蔭",
+    "東海大相模"
+  ],
+
+  [
+    "壮青学院",
+    "大阪桐蔭",
+    "日体荏原",
+    "東海大相模"
+  ],
+
+  [
+    "日体荏原",
+    "東海大相模",
+    "デビルスターズ",
+    "威伏"
+  ],
+
+  [
+    "納東一",
+    "デビルスターズ",
+    "日体荏原",
+    "東海大相模"
+  ],
+
+  [
+    "日体荏原",
+    "大阪桐蔭",
+    "デビルスターズ",
+    "納東一"
+  ],
+
+  [
+    "日体荏原",
+    "デビルスターズ",
+    "壮青学院",
+    "納東一"
+  ],
+
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "壮青学院",
+    "威伏"
+  ],
+
+  [
+    "デビルスターズ",
+    "日体荏原",
+    "大阪桐蔭",
+    "東海大相模"
+  ],
+
+  [
+    "デビルスターズ",
+    "日体荏原",
+    "納東一",
+    "大阪桐蔭"
+  ],
+
+  [
+    "デビルスターズ",
+    "納東一",
+    "大阪桐蔭",
+    "壮青学院"
+  ]
+
 ];
 
-const legendData=[
-["X亀田","デビルスターズを象徴する伝説の4番。走攻守を高いレベルで兼ね備えた五ツールプレイヤー。元主将。後に大阪桐蔭監督。","canon"],
-["八雲 × 佐山","伝説的な二遊間コンビ。八雲はデビルスターズ史上屈指の俊足。2人は引退後、邦成で揃って現役復帰。","canon"],
-["加々美","第1回から第23回までデビルスターズ監督。トータルベースボールを確立。後に日本体育大荏原監督。","canon"],
-["海堂","加々美の弟子。第24回からデビルスターズ監督。ニュートータルベースボールを構築し四冠時代を作る。","canon"],
-["朝比奈","元デビルスターズ主将。加々美の教えを受け、第6回から壮青学院監督。","canon"],
-["SL最高優勝最多","デビルスターズ 27回。第33回終了時点。","canon"],
-["SLポイント最高記録","デビルスターズ 54ポイント。","canon"],
-["初代デビルスターズ監督","正確な人物は現存記録から特定できていない。","unknown"],
-["最初期デビルスターズ","シャオ、戸井、アクメド、H亀田、野球マスク、赤坂、ピンク、小杉、写六らが古い記録で確認されている。","memory"]
+
+/* =========================================================
+   JAPAN CUP
+========================================================= */
+
+const jcHistory = [
+
+  [
+    "デビルスターズ",
+    "納東一",
+    "東海大相模",
+    "大阪桐蔭"
+  ],
+
+  [
+    "納東一",
+    "大阪桐蔭",
+    "デビルスターズ",
+    "東海大相模"
+  ],
+
+  [
+    "大阪桐蔭",
+    "デビルスターズ",
+    "明訓",
+    "壮青学院"
+  ],
+
+  [
+    "納東一",
+    "大阪桐蔭",
+    "東海大相模",
+    "デビルスターズ"
+  ],
+
+  [
+    "大阪桐蔭",
+    "納東一",
+    "デビルスターズ",
+    "壮青学院"
+  ],
+
+  [
+    "納東一",
+    "大阪桐蔭",
+    "東海大相模",
+    "デビルスターズ"
+  ],
+
+  [
+    "大阪桐蔭",
+    "納東一",
+    "デビルスターズ",
+    "東海大相模"
+  ],
+
+  [
+    "デビルスターズ",
+    "壮青学院",
+    "大阪桐蔭",
+    "納東一"
+  ],
+
+  [
+    "大阪桐蔭",
+    "デビルスターズ",
+    "壮青学院",
+    "日体荏原"
+  ],
+
+  [
+    "壮青学院",
+    "東海大相模",
+    "デビルスターズ",
+    "西東国"
+  ],
+
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "東海大相模",
+    "納東一"
+  ],
+
+  [
+    "壮青学院",
+    "東海大相模",
+    "デビルスターズ",
+    "大阪桐蔭"
+  ],
+
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "納東一",
+    "東海大相模"
+  ],
+
+  [
+    "壮青学院",
+    "納東一",
+    "デビルスターズ",
+    "東海大相模"
+  ],
+
+  [
+    "デビルスターズ",
+    "壮青学院",
+    "納東一",
+    "大阪桐蔭"
+  ],
+
+  [
+    "納東一",
+    "壮青学院",
+    "デビルスターズ",
+    "大阪桐蔭"
+  ],
+
+  [
+    "納東一",
+    "日体荏原",
+    "壮青学院",
+    "デビルスターズ"
+  ],
+
+  [
+    "日体荏原",
+    "壮青学院",
+    "デビルスターズ",
+    "西東国"
+  ],
+
+  [
+    "日体荏原",
+    "壮青学院",
+    "デビルスターズ",
+    "納東一"
+  ],
+
+  [
+    "デビルスターズ",
+    "日体荏原",
+    "納東一",
+    "大阪桐蔭"
+  ],
+
+  [
+    "壮青学院",
+    "日体荏原",
+    "大阪桐蔭",
+    "デビルスターズ"
+  ],
+
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "日体荏原",
+    "壮青学院"
+  ],
+
+  [
+    "デビルスターズ",
+    "日体荏原",
+    "大阪桐蔭",
+    "壮青学院"
+  ],
+
+  [
+    "デビルスターズ",
+    "日体荏原",
+    "納東一",
+    "威伏"
+  ],
+
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "日体荏原",
+    "納東一"
+  ]
+
 ];
 
-const defaultNews=[
-{
-category:"移籍",
-title:"納東一、A・ジャッジ＆スタンリッジを同時獲得",
-summary:"SL史上最大級の補強。佐藤監督はSL史上最強の陣容を掲げる。",
-body:`納東一は第34回スーパーリーグ開幕を前に、ヤンキースからA・ジャッジとエドワード・スタンリッジを獲得した。
 
-A・ジャッジは移籍金20億、5年総額100億。
+/* =========================================================
+   国王杯
+========================================================= */
 
-スタンリッジは移籍金15億、5年総額80億。
+const kingHistory = [
 
-直前にはデビルスターズが明日川を18.5億で獲得し、SL史上最高額級の移籍として注目されていたが、納東一はその記録をさらに更新する大型補強を実行。
+  [
+    "デビルスターズ",
+    "日本体育大荏原",
+    "威伏",
+    "邦成"
+  ],
 
-佐藤監督は新戦力を加えた陣容について、SL史上最強のチームを目指す姿勢を示している。`,
-status:"canon"
-},
-{
-category:"移籍",
-title:"明日川、日体荏原からデビルスターズへ",
-summary:"移籍金18.5億。王者が大型補強。",
-body:`デビルスターズは日本体育大荏原から明日川を獲得した。
+  [
+    "デビルスターズ",
+    "大阪桐蔭",
+    "日本体育大荏原",
+    "東海大相模"
+  ],
 
-移籍金は18.5億。
+  [
+    "納東一",
+    "将駈",
+    "壮青学院",
+    "宇霧一"
+  ],
 
-発表時点ではSL史上最大級の移籍金として注目を集めた。
+  [
+    "デビルスターズ",
+    "東海大相模",
+    "日本体育大荏原",
+    "西東国"
+  ]
 
-加々美率いる日本体育大荏原の中心選手が、海堂率いる王者デビルスターズでどのような役割を担うのか注目される。`,
-status:"canon"
-},
-{
-category:"負傷",
-title:"クラウド、左MCL負傷で国王杯欠場",
-summary:"当初約4か月と見られたが、SL開幕復帰の可能性も。",
-body:`デビルスターズのクラウドが左MCLを負傷した。
-
-当初は約4か月の離脱が見込まれ、国王杯は欠場する。
-
-一方でシーズン日程の影響により、スーパーリーグ本戦の開幕には間に合う可能性も残されている。`,
-status:"canon"
-},
-{
-category:"リーグ",
-title:"頭取商、第34回は条件付きAチーム",
-summary:"8ポイント以上またはCC出場でA残留。",
-body:`頭取商は第33回終了後、事実上Aチームからの降格対象となった。
-
-ただし第34回は特例としてAチーム同様の推薦枠で参加する。
-
-残留条件は「8ポイント以上」または「Champions Cup出場」。
-
-条件達成ならA資格は継続扱いとなり、条件未達の場合はTLへ降格する。`,
-status:"canon"
-}
 ];
 
-const defaultTransfers=[
-["明日川","日本体育大荏原 → デビルスターズ","移籍金18.5億"],
-["落合","デビルスターズ → 壮青学院",""],
-["天方","デビルスターズ → 納東一",""],
-["小園","デビルスターズ → 壮青学院",""],
-["柳田","デビルスターズ育成組織 → トップ","昇格"],
-["村上","デビルスターズ育成組織 → トップ","昇格"],
-["岡本","デビルスターズ育成組織 → トップ","昇格"],
-["天馬","納東一 → 大阪桐蔭",""],
-["太田","納東一 → 大阪桐蔭",""],
-["高水","デビルスターズSecond → 大阪桐蔭",""],
-["A・ジャッジ","ヤンキース → 納東一","移籍金20億 / 5年100億"],
-["スタンリッジ","ヤンキース → 納東一","移籍金15億 / 5年80億"],
-["炭谷","日本体育大荏原ユース → 納東一",""]
-].map(x=>({
-player:x[0],
-move:x[1],
-note:x[2],
-status:"canon"
-}));
 
-const defaultRelations=[
-["デビルスターズ","大阪桐蔭","宿敵"],
-["デビルスターズ","日本体育大荏原","良好"],
-["大阪桐蔭","納東一","通常"]
-].map(x=>({
-a:x[0],
-b:x[1],
-status:x[2]
-}));
+/* =========================================================
+   SL TIMELINE
+========================================================= */
 
-function load(key,fallback){
-try{
-const raw=localStorage.getItem(key);
-return raw?JSON.parse(raw):structuredCloneSafe(fallback);
-}catch(e){
-return structuredCloneSafe(fallback);
+const timelineData = [
+
+  {
+    era:"SL以前",
+    title:"スーパーリーグ前史",
+    text:
+      "絶対勝利学園高校を源流とするチーム史と、"+
+      "全日本野球選手権の時代。"+
+      "デビルスターズの名称は全日本時代の中期〜後期に成立したとされる。",
+    status:"memory"
+  },
+
+  {
+    era:"第1回",
+    title:"スーパーリーグ開幕",
+    text:
+      "SLが開幕。デビルスターズはすでに完成された強豪として君臨していた。",
+    status:"canon"
+  },
+
+  {
+    era:"第1〜8回",
+    title:"デビルスターズ 8連覇",
+    text:
+      "SL最高優勝を第1回から第8回まで連続制覇。"+
+      "SL史最初の巨大王朝を築く。",
+    status:"canon"
+  },
+
+  {
+    era:"第9回",
+    title:"納東一、王朝を止める",
+    text:
+      "納東一がSL最高優勝。"+
+      "デビルスターズ以外で初めて最高優勝を獲得する。"+
+      "Japan Cupもこの時代から始まった。",
+    status:"canon"
+  },
+
+  {
+    era:"第19回",
+    title:"デビルスターズ 三冠",
+    text:
+      "デビルスターズがSL・CC・JCを制覇。"+
+      "6連続最高優勝、通算17回目。",
+    status:"canon"
+  },
+
+  {
+    era:"第22回",
+    title:"威伏・能体工がAチームへ",
+    text:
+      "威伏と能体工がSL所属チームへ昇格。"+
+      "威伏には条件付きのAチーム資格が設定された。",
+    status:"canon"
+  },
+
+  {
+    era:"第23回",
+    title:"加々美時代の頂点",
+    text:
+      "デビルスターズが三冠。"+
+      "SL最高優勝10連覇、通算21回目。"+
+      "シーズン後、加々美監督がデビルスターズを退任する。",
+    status:"canon"
+  },
+
+  {
+    era:"第24回",
+    title:"海堂政権と加々美の新たな挑戦",
+    text:
+      "海堂がデビルスターズ監督に就任。"+
+      "加々美は日本体育大荏原の監督となり、"+
+      "若手育成を軸に新たなチーム作りを開始する。",
+    status:"canon"
+  },
+
+  {
+    era:"第27回",
+    title:"日本体育大荏原、初の最高優勝",
+    text:
+      "デビルスターズと38ポイントで並び、"+
+      "最高優勝決定プレーオフを3対1で制した日本体育大荏原が初優勝。"+
+      "Big6の一角として確固たる地位を築く。",
+    status:"canon"
+  },
+
+  {
+    era:"第28回",
+    title:"藤浪、大阪桐蔭監督就任",
+    text:
+      "大阪桐蔭が藤浪を監督に招聘。"+
+      "SL史上初の元NPB監督となる。",
+    status:"canon"
+  },
+
+  {
+    era:"第30回",
+    title:"四冠時代の幕開け",
+    text:
+      "国王杯創設後、デビルスターズが"+
+      "SL・CC・JC・国王杯の四冠を達成。",
+    status:"canon"
+  },
+
+  {
+    era:"第31回",
+    title:"デビルスターズ 四冠連覇",
+    text:
+      "デビルスターズが2シーズン連続四冠。"+
+      "市若大商はAチームから降格。",
+    status:"canon"
+  },
+
+  {
+    era:"第33回",
+    title:"デビルスターズ、再び四冠",
+    text:
+      "大阪桐蔭との最高優勝決定プレーオフを制し、"+
+      "デビルスターズが通算27回目の最高優勝。"+
+      "四冠も達成した。",
+    status:"canon"
+  },
+
+  {
+    era:"第34回 開幕前",
+    title:"王朝か、革命か。",
+    text:
+      "納東一がA・ジャッジとエドワード・スタンリッジを大型補強。"+
+      "デビルスターズは世代交代へ入り、"+
+      "SL史でも屈指の注目シーズンを迎える。",
+    status:"canon"
+  }
+
+];
+
+
+/* =========================================================
+   LEGENDS / RECORDS
+========================================================= */
+
+const legendData = [
+
+  {
+    title:"デビルスターズ",
+    text:
+      "SL最多となる27回の最高優勝を誇る絶対王者。"+
+      "SL初期から現代までリーグの中心に存在し続ける。"
+  },
+
+  {
+    title:"加々美",
+    text:
+      "デビルスターズ第1回〜第23回監督。"+
+      "トータルベースボールを築き、SL史最大級の王朝を形成。"+
+      "第24回から日本体育大荏原を率いる。"
+  },
+
+  {
+    title:"海堂",
+    text:
+      "加々美の系譜を受け継ぎながら、"+
+      "ニュートータルベースボールへ進化させたデビルスターズ監督。"+
+      "四冠を複数回達成。"
+  },
+
+  {
+    title:"X亀田",
+    text:
+      "デビルスターズ史を代表する伝説的4番打者。"+
+      "走攻守すべてに優れた五ツールプレイヤーで、"+
+      "初代SL殿堂入り候補の筆頭。"
+  },
+
+  {
+    title:"八雲 × 佐山",
+    text:
+      "デビルスターズ黄金期を支えた伝説的二遊間。"+
+      "異常なほど高い連携力と親友関係で知られる。"+
+      "現役復帰後は邦成でプレー。"
+  },
+
+  {
+    title:"日本体育大荏原",
+    text:
+      "加々美監督就任後、育成型クラブとして急成長。"+
+      "第27回に初のSL最高優勝を達成しBig6入りを確実なものとした。"
+  }
+
+];
+
+
+/* =========================================================
+   HISTORICAL NEWS
+   ※記事原文が残っていないものは再構成と明記
+========================================================= */
+
+const historicalNews = [
+
+  {
+    category:"歴史",
+    title:"納東一、デビルスターズの8連覇を止める",
+    summary:"第9回SLで納東一が最高優勝。",
+    body:
+      "【正史・再構成】\n\n"+
+      "第1回から第8回までSL最高優勝を独占していた"+
+      "デビルスターズの連覇がついに止まった。\n\n"+
+      "新王者となったのは納東一。\n"+
+      "スーパーリーグ史における最初の巨大な転換点となった。",
+    source:"reconstructed"
+  },
+
+  {
+    category:"歴史",
+    title:"加々美、デビルスターズ監督を退任",
+    summary:"第23回終了後、長期政権に自ら幕。",
+    body:
+      "【正史・再構成】\n\n"+
+      "デビルスターズを第1回から率いてきた加々美監督が退任。\n\n"+
+      "解任ではなく、自ら新たな挑戦を選択した円満退任だった。\n"+
+      "その後、日本体育大荏原の監督に就任する。",
+    source:"reconstructed"
+  },
+
+  {
+    category:"歴史",
+    title:"日本体育大荏原、最高優勝決定戦を制す",
+    summary:"第27回、デビルスターズを3対1で破り初優勝。",
+    body:
+      "【正史・再構成】\n\n"+
+      "第27回SLはデビルスターズと日本体育大荏原が"+
+      "38ポイントで並び、最高優勝決定プレーオフへ。\n\n"+
+      "日本体育大荏原が3対1で勝利し、"+
+      "クラブ史上初のSL最高優勝を達成した。",
+    source:"reconstructed"
+  },
+
+  {
+    category:"歴史",
+    title:"デビルスターズ、史上初の四冠",
+    summary:"第30回、SL・CC・JC・国王杯を完全制覇。",
+    body:
+      "【正史・再構成】\n\n"+
+      "国王杯創設によって主要タイトルが4大会となったSL。\n\n"+
+      "デビルスターズはSL最高優勝、Champions Cup、"+
+      "Japan Cup、国王杯をすべて制し、四冠を達成した。",
+    source:"reconstructed"
+  },
+
+  {
+    category:"移籍",
+    title:"納東一、A・ジャッジとスタンリッジを獲得",
+    summary:"第34回開幕前、SL史を揺るがす超大型補強。",
+    body:
+      "【正史・再構成】\n\n"+
+      "納東一がYankeesからA・ジャッジと"+
+      "エドワード・スタンリッジを獲得。\n\n"+
+      "スタンリッジは移籍金15億・5年80億、"+
+      "ジャッジは移籍金20億・5年100億。\n\n"+
+      "明日川の記録を塗り替えるSL史上最大級の移籍となった。",
+    source:"reconstructed"
+  },
+
+  {
+    category:"選手",
+    title:"クラウド、左膝内側側副靱帯を負傷",
+    summary:"第34回開幕前、デビルスターズに大きな不安。",
+    body:
+      "【正史・再構成】\n\n"+
+      "デビルスターズのクラウドが左膝内側側副靱帯を負傷。\n\n"+
+      "当初は約4か月の離脱が見込まれ、国王杯欠場が確実視された。"+
+      "一方、シーズン日程の遅延によって"+
+      "SL開幕戦への復帰可能性も浮上している。",
+    source:"reconstructed"
+  }
+
+];
+
+
+/* =========================================================
+   DEFAULT CURRENT NEWS
+========================================================= */
+
+const defaultNews = [
+
+  {
+    category:"移籍",
+    title:"納東一、超大型補強を敢行",
+    summary:
+      "A・ジャッジ、エドワード・スタンリッジを獲得。"+
+      "第34回SL最大の補強となった。",
+    body:
+      "納東一が第34回開幕を前に大型補強を敢行した。\n\n"+
+      "YankeesからA・ジャッジ、"+
+      "エドワード・スタンリッジを獲得。\n\n"+
+      "佐藤監督は新戦力を加えたチームについて、"+
+      "SL史上最強クラスの陣容に強い自信を示している。"
+  },
+
+  {
+    category:"移籍",
+    title:"明日川、デビルスターズへ",
+    summary:
+      "日本体育大荏原からデビルスターズへ。"+
+      "移籍金18.5億の大型移籍。",
+    body:
+      "デビルスターズが日本体育大荏原から"+
+      "明日川を獲得した。\n\n"+
+      "移籍金は18.5億。発表時点ではSL史上最高額となった。\n\n"+
+      "その後、納東一によるジャッジ獲得が"+
+      "この記録を更新することになる。"
+  },
+
+  {
+    category:"選手",
+    title:"クラウド、国王杯欠場へ",
+    summary:
+      "左膝内側側副靱帯損傷。"+
+      "SL開幕戦への復帰可能性は残る。",
+    body:
+      "デビルスターズのクラウドが負傷。\n\n"+
+      "国王杯への出場は困難となったが、"+
+      "シーズン日程の状況次第では"+
+      "第34回SL開幕戦への復帰可能性が残されている。"
+  },
+
+  {
+    category:"運営",
+    title:"頭取商、第34回は条件付きAチーム資格",
+    summary:
+      "8ポイント以上、またはCC出場が残留条件。",
+    body:
+      "頭取商は第34回SLに条件付きで参加する。\n\n"+
+      "8ポイント以上の獲得、またはChampions Cupへの出場が"+
+      "Aチーム資格維持の条件となる。\n\n"+
+      "条件達成の場合、事実上の降格記録は取り消され、"+
+      "Aチームとしての所属は継続扱いとなる。"
+  }
+
+];
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const STORAGE = {
+
+  tournaments:"sl34_tournaments",
+
+  news:"sl_news_v12",
+
+  transfers:"sl_transfers_complete",
+
+  relationships:"sl_relationships",
+
+  memo:"sl_world_memo"
+
+};
+
+
+let tournaments = loadJSON(
+  STORAGE.tournaments,
+  []
+);
+
+
+let newsItems = loadJSON(
+  STORAGE.news,
+  defaultNews
+);
+
+
+let transferItems = loadJSON(
+  STORAGE.transfers,
+  []
+);
+
+
+let relationships = loadJSON(
+  STORAGE.relationships,
+  [
+    {
+      a:"デビルスターズ",
+      b:"大阪桐蔭",
+      level:"宿敵"
+    },
+    {
+      a:"デビルスターズ",
+      b:"壮青学院",
+      level:"良好"
+    },
+    {
+      a:"デビルスターズ",
+      b:"日本体育大荏原",
+      level:"良好"
+    },
+    {
+      a:"日本体育大荏原",
+      b:"納東一",
+      level:"通常"
+    }
+  ]
+);
+
+
+/* =========================================================
+   BASIC UTILITIES
+========================================================= */
+
+function loadJSON(key,fallback){
+
+  try{
+
+    const raw = localStorage.getItem(key);
+
+    if(!raw){
+      return fallback;
+    }
+
+    return JSON.parse(raw);
+
+  }catch(error){
+
+    console.error(
+      "SL WORLD load error:",
+      key,
+      error
+    );
+
+    return fallback;
+
+  }
+
 }
+
+
+function saveJSON(key,value){
+
+  try{
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(value)
+    );
+
+  }catch(error){
+
+    console.error(
+      "SL WORLD save error:",
+      key,
+      error
+    );
+
+    alert(
+      "データ保存中にエラーが発生しました。"
+    );
+
+  }
+
 }
 
-function structuredCloneSafe(obj){
-return JSON.parse(JSON.stringify(obj));
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
 }
 
-let tournaments=load("sl34_tournaments",[]);
-let news=load("sl_news_v12",defaultNews);
-let transfers=load("sl_transfers_complete",defaultTransfers);
-let relations=load("sl_relationships",defaultRelations);
 
-$("eventNo").innerHTML=
-Array.from({length:10},(_,i)=>
-`<option value="${i+1}">第${i+1}大会</option>`
-).join("");
+function normalizeTeamName(name){
 
-function value(id){
-return $(id).value.trim();
+  if(name === "D"){
+    return "デビルスターズ";
+  }
+
+  return name;
+
 }
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function showView(id,button){
-document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-$(id).classList.add("active");
-if(button)button.classList.add("active");
-window.scrollTo(0,0);
+
+  document
+    .querySelectorAll(".view")
+    .forEach(view=>{
+      view.classList.remove("active");
+    });
+
+
+  const target = $(id);
+
+  if(target){
+    target.classList.add("active");
+  }
+
+
+  document
+    .querySelectorAll(".navBtn")
+    .forEach(btn=>{
+      btn.classList.remove("active");
+    });
+
+
+  if(button){
+    button.classList.add("active");
+  }
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
 }
+
 
 function showArchive(id,button){
-document.querySelectorAll(".archiveSection").forEach(v=>v.classList.remove("active"));
-document.querySelectorAll(".archiveTab").forEach(b=>b.classList.remove("active"));
-$("arch-"+id).classList.add("active");
-button.classList.add("active");
+
+  document
+    .querySelectorAll(".archiveSection")
+    .forEach(section=>{
+      section.classList.remove("active");
+    });
+
+
+  document
+    .querySelectorAll(".archiveTab")
+    .forEach(tab=>{
+      tab.classList.remove("active");
+    });
+
+
+  const section = $("archive-"+id);
+
+  if(section){
+    section.classList.add("active");
+  }
+
+
+  if(button){
+    button.classList.add("active");
+  }
+
 }
 
-function exactPrevious(no){
-return tournaments.find(t=>Number(t.no)===Number(no)-1);
+
+/* =========================================================
+   INITIAL FORM SETUP
+========================================================= */
+
+function buildTeamDatalist(){
+
+  const list = $("teamsList");
+
+  list.innerHTML = teams
+    .map(team=>
+      `<option value="${escapeHTML(team)}"></option>`
+    )
+    .join("");
+
 }
+
+
+function buildEventSelector(){
+
+  const select = $("eventNo");
+
+  select.innerHTML = "";
+
+  for(let i=1;i<=10;i++){
+
+    const option =
+      document.createElement("option");
+
+    option.value = i;
+
+    option.textContent =
+      `第${i}大会`;
+
+    select.appendChild(option);
+
+  }
+
+}
+
+
+/* =========================================================
+   TOURNAMENT SYSTEM
+========================================================= */
 
 function clearForm(){
-[
-"winner","runner","third1","third2",
-"qf1","qf2","qf3","qf4","beatChampion"
-].forEach(id=>$(id).value="");
+
+  [
+    "winner",
+    "runner",
+    "third1",
+    "third2",
+    "qf1",
+    "qf2",
+    "qf3",
+    "qf4",
+    "beatChampion"
+  ].forEach(id=>{
+
+    $(id).value = "";
+
+  });
+
 }
+
+
+function getTournament(eventNo){
+
+  return tournaments.find(
+    item=>Number(item.eventNo) === Number(eventNo)
+  );
+
+}
+
 
 function saveTournament(){
 
-const no=Number($("eventNo").value);
+  const eventNo =
+    Number($("eventNo").value);
 
-const t={
-no,
-winner:value("winner"),
-runner:value("runner"),
-third1:value("third1"),
-third2:value("third2"),
-qf1:value("qf1"),
-qf2:value("qf2"),
-qf3:value("qf3"),
-qf4:value("qf4"),
-beatChampion:value("beatChampion")
-};
 
-if(!t.winner||!t.runner){
-alert("優勝と準優勝を入力してください。");
-return;
+  const winner =
+    $("winner").value.trim();
+
+
+  const runner =
+    $("runner").value.trim();
+
+
+  const third1 =
+    $("third1").value.trim();
+
+
+  const third2 =
+    $("third2").value.trim();
+
+
+  const qf1 =
+    $("qf1").value.trim();
+
+
+  const qf2 =
+    $("qf2").value.trim();
+
+
+  const qf3 =
+    $("qf3").value.trim();
+
+
+  const qf4 =
+    $("qf4").value.trim();
+
+
+  let beatChampion =
+    $("beatChampion").value.trim();
+
+
+  if(!winner || !runner){
+
+    alert(
+      "優勝と準優勝は必須です。"
+    );
+
+    return;
+
+  }
+
+
+  const placements = [
+    winner,
+    runner,
+    third1,
+    third2,
+    qf1,
+    qf2,
+    qf3,
+    qf4
+  ].filter(Boolean);
+
+
+  const unique =
+    new Set(placements);
+
+
+  if(unique.size !== placements.length){
+
+    alert(
+      "同じチームが複数の順位に登録されています。"
+    );
+
+    return;
+
+  }
+
+
+  if(eventNo === 1 && beatChampion){
+
+    alert(
+      "第1大会には前回王者撃破ボーナスはありません。"
+    );
+
+    return;
+
+  }
+
+
+  let previousChampion = null;
+
+
+  if(eventNo > 1){
+
+    const previous =
+      getTournament(eventNo - 1);
+
+
+    if(previous){
+
+      previousChampion =
+        previous.winner;
+
+    }
+
+  }
+
+
+  if(
+    eventNo > 1 &&
+    beatChampion &&
+    !previousChampion
+  ){
+
+    alert(
+      "直前大会の記録がないため、王者撃破ボーナスは登録できません。"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    beatChampion &&
+    beatChampion === previousChampion
+  ){
+
+    alert(
+      "前回王者自身を王者撃破チームには登録できません。"
+    );
+
+    return;
+
+  }
+
+
+  const consecutive =
+    Boolean(
+      previousChampion &&
+      winner === previousChampion
+    );
+
+
+  if(consecutive && beatChampion){
+
+    alert(
+      "今大会は前回王者が連覇しているため、王者撃破チームは登録できません。"
+    );
+
+    return;
+
+  }
+
+
+  const record = {
+
+    eventNo,
+
+    winner,
+
+    runner,
+
+    third:[
+      third1,
+      third2
+    ].filter(Boolean),
+
+    qf:[
+      qf1,
+      qf2,
+      qf3,
+      qf4
+    ].filter(Boolean),
+
+    beatChampion:
+      beatChampion || "",
+
+    previousChampion:
+      previousChampion || "",
+
+    consecutive
+
+  };
+
+
+  const existingIndex =
+    tournaments.findIndex(
+      item=>
+        Number(item.eventNo) === eventNo
+    );
+
+
+  if(existingIndex >= 0){
+
+    const ok = confirm(
+      `第${eventNo}大会はすでに登録されています。\n上書きしますか？`
+    );
+
+    if(!ok){
+      return;
+    }
+
+    tournaments[existingIndex] =
+      record;
+
+  }else{
+
+    tournaments.push(record);
+
+  }
+
+
+  tournaments.sort(
+    (a,b)=>
+      Number(a.eventNo) -
+      Number(b.eventNo)
+  );
+
+
+  saveJSON(
+    STORAGE.tournaments,
+    tournaments
+  );
+
+
+  clearForm();
+
+  renderAll();
+
+  alert(
+    `第${eventNo}大会を保存しました。`
+  );
+
 }
 
-const placement=[
-t.winner,t.runner,t.third1,t.third2,
-t.qf1,t.qf2,t.qf3,t.qf4
-].filter(Boolean);
 
-if(new Set(placement).size!==placement.length){
-alert("同じチームが複数の順位に入力されています。");
-return;
-}
-
-if(no===1&&t.beatChampion){
-alert("第1大会には前回王者撃破ボーナスはありません。");
-return;
-}
-
-const previous=exactPrevious(no);
-
-if(no>1&&t.beatChampion&&!previous){
-alert("第"+(no-1)+"大会が未登録です。王者撃破ボーナスは登録できません。");
-return;
-}
-
-if(previous&&t.beatChampion===previous.winner){
-alert("前回王者自身に王者撃破ボーナスは付けられません。");
-return;
-}
-
-if(previous&&previous.winner===t.winner&&t.beatChampion){
-alert("前回王者が連覇しているため、王者撃破チームは登録できません。");
-return;
-}
-
-const index=tournaments.findIndex(x=>Number(x.no)===no);
-
-if(index>=0){
-if(!confirm("第"+no+"大会を上書きしますか？"))return;
-tournaments[index]=t;
-}else{
-tournaments.push(t);
-}
-
-tournaments.sort((a,b)=>Number(a.no)-Number(b.no));
-
-saveTournaments();
-clearForm();
-renderAll();
-}
-
-function editTournament(no){
-
-const t=tournaments.find(x=>Number(x.no)===Number(no));
-if(!t)return;
-
-$("eventNo").value=String(t.no);
-$("winner").value=t.winner||"";
-$("runner").value=t.runner||"";
-$("third1").value=t.third1||"";
-$("third2").value=t.third2||"";
-$("qf1").value=t.qf1||"";
-$("qf2").value=t.qf2||"";
-$("qf3").value=t.qf3||"";
-$("qf4").value=t.qf4||"";
-$("beatChampion").value=t.beatChampion||"";
-
-window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function deleteTournament(no){
-
-if(!confirm("第"+no+"大会を削除しますか？"))return;
-
-tournaments=tournaments.filter(x=>Number(x.no)!==Number(no));
-
-saveTournaments();
-renderAll();
-}
-
-function saveTournaments(){
-localStorage.setItem("sl34_tournaments",JSON.stringify(tournaments));
-}
+/* =========================================================
+   POINT CALCULATION
+========================================================= */
 
 function calculatePoints(){
 
-const points={};
+  const points = {};
 
-teams.forEach(team=>{
-points[team]=ccCarry[team]||0;
-});
 
-const sorted=[...tournaments].sort((a,b)=>Number(a.no)-Number(b.no));
+  teams.forEach(team=>{
 
-sorted.forEach(t=>{
+    points[team] =
+      carryover[team] || 0;
 
-const add=(team,pt)=>{
-if(!team)return;
-if(points[team]===undefined)points[team]=0;
-points[team]+=pt;
-};
+  });
 
-add(t.winner,5);
-add(t.runner,4);
-add(t.third1,3);
-add(t.third2,3);
-add(t.qf1,1);
-add(t.qf2,1);
-add(t.qf3,1);
-add(t.qf4,1);
 
-const previous=exactPrevious(Number(t.no));
+  tournaments.forEach(event=>{
 
-if(previous&&t.beatChampion){
-add(t.beatChampion,1);
+    const add = (team,pt)=>{
+
+      if(!team){
+        return;
+      }
+
+      if(points[team] === undefined){
+        points[team] = 0;
+      }
+
+      points[team] += pt;
+
+    };
+
+
+    add(
+      event.winner,
+      5
+    );
+
+
+    add(
+      event.runner,
+      4
+    );
+
+
+    (event.third || [])
+      .forEach(team=>
+        add(team,3)
+      );
+
+
+    (event.qf || [])
+      .forEach(team=>
+        add(team,1)
+      );
+
+
+    if(event.beatChampion){
+
+      add(
+        event.beatChampion,
+        1
+      );
+
+    }
+
+
+    if(event.consecutive){
+
+      add(
+        event.winner,
+        1
+      );
+
+    }
+
+  });
+
+
+  return points;
+
 }
 
-if(previous&&previous.winner===t.winner){
-add(t.winner,1);
+
+/* =========================================================
+   STANDINGS
+========================================================= */
+
+function getStandings(){
+
+  const points =
+    calculatePoints();
+
+
+  return Object
+    .entries(points)
+    .map(([team,pt])=>({
+      team,
+      pt
+    }))
+    .sort((a,b)=>{
+
+      if(b.pt !== a.pt){
+        return b.pt - a.pt;
+      }
+
+      return a.team.localeCompare(
+        b.team,
+        "ja"
+      );
+
+    });
+
 }
 
-});
-
-return points;
-}
-
-function rankingData(){
-
-const rows=Object.entries(calculatePoints())
-.sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"ja"));
-
-let last=null;
-let rank=0;
-
-return rows.map((r,i)=>{
-
-if(r[1]!==last)rank=i+1;
-last=r[1];
-
-return{
-team:r[0],
-pt:r[1],
-rank
-};
-
-});
-}
 
 function renderStandings(){
 
-const data=rankingData();
+  const standings =
+    getStandings();
 
-$("standings").innerHTML=data.map(x=>
-`<tr class="${x.rank===1?"first":""} ${x.rank===8?"cut":""}">
-<td>${x.rank}</td>
-<td>${x.team}</td>
-<td>${x.pt}</td>
-</tr>`
-).join("");
 
-if(data.length){
-$("todayLeader").textContent=data[0].team;
-$("todayLeaderPt").textContent=data[0].pt+" pt";
+  const body =
+    $("standingsBody");
+
+
+  body.innerHTML = "";
+
+
+  let previousPoints = null;
+  let previousRank = 0;
+
+
+  standings.forEach(
+    (item,index)=>{
+
+      let rank =
+        index + 1;
+
+
+      if(
+        previousPoints !== null &&
+        item.pt === previousPoints
+      ){
+
+        rank =
+          previousRank;
+
+      }
+
+
+      const tr =
+        document.createElement("tr");
+
+
+      if(rank === 1){
+        tr.classList.add("first");
+      }
+
+
+      if(rank === 8){
+        tr.classList.add("cut");
+      }
+
+
+      tr.innerHTML = `
+        <td>${rank}</td>
+        <td>${escapeHTML(item.team)}</td>
+        <td>${item.pt}</td>
+      `;
+
+
+      body.appendChild(tr);
+
+
+      previousPoints =
+        item.pt;
+
+      previousRank =
+        rank;
+
+    });
+
+
+  renderPlayoffNotice(
+    standings
+  );
+
 }
 
-const first=data.filter(x=>x.rank===1);
-const eighth=data.filter(x=>x.rank===8);
 
-let html="";
+/* =========================================================
+   PLAYOFF
+========================================================= */
 
-if(tournaments.length===10){
+function renderPlayoffNotice(standings){
 
-const lines=[];
+  const area =
+    $("playoffNotice");
 
-if(first.length>1){
-lines.push("1位タイ："+first.map(x=>x.team).join(" / "));
+
+  if(tournaments.length < 10){
+
+    area.innerHTML =
+      `<p class="notice">
+        プレーオフ判定は全10大会終了後に確定します。
+      </p>`;
+
+    return;
+
+  }
+
+
+  const firstPoint =
+    standings[0]?.pt;
+
+
+  const firstTeams =
+    standings
+      .filter(item=>
+        item.pt === firstPoint
+      )
+      .map(item=>item.team);
+
+
+  const eighthPoint =
+    standings[7]?.pt;
+
+
+  const eighthTeams =
+    standings
+      .filter(item=>
+        item.pt === eighthPoint
+      )
+      .map(item=>item.team);
+
+
+  const messages = [];
+
+
+  if(firstTeams.length > 1){
+
+    messages.push(
+      `最高優勝決定プレーオフ対象：${firstTeams.join(" / ")}`
+    );
+
+  }
+
+
+  if(eighthTeams.length > 1){
+
+    messages.push(
+      `CC出場決定プレーオフ対象：${eighthTeams.join(" / ")}`
+    );
+
+  }
+
+
+  if(messages.length === 0){
+
+    area.innerHTML =
+      `<p class="notice">
+        1位・8位ともプレーオフは必要ありません。
+      </p>`;
+
+  }else{
+
+    area.innerHTML =
+      messages
+        .map(message=>
+          `<div class="alert">
+            ${escapeHTML(message)}
+          </div>`
+        )
+        .join("");
+
+  }
+
 }
 
-if(eighth.length>1){
-lines.push("8位タイ："+eighth.map(x=>x.team).join(" / "));
+
+/* =========================================================
+   TODAY
+========================================================= */
+
+function renderToday(){
+
+  $("todayCount").textContent =
+    `${tournaments.length} / 10`;
+
+
+  const standings =
+    getStandings();
+
+
+  if(
+    tournaments.length === 0 &&
+    standings.every(item=>
+      item.pt === 0
+    )
+  ){
+
+    $("todayLeader").textContent =
+      "開幕前";
+
+    $("todayLeaderPt").textContent =
+      "0 pt";
+
+    $("todayTie").innerHTML = "";
+
+  }else{
+
+    const leaderPoint =
+      standings[0]?.pt || 0;
+
+
+    const leaders =
+      standings.filter(item=>
+        item.pt === leaderPoint
+      );
+
+
+    $("todayLeader").textContent =
+      leaders.length > 1
+        ? "暫定1位タイ"
+        : leaders[0]?.team || "開幕前";
+
+
+    $("todayLeaderPt").textContent =
+      `${leaderPoint} pt`;
+
+
+    $("todayTie").innerHTML =
+      leaders.length > 1
+        ? `<p>
+            ${leaders
+              .map(item=>
+                escapeHTML(item.team)
+              )
+              .join(" / ")}
+          </p>`
+        : "";
+
+  }
+
+
+  $("carryList").innerHTML =
+    Object
+      .entries(carryover)
+      .map(([team,pt])=>
+        `<div class="rule">
+          <span>${escapeHTML(team)}</span>
+          <strong>+${pt} pt</strong>
+        </div>`
+      )
+      .join("");
+
+
+  const recentNews =
+    newsItems
+      .slice()
+      .reverse()
+      .slice(0,3);
+
+
+  $("todayNews").innerHTML =
+    recentNews.length
+      ? recentNews
+          .map((item,index)=>{
+
+            const realIndex =
+              newsItems.indexOf(item);
+
+            return `
+              <div
+                class="item newsCard"
+                data-news-index="${realIndex}"
+              >
+                <div class="newsCat">
+                  ${escapeHTML(item.category)}
+                </div>
+
+                <div class="newsTitle">
+                  ${escapeHTML(item.title)}
+                </div>
+
+                <div class="newsSummary">
+                  ${escapeHTML(item.summary)}
+                </div>
+              </div>
+            `;
+
+          })
+          .join("")
+      : `<div class="empty">
+          ニュースはありません
+        </div>`;
+
+
+  const recentTransfers =
+    transferItems
+      .slice()
+      .reverse()
+      .slice(0,4);
+
+
+  $("todayTransfers").innerHTML =
+    recentTransfers.length
+      ? recentTransfers
+          .map(item=>
+            `<div class="item">
+              <strong>
+                ${escapeHTML(item.player)}
+              </strong>
+
+              <p>
+                ${escapeHTML(item.from || "―")}
+                →
+                ${escapeHTML(item.to || "―")}
+              </p>
+
+              <small>
+                ${escapeHTML(item.type)}
+              </small>
+            </div>`
+          )
+          .join("")
+      : `<div class="empty">
+          移籍記録はありません
+        </div>`;
+
 }
 
-if(lines.length){
-html=`<div class="alert"><strong>プレーオフ対象</strong><br>${lines.join("<br>")}</div>`;
+
+/* =========================================================
+   EVENT HISTORY
+========================================================= */
+
+function renderEventHistory(){
+
+  const area =
+    $("eventHistory");
+
+
+  if(!tournaments.length){
+
+    area.innerHTML =
+      `<div class="empty">
+        まだ大会結果は登録されていません
+      </div>`;
+
+    return;
+
+  }
+
+
+  area.innerHTML =
+    tournaments
+      .slice()
+      .reverse()
+      .map(event=>{
+
+        const third =
+          (event.third || [])
+            .join(" / ") || "―";
+
+
+        const qf =
+          (event.qf || [])
+            .join(" / ") || "―";
+
+
+        return `
+          <div class="box">
+
+            <div class="row">
+              <strong>
+                第${event.eventNo}大会
+              </strong>
+
+              <button
+                class="danger"
+                data-delete-event="${event.eventNo}"
+              >
+                削除
+              </button>
+            </div>
+
+            <div class="score">
+              ${escapeHTML(event.winner)}
+            </div>
+
+            <p>
+              準優勝：
+              ${escapeHTML(event.runner)}
+            </p>
+
+            <small>
+              3位：
+              ${escapeHTML(third)}
+            </small>
+
+            <br>
+
+            <small>
+              Best8：
+              ${escapeHTML(qf)}
+            </small>
+
+            ${
+              event.beatChampion
+                ? `<p>
+                    王者撃破：
+                    ${escapeHTML(event.beatChampion)}
+                    <strong>+1</strong>
+                  </p>`
+                : ""
+            }
+
+            ${
+              event.consecutive
+                ? `<p class="goldText">
+                    大会連覇 +1
+                  </p>`
+                : ""
+            }
+
+          </div>
+        `;
+
+      })
+      .join("");
+
 }
 
-}else{
 
-if(first.length>1){
-html=`<div class="notice">暫定1位タイ：${first.map(x=>x.team).join(" / ")}</div>`;
-}
-
-}
-
-$("tieAlert").innerHTML=html;
-$("todayTie").innerHTML=html;
-}
-
-function renderTournamentHistory(){
-
-if(!tournaments.length){
-$("tournamentHistory").innerHTML=
-'<div class="empty">まだ第34回の大会記録はありません</div>';
-return;
-}
-
-$("tournamentHistory").innerHTML=
-[...tournaments]
-.sort((a,b)=>Number(b.no)-Number(a.no))
-.map(t=>{
-
-const previous=exactPrevious(Number(t.no));
-const repeat=previous&&previous.winner===t.winner;
-
-return`
-<div class="box">
-
-<div class="row">
-
-<div>
-<small>第${t.no}大会</small>
-<div class="score">${t.winner}</div>
-</div>
-
-<div>
-<button class="secondary" onclick="editTournament(${t.no})">編集</button>
-<button class="danger" onclick="deleteTournament(${t.no})">削除</button>
-</div>
-
-</div>
-
-<p>準優勝：${t.runner}</p>
-
-${t.third1||t.third2?
-`<p>3位：${[t.third1,t.third2].filter(Boolean).join(" / ")}</p>`:""}
-
-${t.beatChampion?
-`<span class="tag memory">前回王者撃破 ${t.beatChampion} +1</span>`:""}
-
-${repeat?
-`<span class="tag big6">連覇 +1</span>`:""}
-
-</div>
-`;
-}).join("");
-}
-
-function renderCarry(){
-
-$("carryList").innerHTML=
-Object.entries(ccCarry).map(x=>
-`<div class="item row">
-<strong>${x[0]}</strong>
-<strong>+${x[1]} pt</strong>
-</div>`
-).join("");
-}
+/* =========================================================
+   TEAM CARDS
+========================================================= */
 
 function renderTeams(){
 
-$("teamList").innerHTML=teams.map(team=>
-`<div class="item row">
+  const area =
+    $("teamCards");
 
-<div>
-<strong>${team}</strong>
-<p>監督：${managers[team]||"記録なし"}</p>
-</div>
 
-<div>
-${big6.includes(team)?
-'<span class="tag big6">BIG 6</span>':
-'<span class="tag memory">SL</span>'}
-${team==="頭取商"?
-'<span class="tag warn">条件付きA</span>':""}
-</div>
+  area.innerHTML =
+    teams
+      .map(team=>{
 
-</div>`
-).join("");
+        const big6 =
+          big6Teams.includes(team);
+
+
+        let extra = "";
+
+
+        if(team === "頭取商"){
+
+          extra = `
+            <div class="alert">
+              第34回 条件付きAチーム資格<br>
+              8pt以上 または CC出場で残留
+            </div>
+          `;
+
+        }
+
+
+        return `
+          <div class="card">
+
+            <div class="row">
+
+              <div>
+
+                <h2>
+                  ${escapeHTML(team)}
+                </h2>
+
+                ${
+                  big6
+                    ? `<span class="tag big6">
+                        BIG6
+                      </span>`
+                    : `<span class="tag canon">
+                        SL
+                      </span>`
+                }
+
+              </div>
+
+              <div>
+                <small>監督</small>
+                <div>
+                  <strong>
+                    ${escapeHTML(managers[team] || "記録なし")}
+                  </strong>
+                </div>
+              </div>
+
+            </div>
+
+            ${extra}
+
+          </div>
+        `;
+
+      })
+      .join("");
+
 }
 
-function saveRelations(){
-localStorage.setItem("sl_relationships",JSON.stringify(relations));
+
+/* =========================================================
+   RELATIONSHIPS
+========================================================= */
+
+const relationshipOptions = [
+  "友好",
+  "良好",
+  "通常",
+  "警戒",
+  "緊張",
+  "敵対",
+  "宿敵"
+];
+
+
+function renderRelationships(){
+
+  const area =
+    $("relationshipList");
+
+
+  area.innerHTML =
+    relationships
+      .map((rel,index)=>{
+
+        const options =
+          relationshipOptions
+            .map(level=>
+              `<option
+                value="${level}"
+                ${
+                  level === rel.level
+                    ? "selected"
+                    : ""
+                }
+              >
+                ${level}
+              </option>`
+            )
+            .join("");
+
+
+        return `
+          <div class="relationship">
+
+            <div>
+              <strong>
+                ${escapeHTML(rel.a)}
+              </strong>
+
+              <small> × </small>
+
+              <strong>
+                ${escapeHTML(rel.b)}
+              </strong>
+            </div>
+
+            <select
+              data-relation-index="${index}"
+              style="width:auto"
+            >
+              ${options}
+            </select>
+
+          </div>
+        `;
+
+      })
+      .join("");
+
 }
 
-function renderRelations(){
 
-const choices=["友好","良好","通常","警戒","緊張","敵対","宿敵"];
-
-$("relations").innerHTML=relations.map((r,i)=>
-`<div class="relationship">
-<strong>${r.a} × ${r.b}</strong>
-
-<select style="width:auto"
-onchange="relations[${i}].status=this.value;saveRelations()">
-
-${choices.map(c=>
-`<option ${c===r.status?"selected":""}>${c}</option>`
-).join("")}
-
-</select>
-</div>`
-).join("");
-}
-
-function statusLabel(status){
-if(status==="canon")return "正史";
-if(status==="hold")return "保留";
-return "却下";
-}
+/* =========================================================
+   TRANSFERS
+========================================================= */
 
 function addTransfer(){
 
-const player=value("transferPlayer");
-const move=value("transferMove");
-const note=value("transferNote");
-const status=$("transferStatus").value;
+  const player =
+    $("transferPlayer").value.trim();
 
-if(!player||!move){
-alert("選手名と移動内容を入力してください。");
-return;
+
+  const from =
+    $("transferFrom").value.trim();
+
+
+  const to =
+    $("transferTo").value.trim();
+
+
+  const type =
+    $("transferType").value;
+
+
+  const memo =
+    $("transferMemo").value.trim();
+
+
+  if(!player){
+
+    alert(
+      "選手名を入力してください。"
+    );
+
+    return;
+
+  }
+
+
+  transferItems.push({
+
+    player,
+    from,
+    to,
+    type,
+    memo,
+    createdAt:
+      new Date().toISOString()
+
+  });
+
+
+  saveJSON(
+    STORAGE.transfers,
+    transferItems
+  );
+
+
+  $("transferPlayer").value = "";
+  $("transferFrom").value = "";
+  $("transferTo").value = "";
+  $("transferMemo").value = "";
+
+
+  renderAll();
+
 }
 
-transfers.unshift({player,move,note,status});
-
-localStorage.setItem("sl_transfers_complete",JSON.stringify(transfers));
-
-$("transferPlayer").value="";
-$("transferMove").value="";
-$("transferNote").value="";
-
-renderTransfers();
-}
-
-function deleteTransfer(i){
-
-if(!confirm("この移籍記録を削除しますか？"))return;
-
-transfers.splice(i,1);
-
-localStorage.setItem("sl_transfers_complete",JSON.stringify(transfers));
-
-renderTransfers();
-}
 
 function renderTransfers(){
 
-$("transferList").innerHTML=
-transfers.length?
-transfers.map((t,i)=>
-`<div class="item row">
+  const area =
+    $("transferList");
 
-<div>
-<span class="tag ${t.status}">${statusLabel(t.status)}</span>
-<strong>${t.player}</strong>
-<p>${t.move}</p>
-${t.note?`<small>${t.note}</small>`:""}
-</div>
 
-<button class="danger" onclick="deleteTransfer(${i})">削除</button>
+  if(!transferItems.length){
 
-</div>`
-).join(""):
-'<div class="empty">移籍記録なし</div>';
+    area.innerHTML =
+      `<div class="empty">
+        移籍記録はありません
+      </div>`;
 
-const canonTransfers=transfers.filter(t=>t.status==="canon").slice(0,5);
+    return;
 
-$("todayTransfers").innerHTML=
-canonTransfers.length?
-canonTransfers.map(t=>
-`<div class="item">
-<strong>${t.player}</strong>
-<p>${t.move}</p>
-</div>`
-).join(""):
-'<div class="empty">移籍情報なし</div>';
+  }
+
+
+  area.innerHTML =
+    transferItems
+      .slice()
+      .reverse()
+      .map((item,reverseIndex)=>{
+
+        const index =
+          transferItems.length -
+          1 -
+          reverseIndex;
+
+
+        return `
+          <div class="box">
+
+            <div class="row">
+
+              <strong>
+                ${escapeHTML(item.player)}
+              </strong>
+
+              <button
+                class="danger"
+                data-delete-transfer="${index}"
+              >
+                削除
+              </button>
+
+            </div>
+
+            <p>
+              ${escapeHTML(item.from || "―")}
+              →
+              ${escapeHTML(item.to || "―")}
+            </p>
+
+            <span class="tag canon">
+              ${escapeHTML(item.type)}
+            </span>
+
+            ${
+              item.memo
+                ? `<p>
+                    ${escapeHTML(item.memo)}
+                  </p>`
+                : ""
+            }
+
+          </div>
+        `;
+
+      })
+      .join("");
+
 }
 
-function saveNews(){
-localStorage.setItem("sl_news_v12",JSON.stringify(news));
-}
+
+/* =========================================================
+   END OF PART 2
+========================================================= */
+
+<!-- ===== SL WORLD STABLE 2/3 END ===== -->
+// ===== SL WORLD STABLE 3/3 START =====
+
+
+/* =========================================================
+   NEWS
+========================================================= */
 
 function addNews(){
 
-const category=value("newsCategory")||"SL NEWS";
-const title=value("newsTitle");
-const summary=value("newsSummary");
-const body=value("newsBody");
-const status=$("newsStatus").value;
+  const category =
+    $("newsCategory").value;
 
-if(!title||!body){
-alert("見出しと記事本文を入力してください。");
-return;
+  const title =
+    $("newsTitle").value.trim();
+
+  const summary =
+    $("newsSummary").value.trim();
+
+  const body =
+    $("newsBody").value.trim();
+
+
+  if(!title){
+
+    alert(
+      "ニュースタイトルを入力してください。"
+    );
+
+    return;
+
+  }
+
+
+  newsItems.push({
+
+    category,
+    title,
+    summary,
+    body,
+    createdAt:
+      new Date().toISOString()
+
+  });
+
+
+  saveJSON(
+    STORAGE.news,
+    newsItems
+  );
+
+
+  $("newsTitle").value = "";
+  $("newsSummary").value = "";
+  $("newsBody").value = "";
+
+
+  renderAll();
+
 }
 
-news.unshift({
-category,
-title,
-summary,
-body,
-status
-});
-
-saveNews();
-
-$("newsCategory").value="";
-$("newsTitle").value="";
-$("newsSummary").value="";
-$("newsBody").value="";
-
-renderNews();
-}
-
-function deleteNews(i){
-
-if(!confirm("このニュースを削除しますか？"))return;
-
-news.splice(i,1);
-saveNews();
-renderNews();
-}
-
-function openNews(i){
-
-const n=news[i];
-if(!n)return;
-
-$("modalCategory").textContent=n.category||"SL NEWS";
-$("modalTitle").textContent=n.title||"";
-$("modalStatus").innerHTML=
-`<span class="tag ${n.status}">${statusLabel(n.status)}</span>`;
-$("modalBody").textContent=n.body||n.summary||"";
-
-$("newsModal").classList.add("open");
-}
-
-function closeNews(){
-$("newsModal").classList.remove("open");
-}
 
 function renderNews(){
 
-$("newsList").innerHTML=
-news.length?
-news.map((n,i)=>
-`<div class="box newsCard" onclick="openNews(${i})">
+  const area =
+    $("newsList");
 
-<div class="row">
-<div class="newsCat">${n.category||"SL NEWS"}</div>
-<span class="tag ${n.status}">${statusLabel(n.status)}</span>
-</div>
 
-<div class="newsTitle">${n.title}</div>
+  if(!newsItems.length){
 
-<div class="newsSummary">
-${n.summary||"記事全文を読む"}
-</div>
+    area.innerHTML =
+      `<div class="card">
+        <div class="empty">
+          現在のニュースはありません
+        </div>
+      </div>`;
 
-<div class="readmore">記事全文を読む ›</div>
+  }else{
 
-<div style="margin-top:10px">
-<button class="danger"
-onclick="event.stopPropagation();deleteNews(${i})">削除</button>
-</div>
+    area.innerHTML =
+      newsItems
+        .slice()
+        .reverse()
+        .map((item,reverseIndex)=>{
 
-</div>`
-).join(""):
-'<div class="empty">ニュースなし</div>';
+          const index =
+            newsItems.length -
+            1 -
+            reverseIndex;
 
-const canon=news
-.map((n,i)=>({...n,_index:i}))
-.filter(n=>n.status==="canon")
-.slice(0,5);
 
-$("todayNews").innerHTML=
-canon.length?
-canon.map(n=>
-`<div class="box newsCard" onclick="openNews(${n._index})">
+          return `
+            <div
+              class="card newsCard"
+              data-news-index="${index}"
+            >
 
-<div class="newsCat">${n.category}</div>
+              <div class="row">
 
-<div class="newsTitle">${n.title}</div>
+                <div>
 
-<div class="newsSummary">${n.summary||""}</div>
+                  <div class="newsCat">
+                    ${escapeHTML(item.category)}
+                  </div>
 
-<div class="readmore">続きを読む ›</div>
+                  <div class="newsTitle">
+                    ${escapeHTML(item.title)}
+                  </div>
 
-</div>`
-).join(""):
-'<div class="empty">ニュースなし</div>';
+                </div>
+
+                <button
+                  class="danger"
+                  data-delete-news="${index}"
+                >
+                  削除
+                </button>
+
+              </div>
+
+              <div class="newsSummary">
+                ${escapeHTML(item.summary || "")}
+              </div>
+
+              <div class="readmore">
+                記事を読む →
+              </div>
+
+            </div>
+          `;
+
+        })
+        .join("");
+
+  }
+
+
+  const historicalArea =
+    $("historicalNewsList");
+
+
+  historicalArea.innerHTML =
+    historicalNews
+      .slice()
+      .reverse()
+      .map((item,index)=>{
+
+        const actualIndex =
+          historicalNews.length -
+          1 -
+          index;
+
+
+        return `
+          <div
+            class="card newsCard"
+            data-history-news-index="${actualIndex}"
+          >
+
+            <span class="tag canon">
+              正史・再構成
+            </span>
+
+            <div class="newsCat">
+              ${escapeHTML(item.category)}
+            </div>
+
+            <div class="newsTitle">
+              ${escapeHTML(item.title)}
+            </div>
+
+            <div class="newsSummary">
+              ${escapeHTML(item.summary)}
+            </div>
+
+            <div class="readmore">
+              過去の記事を読む →
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
+
 }
 
-function renderArchives(){
 
-$("champions").innerHTML=
-championHistory.map((team,i)=>
-`<div class="item row">
-<span>第${i+1}回</span>
-<strong>${team}</strong>
-</div>`
-).join("");
+/* =========================================================
+   ARTICLE MODAL
+========================================================= */
 
-$("ccList").innerHTML=
-ccHistory.map((r,i)=>{
+function openArticle(item){
 
-const no=i+1;
+  if(!item){
+    return;
+  }
 
-return`
-<div class="box">
 
-<strong class="goldText">第${no}回</strong>
+  $("modalCategory").textContent =
+    item.category || "";
 
-<p>
-優勝：${r[0]}
-<br>
-準優勝：${r[1]}
-${r[2]?`<br>3位：${r[2]} / ${r[3]}`:""}
-</p>
 
-${no>=16?
-'<span class="tag canon">翌季持ち越し対象</span>':""}
+  $("modalTitle").textContent =
+    item.title || "";
 
-</div>
-`;
 
-}).join("");
+  $("modalSummary").textContent =
+    item.summary || "";
 
-$("kingList").innerHTML=
-kingCup.map(k=>
-`<div class="box">
 
-<strong class="goldText">第${k.no}回</strong>
+  $("modalBody").textContent =
+    item.body ||
+    "本文記録なし";
 
-<p>
-優勝：${k.winner}
-<br>
-準優勝：${k.runner}
-<br>
-3位：${k.third.join(" / ")}
-</p>
 
-</div>`
-).join("");
+  $("articleModal")
+    .classList
+    .add("open");
 
-$("timeline").innerHTML=
-timelineData.map(t=>
-`<div class="timelineItem">
-
-<span class="tag ${t[2]}">
-${t[2]==="canon"?"正史":"記憶・前史"}
-</span>
-
-<h3>${t[0]}</h3>
-<p>${t[1]}</p>
-
-</div>`
-).join("");
-
-$("legends").innerHTML=
-legendData.map(l=>
-`<div class="box">
-
-<span class="tag ${l[2]}">
-${l[2]==="canon"?"正史":l[2]==="memory"?"記憶":"記録なし"}
-</span>
-
-<h3>${l[0]}</h3>
-<p>${l[1]}</p>
-
-</div>`
-).join("");
 }
+
+
+function closeArticle(){
+
+  $("articleModal")
+    .classList
+    .remove("open");
+
+}
+
+
+/* =========================================================
+   SL CHAMPION ARCHIVE
+========================================================= */
+
+function renderSLArchive(){
+
+  const area =
+    $("slChampionArchive");
+
+
+  const counts = {};
+
+
+  slChampions.forEach(team=>{
+
+    counts[team] =
+      (counts[team] || 0) + 1;
+
+  });
+
+
+  const ranking =
+    Object
+      .entries(counts)
+      .sort((a,b)=>
+        b[1] - a[1]
+      );
+
+
+  const rankingHTML = `
+    <div class="box">
+
+      <h3>通算最高優勝</h3>
+
+      ${
+        ranking
+          .map(([team,count],index)=>
+            `<div class="rule">
+              <span>
+                ${index + 1}.
+                ${escapeHTML(team)}
+              </span>
+
+              <strong>
+                ${count}回
+              </strong>
+            </div>`
+          )
+          .join("")
+      }
+
+    </div>
+  `;
+
+
+  const historyHTML =
+    slChampions
+      .map((team,index)=>{
+
+        const edition =
+          index + 1;
+
+
+        let note = "";
+
+
+        if(edition === 8){
+
+          note =
+            `<span class="tag canon">
+              8連覇
+            </span>`;
+
+        }
+
+
+        if(edition === 19){
+
+          note =
+            `<span class="tag canon">
+              三冠
+            </span>
+            <span class="tag canon">
+              通算17回目
+            </span>`;
+
+        }
+
+
+        if(edition === 23){
+
+          note =
+            `<span class="tag canon">
+              三冠
+            </span>
+            <span class="tag canon">
+              10連覇
+            </span>`;
+
+        }
+
+
+        if(
+          edition === 30 ||
+          edition === 31 ||
+          edition === 33
+        ){
+
+          note =
+            `<span class="tag canon">
+              四冠
+            </span>`;
+
+        }
+
+
+        return `
+          <div class="item">
+
+            <div class="row">
+
+              <strong>
+                第${edition}回
+              </strong>
+
+              <strong class="goldText">
+                ${escapeHTML(team)}
+              </strong>
+
+            </div>
+
+            ${
+              note
+                ? `<div style="margin-top:7px">
+                    ${note}
+                  </div>`
+                : ""
+            }
+
+          </div>
+        `;
+
+      })
+      .reverse()
+      .join("");
+
+
+  area.innerHTML =
+    rankingHTML +
+    historyHTML;
+
+}
+
+
+/* =========================================================
+   CHAMPIONS CUP ARCHIVE
+========================================================= */
+
+function renderCCArchive(){
+
+  const area =
+    $("ccArchive");
+
+
+  area.innerHTML = `
+
+    <div class="box">
+
+      <span class="tag canon">
+        正史
+      </span>
+
+      <h3>Champions Cup</h3>
+
+      <p>
+        SLシーズン最終順位1位〜8位による
+        8チーム制トーナメント。
+      </p>
+
+      <div class="rule">
+        <span>延長</span>
+        <strong>15回</strong>
+      </div>
+
+      <div class="rule">
+        <span>コールド</span>
+        <strong>なし</strong>
+      </div>
+
+      <div class="rule">
+        <span>風</span>
+        <strong>なし</strong>
+      </div>
+
+      <div class="rule">
+        <span>エラー</span>
+        <strong>あり</strong>
+      </div>
+
+      <p class="notice">
+        第16回以降は、
+        優勝+3・準優勝+2・3位2チーム+1を
+        翌SLへ持ち越します。
+      </p>
+
+    </div>
+
+    ${
+      ccHistory
+        .map((record,index)=>{
+
+          const edition =
+            index + 1;
+
+          const winner =
+            record[0];
+
+          const runner =
+            record[1];
+
+          const third1 =
+            record[2];
+
+          const third2 =
+            record[3];
+
+
+          return `
+            <div class="box">
+
+              <div class="row">
+
+                <strong>
+                  第${edition}回
+                </strong>
+
+                <span class="tag canon">
+                  正史
+                </span>
+
+              </div>
+
+              <div class="score">
+                ${escapeHTML(winner)}
+              </div>
+
+              <p>
+                準優勝：
+                ${escapeHTML(runner)}
+              </p>
+
+              ${
+                third1 && third2
+                  ? `<small>
+                      3位：
+                      ${escapeHTML(third1)}
+                      /
+                      ${escapeHTML(third2)}
+                    </small>`
+                  : `<small>
+                      3位：
+                      記録なし
+                    </small>`
+              }
+
+            </div>
+          `;
+
+        })
+        .reverse()
+        .join("")
+    }
+
+  `;
+
+}
+
+
+/* =========================================================
+   JAPAN CUP ARCHIVE
+========================================================= */
+
+function renderJCArchive(){
+
+  const area =
+    $("jcArchive");
+
+
+  const winnerCounts = {};
+
+
+  jcHistory.forEach(record=>{
+
+    const winner =
+      normalizeTeamName(
+        record[0]
+      );
+
+
+    winnerCounts[winner] =
+      (winnerCounts[winner] || 0) + 1;
+
+  });
+
+
+  const ranking =
+    Object
+      .entries(winnerCounts)
+      .sort((a,b)=>
+        b[1] - a[1]
+      );
+
+
+  area.innerHTML = `
+
+    <div class="box">
+
+      <span class="tag canon">
+        正史
+      </span>
+
+      <h3>Japan Cup</h3>
+
+      <p>
+        SL第9回から開始。
+        シーズン5大会終了時点の
+        上位4チームによるトーナメント。
+      </p>
+
+      <div class="rule">
+        <span>優勝</span>
+        <strong>4 pt</strong>
+      </div>
+
+      <div class="rule">
+        <span>準優勝</span>
+        <strong>3 pt</strong>
+      </div>
+
+      <div class="rule">
+        <span>3位</span>
+        <strong>2 pt</strong>
+      </div>
+
+      <div class="rule">
+        <span>延長</span>
+        <strong>12回</strong>
+      </div>
+
+      <div class="rule">
+        <span>コールド</span>
+        <strong>10点</strong>
+      </div>
+
+      <div class="rule">
+        <span>風</span>
+        <strong>なし</strong>
+      </div>
+
+      <div class="rule">
+        <span>エラー</span>
+        <strong>あり</strong>
+      </div>
+
+      <p class="notice">
+        JC優勝はSL大会の連覇ボーナスには影響しません。
+      </p>
+
+    </div>
+
+
+    <div class="box">
+
+      <h3>歴代優勝回数</h3>
+
+      ${
+        ranking
+          .map(([team,count],index)=>
+            `<div class="rule">
+              <span>
+                ${index + 1}.
+                ${escapeHTML(team)}
+              </span>
+
+              <strong>
+                ${count}回
+              </strong>
+            </div>`
+          )
+          .join("")
+      }
+
+    </div>
+
+
+    ${
+      jcHistory
+        .map((record,index)=>{
+
+          const edition =
+            index + 1;
+
+
+          const winner =
+            normalizeTeamName(
+              record[0]
+            );
+
+
+          const runner =
+            normalizeTeamName(
+              record[1]
+            );
+
+
+          const third1 =
+            normalizeTeamName(
+              record[2]
+            );
+
+
+          const third2 =
+            normalizeTeamName(
+              record[3]
+            );
+
+
+          return `
+            <div class="box">
+
+              <div class="row">
+
+                <strong>
+                  第${edition}回
+                </strong>
+
+                <span class="tag canon">
+                  正史
+                </span>
+
+              </div>
+
+              <div class="score">
+                ${escapeHTML(winner)}
+              </div>
+
+              <p>
+                準優勝：
+                ${escapeHTML(runner)}
+              </p>
+
+              <small>
+                3位：
+                ${escapeHTML(third1)}
+                /
+                ${escapeHTML(third2)}
+              </small>
+
+            </div>
+          `;
+
+        })
+        .reverse()
+        .join("")
+    }
+
+  `;
+
+}
+
+
+/* =========================================================
+   KING'S CUP ARCHIVE
+========================================================= */
+
+function renderKingArchive(){
+
+  const area =
+    $("kingArchive");
+
+
+  area.innerHTML = `
+
+    <div class="box">
+
+      <span class="tag canon">
+        正史
+      </span>
+
+      <h3>国王杯</h3>
+
+      <p>
+        第30回SL時代から始まった
+        32チーム規模の大会。
+      </p>
+
+      <p>
+        Aチームを2ブロックへ分け、
+        残りの枠には予選突破チームが参加。
+        各ブロックを勝ち上がった4チームが
+        最終トーナメントへ進出します。
+      </p>
+
+      <div class="rule">
+        <span>延長</span>
+        <strong>なし</strong>
+      </div>
+
+      <div class="rule">
+        <span>コールド</span>
+        <strong>10点</strong>
+      </div>
+
+      <div class="rule">
+        <span>風</span>
+        <strong>なし</strong>
+      </div>
+
+      <div class="rule">
+        <span>エラー</span>
+        <strong>なし</strong>
+      </div>
+
+      <p class="notice">
+        国王杯第1〜4回とSL各シーズンの
+        厳密な対応関係は、
+        現在の正史資料では固定しません。
+      </p>
+
+    </div>
+
+
+    ${
+      kingHistory
+        .map((record,index)=>{
+
+          const edition =
+            index + 1;
+
+
+          return `
+            <div class="box">
+
+              <div class="row">
+
+                <strong>
+                  第${edition}回
+                </strong>
+
+                <span class="tag canon">
+                  正史
+                </span>
+
+              </div>
+
+              <div class="score">
+                ${escapeHTML(record[0])}
+              </div>
+
+              <p>
+                準優勝：
+                ${escapeHTML(record[1])}
+              </p>
+
+              <small>
+                3位：
+                ${escapeHTML(record[2])}
+                /
+                ${escapeHTML(record[3])}
+              </small>
+
+            </div>
+          `;
+
+        })
+        .reverse()
+        .join("")
+    }
+
+  `;
+
+}
+
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+function timelineStatus(status){
+
+  if(status === "canon"){
+
+    return `
+      <span class="tag canon">
+        正史
+      </span>
+    `;
+
+  }
+
+
+  if(status === "memory"){
+
+    return `
+      <span class="tag memory">
+        記憶
+      </span>
+    `;
+
+  }
+
+
+  if(status === "hold"){
+
+    return `
+      <span class="tag hold">
+        推定
+      </span>
+    `;
+
+  }
+
+
+  return `
+    <span class="tag unknown">
+      記録なし
+    </span>
+  `;
+
+}
+
+
+function renderTimeline(){
+
+  const area =
+    $("timelineArchive");
+
+
+  area.innerHTML = `
+    <div class="timeline">
+
+      ${
+        timelineData
+          .map(item=>
+            `<div class="timelineItem">
+
+              ${timelineStatus(item.status)}
+
+              <small>
+                ${escapeHTML(item.era)}
+              </small>
+
+              <h3>
+                ${escapeHTML(item.title)}
+              </h3>
+
+              <p>
+                ${escapeHTML(item.text)}
+              </p>
+
+            </div>`
+          )
+          .join("")
+      }
+
+    </div>
+  `;
+
+}
+
+
+/* =========================================================
+   LEGENDS
+========================================================= */
+
+function renderLegends(){
+
+  const area =
+    $("legendArchive");
+
+
+  area.innerHTML = `
+
+    <div class="box">
+
+      <h3>SL世界記録</h3>
+
+      <div class="rule">
+        <span>
+          デビルスターズ SL最高優勝
+        </span>
+
+        <strong>
+          27回
+        </strong>
+      </div>
+
+      <div class="rule">
+        <span>
+          デビルスターズ 最長最高優勝連覇
+        </span>
+
+        <strong>
+          11連覇
+        </strong>
+      </div>
+
+      <div class="rule">
+        <span>
+          初の四冠
+        </span>
+
+        <strong>
+          デビルスターズ
+        </strong>
+      </div>
+
+    </div>
+
+
+    ${
+      legendData
+        .map(item=>
+          `<div class="box">
+
+            <span class="tag canon">
+              正史
+            </span>
+
+            <h3>
+              ${escapeHTML(item.title)}
+            </h3>
+
+            <p>
+              ${escapeHTML(item.text)}
+            </p>
+
+          </div>`
+        )
+        .join("")
+    }
+
+
+    <div class="box">
+
+      <span class="tag unknown">
+        記録なし
+      </span>
+
+      <h3>
+        デビルスターズ初代監督
+      </h3>
+
+      <p>
+        現存する正史資料では確認できません。
+        推測による補完は行いません。
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   WORLD MEMO
+========================================================= */
+
+function loadMemo(){
+
+  try{
+
+    $("worldMemo").value =
+      localStorage.getItem(
+        STORAGE.memo
+      ) || "";
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
 
 function saveMemo(){
 
-localStorage.setItem(
-"sl_world_memo",
-$("worldMemo").value
+  try{
+
+    localStorage.setItem(
+      STORAGE.memo,
+      $("worldMemo").value
+    );
+
+
+    alert(
+      "世界状態メモを保存しました。"
+    );
+
+  }catch(error){
+
+    alert(
+      "世界状態メモを保存できませんでした。"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BACKUP
+========================================================= */
+
+function exportBackup(){
+
+  const backup = {
+
+    version:
+      "SL WORLD v1.3 STABLE",
+
+    exportedAt:
+      new Date().toISOString(),
+
+    tournaments,
+
+    newsItems,
+
+    transferItems,
+
+    relationships,
+
+    worldMemo:
+      localStorage.getItem(
+        STORAGE.memo
+      ) || ""
+
+  };
+
+
+  $("backupArea").value =
+    JSON.stringify(
+      backup,
+      null,
+      2
+    );
+
+}
+
+
+function importBackup(){
+
+  const raw =
+    $("backupArea").value.trim();
+
+
+  if(!raw){
+
+    alert(
+      "復元するJSONを入力してください。"
+    );
+
+    return;
+
+  }
+
+
+  let data;
+
+
+  try{
+
+    data =
+      JSON.parse(raw);
+
+  }catch(error){
+
+    alert(
+      "JSON形式が正しくありません。"
+    );
+
+    return;
+
+  }
+
+
+  const ok = confirm(
+    "現在のSL WORLDデータをこのバックアップ内容で復元しますか？"
+  );
+
+
+  if(!ok){
+    return;
+  }
+
+
+  if(
+    Array.isArray(
+      data.tournaments
+    )
+  ){
+
+    tournaments =
+      data.tournaments;
+
+    saveJSON(
+      STORAGE.tournaments,
+      tournaments
+    );
+
+  }
+
+
+  if(
+    Array.isArray(
+      data.newsItems
+    )
+  ){
+
+    newsItems =
+      data.newsItems;
+
+    saveJSON(
+      STORAGE.news,
+      newsItems
+    );
+
+  }
+
+
+  if(
+    Array.isArray(
+      data.transferItems
+    )
+  ){
+
+    transferItems =
+      data.transferItems;
+
+    saveJSON(
+      STORAGE.transfers,
+      transferItems
+    );
+
+  }
+
+
+  if(
+    Array.isArray(
+      data.relationships
+    )
+  ){
+
+    relationships =
+      data.relationships;
+
+    saveJSON(
+      STORAGE.relationships,
+      relationships
+    );
+
+  }
+
+
+  if(
+    typeof data.worldMemo ===
+    "string"
+  ){
+
+    localStorage.setItem(
+      STORAGE.memo,
+      data.worldMemo
+    );
+
+  }
+
+
+  loadMemo();
+
+  renderAll();
+
+
+  alert(
+    "SL WORLDデータを復元しました。"
+  );
+
+}
+
+
+/* =========================================================
+   SAFE EVENT HANDLING
+========================================================= */
+
+document.addEventListener(
+  "click",
+  event=>{
+
+
+    const deleteEventButton =
+      event.target.closest(
+        "[data-delete-event]"
+      );
+
+
+    if(deleteEventButton){
+
+      event.stopPropagation();
+
+
+      const eventNo =
+        Number(
+          deleteEventButton.dataset.deleteEvent
+        );
+
+
+      const ok =
+        confirm(
+          `第${eventNo}大会の記録を削除しますか？`
+        );
+
+
+      if(!ok){
+        return;
+      }
+
+
+      tournaments =
+        tournaments.filter(
+          item=>
+            Number(item.eventNo) !==
+            eventNo
+        );
+
+
+      saveJSON(
+        STORAGE.tournaments,
+        tournaments
+      );
+
+
+      renderAll();
+
+      return;
+
+    }
+
+
+
+    const deleteTransferButton =
+      event.target.closest(
+        "[data-delete-transfer]"
+      );
+
+
+    if(deleteTransferButton){
+
+      event.stopPropagation();
+
+
+      const index =
+        Number(
+          deleteTransferButton
+            .dataset
+            .deleteTransfer
+        );
+
+
+      if(
+        !Number.isInteger(index) ||
+        !transferItems[index]
+      ){
+
+        return;
+
+      }
+
+
+      const ok =
+        confirm(
+          `${transferItems[index].player} の移籍記録を削除しますか？`
+        );
+
+
+      if(!ok){
+        return;
+      }
+
+
+      transferItems.splice(
+        index,
+        1
+      );
+
+
+      saveJSON(
+        STORAGE.transfers,
+        transferItems
+      );
+
+
+      renderAll();
+
+      return;
+
+    }
+
+
+
+    const deleteNewsButton =
+      event.target.closest(
+        "[data-delete-news]"
+      );
+
+
+    if(deleteNewsButton){
+
+      event.stopPropagation();
+
+
+      const index =
+        Number(
+          deleteNewsButton
+            .dataset
+            .deleteNews
+        );
+
+
+      if(
+        !Number.isInteger(index) ||
+        !newsItems[index]
+      ){
+
+        return;
+
+      }
+
+
+      const ok =
+        confirm(
+          `「${newsItems[index].title}」を削除しますか？`
+        );
+
+
+      if(!ok){
+        return;
+      }
+
+
+      newsItems.splice(
+        index,
+        1
+      );
+
+
+      saveJSON(
+        STORAGE.news,
+        newsItems
+      );
+
+
+      renderAll();
+
+      return;
+
+    }
+
+
+
+    const newsCard =
+      event.target.closest(
+        "[data-news-index]"
+      );
+
+
+    if(newsCard){
+
+      const index =
+        Number(
+          newsCard.dataset.newsIndex
+        );
+
+
+      if(newsItems[index]){
+
+        openArticle(
+          newsItems[index]
+        );
+
+      }
+
+      return;
+
+    }
+
+
+
+    const historicalCard =
+      event.target.closest(
+        "[data-history-news-index]"
+      );
+
+
+    if(historicalCard){
+
+      const index =
+        Number(
+          historicalCard
+            .dataset
+            .historyNewsIndex
+        );
+
+
+      if(
+        historicalNews[index]
+      ){
+
+        openArticle(
+          historicalNews[index]
+        );
+
+      }
+
+    }
+
+  }
 );
 
-alert("保存しました。");
-}
 
-function exportData(){
+document.addEventListener(
+  "change",
+  event=>{
 
-const data={
-version:"SL WORLD v1.2 ARCHIVES",
-season:34,
-tournaments,
-transfers,
-news,
-relations,
-memo:localStorage.getItem("sl_world_memo")||""
-};
 
-$("backupBox").value=
-JSON.stringify(data,null,2);
-}
+    const relationSelect =
+      event.target.closest(
+        "[data-relation-index]"
+      );
 
-function importData(){
 
-try{
+    if(!relationSelect){
+      return;
+    }
 
-const data=JSON.parse($("restoreBox").value);
 
-tournaments=data.tournaments||[];
-transfers=data.transfers||[];
-news=data.news||[];
-relations=data.relations||data.relationships||structuredCloneSafe(defaultRelations);
+    const index =
+      Number(
+        relationSelect
+          .dataset
+          .relationIndex
+      );
 
-saveTournaments();
-saveNews();
-saveRelations();
 
-localStorage.setItem(
-"sl_transfers_complete",
-JSON.stringify(transfers)
+    if(!relationships[index]){
+      return;
+    }
+
+
+    relationships[index].level =
+      relationSelect.value;
+
+
+    saveJSON(
+      STORAGE.relationships,
+      relationships
+    );
+
+  }
 );
 
-localStorage.setItem(
-"sl_world_memo",
-data.memo||""
+
+/* =========================================================
+   MODAL SAFETY
+========================================================= */
+
+$("articleModal").addEventListener(
+  "click",
+  event=>{
+
+    if(
+      event.target ===
+      $("articleModal")
+    ){
+
+      closeArticle();
+
+    }
+
+  }
 );
 
-$("worldMemo").value=data.memo||"";
 
-renderAll();
+document.addEventListener(
+  "keydown",
+  event=>{
 
-alert("復元しました。");
+    if(event.key === "Escape"){
 
-}catch(e){
+      closeArticle();
 
-alert("JSONを読み込めませんでした。");
+    }
 
-}
-}
+  }
+);
+
+
+/* =========================================================
+   RENDER ALL
+========================================================= */
 
 function renderAll(){
 
-$("todayCount").textContent=
-tournaments.length+" / 10";
+  renderStandings();
 
-renderStandings();
-renderTournamentHistory();
-renderCarry();
-renderTeams();
-renderRelations();
-renderTransfers();
-renderNews();
-renderArchives();
+  renderToday();
+
+  renderEventHistory();
+
+  renderTeams();
+
+  renderRelationships();
+
+  renderTransfers();
+
+  renderNews();
+
+  renderSLArchive();
+
+  renderCCArchive();
+
+  renderJCArchive();
+
+  renderKingArchive();
+
+  renderTimeline();
+
+  renderLegends();
 
 }
 
-$("worldMemo").value=
-localStorage.getItem("sl_world_memo")||"";
 
-renderAll();
+/* =========================================================
+   START SL WORLD
+========================================================= */
+
+function startSLWorld(){
+
+  try{
+
+    buildTeamDatalist();
+
+    buildEventSelector();
+
+    loadMemo();
+
+    renderAll();
+
+
+    console.log(
+      "SL WORLD v1.3 STABLE READY"
+    );
+
+  }catch(error){
+
+    console.error(
+      "SL WORLD startup error:",
+      error
+    );
+
+
+    alert(
+      "SL WORLDの起動中にエラーが発生しました。"
+    );
+
+  }
+
+}
+
+
+startSLWorld();
+
+
+// ===== SL WORLD STABLE 3/3 END =====
 
 </script>
 
