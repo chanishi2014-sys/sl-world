@@ -5025,5 +5025,1821 @@ startSLWorld();
 
 </script>
 
+<!-- ======================================================
+     SL WORLD v1.3.1
+     NEWS ARCHIVE PATCH
+     PART 1/2
+======================================================= -->
+
+<style>
+
+#slNewsArchivePatch{
+  margin-top:14px;
+}
+
+.naControl{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-bottom:10px;
+}
+
+.naMode{
+  border:1px solid #304665;
+  background:#101d30;
+  color:#91a3c0;
+  border-radius:12px;
+  padding:11px 5px;
+  font-weight:800;
+}
+
+.naMode.active{
+  background:#285fae;
+  color:#fff;
+}
+
+.naFilters{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:2px 0 10px;
+  scrollbar-width:none;
+}
+
+.naFilters::-webkit-scrollbar{
+  display:none;
+}
+
+.naFilter{
+  flex:0 0 auto;
+  border:1px solid #304665;
+  background:#0c1726;
+  color:#91a3c0;
+  border-radius:999px;
+  padding:8px 11px;
+  font-size:11px;
+}
+
+.naFilter.active{
+  background:#234d82;
+  color:#fff;
+}
+
+.naEra{
+  margin:20px 2px 8px;
+  color:#82aff4;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.naSource{
+  margin-top:8px;
+}
+
+.naSearch{
+  margin-bottom:10px;
+}
+
+.naCount{
+  color:#7f96b8;
+  font-size:11px;
+  margin:5px 2px 12px;
+}
+
+</style>
+
+<script>
+
+(function(){
+
+"use strict";
+
+/* ======================================================
+   SL HISTORICAL NEWS DATABASE
+
+   source:
+   reconstructed = 正史・再構成
+   original      = 当時の記事記録あり
+   noarticle     = 当時の記事記録なし
+====================================================== */
+
+const SL_NEWS_ARCHIVE = [
+
+/* ===================== 第15回終了後 ===================== */
+
+{
+  era:"第15回終了後",
+  season:15,
+  category:"移籍",
+  title:"デビルスターズ、島袋を壮青学院へ放出",
+  summary:"島袋がデビルスターズを離れ、壮青学院へ。",
+  body:
+`【正史・再構成】
+
+第15回終了後の移籍市場で、島袋がデビルスターズから壮青学院へ移籍した。
+
+同時期のデビルスターズでは八重島が加入しており、次の時代へ向けた戦力再編が進んだ。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第15回終了後",
+  season:15,
+  category:"移籍",
+  title:"明神、デビルスターズから壮青学院へ",
+  summary:"壮青学院が明神を獲得。デビルスターズには太刀川。",
+  body:
+`【正史・再構成】
+
+明神がデビルスターズから壮青学院へ移籍。
+
+デビルスターズには太刀川が加わり、両クラブの戦力構成に大きな変化が生まれた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第15回終了後",
+  season:15,
+  category:"移籍",
+  title:"有栖川、納東一へ",
+  summary:"デビルスターズから納東一へ有栖川が移籍。",
+  body:
+`【正史・再構成】
+
+有栖川がデビルスターズを離れ、納東一へ加入。
+
+納東一はこの時期、大規模な選手入れ替えを進めていた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第15回終了後",
+  season:15,
+  category:"移籍",
+  title:"納東一、大規模な戦力再編",
+  summary:"複数選手を放出する一方、水瀬・坂本・コーツらを補強。",
+  body:
+`【正史・再構成】
+
+納東一が大規模な戦力再編を実施。
+
+鬼沢、利根川、桜庭、草刈、生江、奈良崎らがチームを離れた。
+
+一方で水瀬、坂本、コーツ、五代、土浦、有栖川らが加入。
+
+リーグ屈指の大型再編となった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第15回終了後",
+  season:15,
+  category:"移籍",
+  title:"壮青学院も積極補強",
+  summary:"島袋、吉田、明神らが壮青学院へ。",
+  body:
+`【正史・再構成】
+
+壮青学院も第15回終了後に積極的な補強を行った。
+
+島袋、吉田、明神らが加入。
+
+朝比奈体制のチーム強化が進められた。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第16回前後 ===================== */
+
+{
+  era:"第16回前後",
+  season:16,
+  category:"移籍",
+  title:"大阪桐蔭と納東一、設楽と白瀬を交換",
+  summary:"設楽と白瀬によるトレードが成立。",
+  body:
+`【正史・再構成】
+
+大阪桐蔭と納東一の間で移籍が成立。
+
+設楽と白瀬がそれぞれ新天地へ向かった。
+
+SLを代表する有力クラブ同士による戦力交換となった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第16回前後",
+  season:16,
+  category:"移籍",
+  title:"明訓と将駈、複数選手を交換",
+  summary:"渚と桐原、香車と本庄がそれぞれ移籍。",
+  body:
+`【正史・再構成】
+
+明訓と将駈の間で複数の選手移動が行われた。
+
+渚と桐原、さらに香車と本庄がそれぞれ交換される形となった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第16回終了後",
+  season:16,
+  category:"移籍",
+  title:"壮青学院と納東一、常盤と蔵前が移籍",
+  summary:"第16回終了後の移籍市場が活発化。",
+  body:
+`【正史・再構成】
+
+壮青学院と納東一の間で、常盤と蔵前の移籍が成立。
+
+第16回終了後のSL移籍市場では複数クラブが積極的に動いた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第16回終了後",
+  season:16,
+  category:"移籍",
+  title:"木野村、複数クラブをまたぐ移籍",
+  summary:"壮青学院、大阪桐蔭、納東一をまたいだ移動記録。",
+  body:
+`【正史・再構成】
+
+木野村については、第16回終了後の移籍記録に壮青学院、大阪桐蔭、納東一をまたぐ動きが残されている。
+
+同一オフシーズン内に複数段階の移籍が行われた可能性が高い。
+
+正確な発表順については、今後の資料確認対象とする。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第19回 ===================== */
+
+{
+  era:"第19回",
+  season:19,
+  category:"大会",
+  title:"デビルスターズ、三冠達成",
+  summary:"SL最高優勝・CC・JCを制し、6連続最高優勝。",
+  body:
+`【正史・再構成】
+
+デビルスターズが第19回シーズンで三冠を達成した。
+
+SL最高優勝、Champions Cup、Japan Cupを制覇。
+
+SL最高優勝は6連続、通算17回目となった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第19回",
+  season:19,
+  category:"運営",
+  title:"剛田理大付、Aチーム資格を失う",
+  summary:"SL運営委員会によるリーグ編成の転換点。",
+  body:
+`【正史・再構成】
+
+剛田理大付がAチーム資格を失った。
+
+同時期には威伏のAチーム昇格も検討されたが、この段階での昇格は見送られた。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第20回 ===================== */
+
+{
+  era:"第20回",
+  season:20,
+  category:"運営",
+  title:"将駈、Aチームから降格",
+  summary:"将駈がSL所属チームとしての資格を失う。",
+  body:
+`【正史・再構成】
+
+第20回シーズンをめぐるリーグ編成で、将駈がAチーム資格を失った。
+
+降格後はSL本戦へ戻るために予選突破が必要となる。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第22回 ===================== */
+
+{
+  era:"第22回開幕前",
+  season:22,
+  category:"選手",
+  title:"SLに大型新人世代",
+  summary:"落合、掛布、長嶋、岡田、衣笠、野村らが各クラブへ。",
+  body:
+`【正史・再構成】
+
+第22回開幕前、SL各クラブに大型新人が加わった。
+
+落合と野村はデビルスターズ。
+掛布は大阪桐蔭。
+長嶋は東海大相模。
+岡田は納東一。
+衣笠は壮青学院へ。
+
+後のSLを担う新世代が一斉に登場した。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第22回開幕前",
+  season:22,
+  category:"移籍",
+  title:"天馬、納東一へ帰還",
+  summary:"デビルスターズから納東一へ。",
+  body:
+`【正史・再構成】
+
+天馬がデビルスターズから納東一へ移籍。
+
+納東一の歴史を象徴する選手の一人が、再びクラブへ戻ることとなった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第22回開幕前",
+  season:22,
+  category:"移籍",
+  title:"長谷川、日本体育大荏原へレンタル",
+  summary:"デビルスターズから2シーズンの期限付き移籍。",
+  body:
+`【正史・再構成】
+
+デビルスターズの長谷川が日本体育大荏原へ期限付き移籍。
+
+契約期間は第22回から第23回までの2シーズンとされた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第22回",
+  season:22,
+  category:"運営",
+  title:"威伏・能体工、Aチーム昇格",
+  summary:"新たなSL所属チームとして昇格。",
+  body:
+`【正史・再構成】
+
+威伏と能体工がAチームへ昇格。
+
+威伏には第22回で8ポイント以上を獲得するという条件が設定された。
+
+SLのクラブ構成が大きく変化したシーズンとなった。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第23回 ===================== */
+
+{
+  era:"第23回",
+  season:23,
+  category:"大会",
+  title:"デビルスターズ、10連覇",
+  summary:"三冠とともにSL最高優勝10連覇を達成。",
+  body:
+`【正史・再構成】
+
+デビルスターズが第23回SL最高優勝を獲得。
+
+これで最高優勝10連覇、通算21回目。
+
+さらにChampions CupとJapan Cupも制し、三冠を達成した。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第23回終了後",
+  season:23,
+  category:"監督",
+  title:"加々美、デビルスターズ監督を退任",
+  summary:"23シーズンに及ぶ長期政権が終了。",
+  body:
+`【正史・再構成】
+
+第1回SLからデビルスターズを率いてきた加々美監督が退任した。
+
+解任ではない。
+
+10連続最高優勝を達成したうえで、自ら新たな挑戦を選択した円満退任だった。
+
+SL史最大級の監督政権がここで一区切りを迎えた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第23回終了後",
+  season:23,
+  category:"運営",
+  title:"日本体育大荏原、五十嵐・多湖を永久追放",
+  summary:"2選手がチームから永久追放。詳細は非公表。",
+  body:
+`【正史・再構成】
+
+日本体育大荏原の五十嵐、多湖が永久追放となった。
+
+追放理由の詳細について、正史上の具体的な記録は公開されていない。
+
+不明な部分について推測による補完は行わない。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第24回 ===================== */
+
+{
+  era:"第24回",
+  season:24,
+  category:"監督",
+  title:"海堂、デビルスターズ新監督に就任",
+  summary:"加々美の後継者として新時代へ。",
+  body:
+`【正史・再構成】
+
+デビルスターズの新監督に海堂が就任。
+
+加々美のもとで学んだ海堂は、その思想を継承しながら独自の進化を目指す。
+
+後にその野球は「ニュートータルベースボール」と呼ばれることになる。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第24回",
+  season:24,
+  category:"監督",
+  title:"加々美、日本体育大荏原監督へ",
+  summary:"絶対王者を離れ、新たなクラブ作りに挑戦。",
+  body:
+`【正史・再構成】
+
+デビルスターズを退任した加々美が、日本体育大荏原の監督に就任。
+
+長井、岩田、江川、浜口、島、金、倉見、田島ら若手を軸とした育成改革を開始した。
+
+完成された王者を率いる立場から、クラブそのものを作り直す新たな挑戦へ向かった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第24回",
+  season:24,
+  category:"移籍",
+  title:"日本体育大荏原、長谷川を完全獲得",
+  summary:"デビルスターズから12.2億で買取。",
+  body:
+`【正史・再構成】
+
+日本体育大荏原が、期限付き移籍中だった長谷川の買取オプションを行使。
+
+デビルスターズから12.2億で完全移籍となった。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第25回 ===================== */
+
+{
+  era:"第25回",
+  season:25,
+  category:"運営",
+  title:"能体工、Aチーム資格を失う",
+  summary:"第22回からAチームだった能体工が降格。",
+  body:
+`【正史・再構成】
+
+能体工がAチーム資格を失った。
+
+第22回からSL所属チームとして戦っていたが、第25回で再びリーグ編成が変更された。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第25回",
+  season:25,
+  category:"移籍",
+  title:"デビルスターズと壮青学院、期限付き移籍",
+  summary:"吉光と吉田をめぐる選手移動。",
+  body:
+`【正史・再構成】
+
+デビルスターズの吉光が壮青学院へ2シーズンの期限付き移籍。
+
+一方、壮青学院の吉田がデビルスターズへ期限付きで加わった。
+
+両クラブ間で特徴的な選手交流が行われた。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第26回 ===================== */
+
+{
+  era:"第26回",
+  season:26,
+  category:"移籍",
+  title:"東郷、日本体育大荏原へ",
+  summary:"大阪桐蔭から日本体育大荏原へ移籍。",
+  body:
+`【正史・再構成】
+
+東郷が大阪桐蔭から日本体育大荏原へ移籍。
+
+加々美体制の日本体育大荏原は、若手育成と並行して積極的な戦力強化を続けた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第26回",
+  season:26,
+  category:"移籍",
+  title:"明神、威伏へ",
+  summary:"日本体育大荏原から威伏へ移籍。",
+  body:
+`【正史・再構成】
+
+明神が日本体育大荏原から威伏へ移籍。
+
+Aチーム定着を目指す威伏にとって、経験豊富な戦力の補強となった。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第27回 ===================== */
+
+{
+  era:"第27回開幕前",
+  season:27,
+  category:"選手",
+  title:"大谷、Yankeesからデビルスターズへ帰還",
+  summary:"絶対王者に大谷が復帰。",
+  body:
+`【正史・再構成】
+
+大谷がYankeesからデビルスターズへ帰還。
+
+復帰後最初の登板では東海大相模を相手にノーヒットノーランを達成した。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第27回",
+  season:27,
+  category:"大会",
+  title:"日本体育大荏原、初のSL最高優勝",
+  summary:"38ポイントで並んだデビルスターズとの決定戦を3対1で制す。",
+  body:
+`【正史・再構成】
+
+第27回SLはデビルスターズと日本体育大荏原が38ポイントで並んだ。
+
+最高優勝決定プレーオフの結果、日本体育大荏原が3対1で勝利。
+
+クラブ史上初となるSL最高優勝を達成した。
+
+この優勝によって、日本体育大荏原はBig6の一角として確固たる地位を築いた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第27回",
+  season:27,
+  category:"クラブ",
+  title:"大阪桐蔭、まさかの9位",
+  summary:"名門がSL史上最悪クラスのシーズン。",
+  body:
+`【正史・再構成】
+
+大阪桐蔭が第27回SLを9位で終了。
+
+デビルスターズ最大のライバルの一つである名門にとって、極めて厳しいシーズンとなった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第27回終了後",
+  season:27,
+  category:"監督",
+  title:"大阪桐蔭、亀田監督を解任",
+  summary:"9位低迷を受け長期政権終了。",
+  body:
+`【正史・再構成】
+
+大阪桐蔭が亀田監督を解任した。
+
+第27回を9位で終えた成績が大きく影響した。
+
+かつてデビルスターズの伝説的選手として活躍した亀田による大阪桐蔭政権は、ここで終了した。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第28回 ===================== */
+
+{
+  era:"第28回",
+  season:28,
+  category:"監督",
+  title:"藤浪、大阪桐蔭監督に就任",
+  summary:"SL史上初となる元NPB監督。",
+  body:
+`【正史・再構成】
+
+大阪桐蔭が藤浪を新監督として招聘。
+
+藤浪はSL史上初となる元NPB監督となった。
+
+第27回9位からの名門再建を託された。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第28回終了後",
+  season:28,
+  category:"選手",
+  title:"大津、現役引退",
+  summary:"デビルスターズ・納東一・日本体育大荏原でタイトルを経験。",
+  body:
+`【正史・再構成】
+
+大津が現役を引退。
+
+デビルスターズ、納東一、日本体育大荏原でプレーし、それぞれのクラブでタイトルを経験した。
+
+引退後は日本体育大荏原の投手コーチに就任した。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第29回 ===================== */
+
+{
+  era:"第29回開幕前",
+  season:29,
+  category:"移籍",
+  title:"根尾、日本体育大荏原へ",
+  summary:"デビルスターズから加々美率いる日本体育大荏原へ。",
+  body:
+`【正史・再構成】
+
+根尾がデビルスターズから日本体育大荏原へ移籍。
+
+加々美監督のもとで新たな役割を担うこととなった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第29回開幕前",
+  season:29,
+  category:"選手",
+  title:"デビルスターズ、天道を育成組織から昇格",
+  summary:"将来の絶対的エース候補がトップチームへ。",
+  body:
+`【正史・再構成】
+
+デビルスターズが育成組織から天道をトップチームへ昇格させた。
+
+海堂監督は将来的に、大谷が担ってきた「決勝優勝請負人」の役割を託せる存在として成長を期待している。
+
+現時点では完成された絶対的エースではなく、巨大な潜在能力を持つ投手として育成が続く。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第29回",
+  season:29,
+  category:"移籍",
+  title:"クラウドを巡り各クラブが関心",
+  summary:"デビルスターズ育成出身のスターに移籍市場が注目。",
+  body:
+`【正史・再構成】
+
+日本体育大荏原で成長したクラウドを巡り、移籍市場で複数の動きが報じられた。
+
+クラウドは元々デビルスターズの育成組織出身。
+
+加々美の指導を受けることを望み、自ら日本体育大荏原での育成を選んだ特殊な経歴を持つ。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第30回 ===================== */
+
+{
+  era:"第30回",
+  season:30,
+  category:"大会",
+  title:"国王杯、創設",
+  summary:"SL世界に新たな主要大会が誕生。",
+  body:
+`【正史・再構成】
+
+新大会「国王杯」が創設された。
+
+Aチームと予選突破チームを含む32チーム規模で行われる大会としてスタート。
+
+これによりSL世界の主要タイトルは4つとなった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第30回",
+  season:30,
+  category:"大会",
+  title:"デビルスターズ、初の四冠",
+  summary:"SL・CC・JC・国王杯を完全制覇。",
+  body:
+`【正史・再構成】
+
+デビルスターズがSL最高優勝、Champions Cup、Japan Cup、国王杯をすべて制覇。
+
+SL史上初となる四冠を達成した。
+
+海堂体制のデビルスターズが、新たな王朝の形を完成させた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第30回",
+  season:30,
+  category:"クラブ",
+  title:"ジオット会長、銀河系軍団構想",
+  summary:"デビルスターズ上層部がさらなる強化を支持。",
+  body:
+`【正史・再構成】
+
+デビルスターズのジオット会長が、圧倒的戦力をさらに強化する方針を示した。
+
+後に「銀河系軍団」と表現される巨大戦力構想が注目を集めることになる。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第30回",
+  season:30,
+  category:"移籍",
+  title:"納東一、明日川・御子柴へ大型オファー",
+  summary:"明日川8億、御子柴10億規模の獲得案。",
+  body:
+`【正史・再構成】
+
+納東一が大型補強を検討。
+
+明日川に8億、御子柴に10億規模の獲得オファーが取り沙汰された。
+
+SL屈指の資金力を持つ納東一の動きとして大きな注目を集めた。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第31回 ===================== */
+
+{
+  era:"第31回",
+  season:31,
+  category:"大会",
+  title:"デビルスターズ、2年連続四冠",
+  summary:"第30回に続いて全主要タイトルを制覇。",
+  body:
+`【正史・再構成】
+
+デビルスターズが2シーズン連続で四冠を達成。
+
+国王杯創設後のSL世界で、絶対王者としての地位をさらに強固なものとした。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第31回",
+  season:31,
+  category:"運営",
+  title:"市若大商、Aチームから降格",
+  summary:"SL運営委員会の判断によりAチーム資格を失う。",
+  body:
+`【正史・再構成】
+
+市若大商がAチーム資格を失い、SLから降格した。
+
+Aチームへ復帰するためには、再び予選からSL本戦出場を目指す必要がある。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第31回",
+  season:31,
+  category:"大会",
+  title:"東海大相模、8位決定戦を制す",
+  summary:"武勇館とのプレーオフに勝利。",
+  body:
+`【正史・再構成】
+
+東海大相模と武勇館による8位決定プレーオフが行われた。
+
+東海大相模が勝利し、Champions Cup出場権を獲得した。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第33回 ===================== */
+
+{
+  era:"第33回開幕前",
+  season:33,
+  category:"移籍",
+  title:"八雲・佐山、邦成で現役復帰",
+  summary:"元デビルスターズの伝説的二遊間が再結成。",
+  body:
+`【正史・再構成】
+
+元デビルスターズの八雲と佐山が邦成と契約。
+
+契約額はそれぞれ1000万円。
+
+全盛期の市場価値を示す金額ではなく、現役復帰にあたっての契約だった。
+
+かつて異常なまでの連携力を誇った伝説的二遊間が再び同じユニフォームを着る。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第33回",
+  season:33,
+  category:"大会",
+  title:"デビルスターズ、大阪桐蔭との決定戦を制す",
+  summary:"同ポイントから最高優勝決定プレーオフへ。",
+  body:
+`【正史・再構成】
+
+第33回SLはデビルスターズと大阪桐蔭が同ポイントで首位に並んだ。
+
+最高優勝決定プレーオフをデビルスターズが制し、通算27回目のSL最高優勝を獲得した。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第33回",
+  season:33,
+  category:"大会",
+  title:"デビルスターズ、再び四冠",
+  summary:"第33回の主要タイトルを完全制覇。",
+  body:
+`【正史・再構成】
+
+デビルスターズが第33回シーズンで四冠を達成。
+
+SL最高優勝に加え、Champions Cup、Japan Cup、国王杯も制した。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第33回",
+  season:33,
+  category:"監督",
+  title:"海堂、初代ベスト監督賞",
+  summary:"SL初となるベスト監督賞を受賞。",
+  body:
+`【正史・再構成】
+
+SLでベスト監督賞が創設され、デビルスターズの海堂監督が初代受賞者となった。
+
+四冠を達成したチーム運営と采配が高く評価された。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第33回終了後",
+  season:33,
+  category:"運営",
+  title:"頭取商、第34回は条件付きAチーム資格",
+  summary:"8ポイント以上、またはCC出場が残留条件。",
+  body:
+`【正史・再構成】
+
+頭取商は第33回終了時点で事実上のAチーム降格対象となった。
+
+しかしSL運営委員会の審議により、第34回への条件付き参加が認められた。
+
+残留条件は「8ポイント以上」または「Champions Cup出場」。
+
+条件を達成した場合、降格記録は取り消され、Aチーム所属は継続扱いとなる。`,
+  source:"reconstructed"
+},
+
+
+/* ===================== 第34回開幕前 ===================== */
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"移籍",
+  title:"明日川、デビルスターズ移籍",
+  summary:"移籍金18.5億。発表時点でSL史上最高額。",
+  body:
+`【正史・再構成】
+
+日本体育大荏原の明日川がデビルスターズへ移籍。
+
+移籍金は18.5億。
+
+成立時点ではSL史上最高額の移籍となった。
+
+絶対王者デビルスターズによる大型補強として、リーグ全体に衝撃を与えた。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"移籍",
+  title:"納東一、A・ジャッジ獲得",
+  summary:"移籍金20億、5年100億の超大型契約。",
+  body:
+`【正史・再構成】
+
+納東一がYankeesからA・ジャッジを獲得。
+
+移籍金20億、契約は5年総額100億。
+
+直前に記録された明日川の移籍金18.5億を上回り、SL史上最高額を更新した。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"移籍",
+  title:"納東一、スタンリッジも獲得",
+  summary:"移籍金15億、5年80億。ジャッジと同時加入。",
+  body:
+`【正史・再構成】
+
+納東一がYankeesからエドワード・スタンリッジを獲得。
+
+移籍金15億、契約は5年総額80億。
+
+A・ジャッジと合わせ、SL史でも例を見ない超大型補強となった。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"クラブ",
+  title:"佐藤監督「SL史上最強のチーム」",
+  summary:"超大型補強を終えた納東一が王座奪還へ。",
+  body:
+`【正史・再構成】
+
+A・ジャッジ、エドワード・スタンリッジらを加えた納東一。
+
+佐藤監督は新チームの戦力に強い自信を示し、「SL史上最強」と評した。
+
+第34回は絶対王者デビルスターズの支配を崩せるかが最大の焦点となる。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"選手",
+  title:"クラウド、左膝内側側副靱帯損傷",
+  summary:"国王杯欠場。SL開幕戦復帰の可能性は残る。",
+  body:
+`【正史・再構成】
+
+デビルスターズのクラウドが左膝内側側副靱帯を負傷。
+
+当初は約4か月の離脱が見込まれ、国王杯への出場は不可能となった。
+
+一方、SLシーズン日程の遅延により、第34回開幕戦に間に合う可能性が残されている。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"選手",
+  title:"デビルスターズ、世代交代へ",
+  summary:"柳田・村上・岡本が育成組織からトップ昇格。",
+  body:
+`【正史・再構成】
+
+デビルスターズが柳田、村上、岡本を育成組織からトップチームへ昇格。
+
+大谷、八重島、白鳥が第34回終了後の引退を予定する中、絶対王者は本格的な世代交代へ入る。
+
+海堂監督のニュートータルベースボールが、新世代をどう融合させるか注目される。`,
+  source:"reconstructed"
+},
+
+{
+  era:"第34回開幕前",
+  season:34,
+  category:"移籍",
+  title:"炭谷、納東一へ",
+  summary:"日本体育大荏原の育成組織から納東一が獲得。",
+  body:
+`【正史・再構成】
+
+納東一が日本体育大荏原の育成組織から炭谷を獲得。
+
+育成選手を巡る今回の移籍が、両クラブの今後の関係に影響を与える可能性もある。
+
+ただし、クラブ間関係の正式な変化については現時点では確定していない。`,
+  source:"reconstructed"
+}
+
+];
+
+
+/* ======================================================
+   PATCH STATE
+====================================================== */
+
+let archiveCategory = "すべて";
+let archiveSearch = "";
+
+
+/* ======================================================
+   SOURCE LABEL
+====================================================== */
+
+function archiveSourceLabel(source){
+
+  if(source === "original"){
+
+    return `
+      <span class="tag canon">
+        当時の記事記録あり
+      </span>
+    `;
+
+  }
+
+
+  if(source === "noarticle"){
+
+    return `
+      <span class="tag unknown">
+        当時の記事記録なし
+      </span>
+    `;
+
+  }
+
+
+  return `
+    <span class="tag memory">
+      正史・再構成
+    </span>
+  `;
+
+}
+
+
+/* ======================================================
+   END PART 1
+====================================================== */
+
+</script>
+
+<!-- ===== NEWS ARCHIVE PATCH 1/2 END ===== -->
+<!-- ======================================================
+     SL WORLD v1.3.1
+     NEWS ARCHIVE PATCH
+     PART 2/2
+======================================================= -->
+
+<script>
+
+(function(){
+
+"use strict";
+
+
+/* ======================================================
+   PART 1 DATABASE CHECK
+====================================================== */
+
+if(
+  typeof SL_NEWS_ARCHIVE === "undefined"
+){
+
+  console.error(
+    "SL NEWS ARCHIVE database not found"
+  );
+
+  return;
+
+}
+
+
+/* ======================================================
+   BUILD ARCHIVE UI
+====================================================== */
+
+function buildNewsArchiveUI(){
+
+  const oldArea =
+    document.getElementById(
+      "historicalNewsList"
+    );
+
+
+  if(!oldArea){
+    return;
+  }
+
+
+  /*
+    v1.3標準版に入っていた
+    少数の過去ニュース表示を置き換える
+  */
+
+  oldArea.innerHTML = `
+    <div id="slNewsArchivePatch">
+
+      <div class="naControl">
+
+        <button
+          class="naMode active"
+          id="naAllButton"
+          type="button"
+        >
+          SL NEWS ARCHIVE
+        </button>
+
+        <button
+          class="naMode"
+          id="naLatestButton"
+          type="button"
+        >
+          最新から表示
+        </button>
+
+      </div>
+
+
+      <input
+        id="naSearch"
+        class="naSearch"
+        type="search"
+        placeholder="過去ニュースを検索"
+        autocomplete="off"
+      >
+
+
+      <div class="naFilters">
+
+        <button
+          class="naFilter active"
+          data-na-category="すべて"
+          type="button"
+        >
+          すべて
+        </button>
+
+        <button
+          class="naFilter"
+          data-na-category="大会"
+          type="button"
+        >
+          大会
+        </button>
+
+        <button
+          class="naFilter"
+          data-na-category="移籍"
+          type="button"
+        >
+          移籍
+        </button>
+
+        <button
+          class="naFilter"
+          data-na-category="監督"
+          type="button"
+        >
+          監督
+        </button>
+
+        <button
+          class="naFilter"
+          data-na-category="選手"
+          type="button"
+        >
+          選手
+        </button>
+
+        <button
+          class="naFilter"
+          data-na-category="クラブ"
+          type="button"
+        >
+          クラブ
+        </button>
+
+        <button
+          class="naFilter"
+          data-na-category="運営"
+          type="button"
+        >
+          運営
+        </button>
+
+      </div>
+
+
+      <div
+        id="naCount"
+        class="naCount"
+      ></div>
+
+
+      <div
+        id="naResults"
+      ></div>
+
+    </div>
+  `;
+
+
+  const search =
+    document.getElementById(
+      "naSearch"
+    );
+
+
+  if(search){
+
+    search.addEventListener(
+      "input",
+      function(){
+
+        archiveSearch =
+          this.value
+            .trim()
+            .toLowerCase();
+
+
+        renderNewsArchive();
+
+      }
+    );
+
+  }
+
+
+  document
+    .querySelectorAll(
+      "[data-na-category]"
+    )
+    .forEach(button=>{
+
+      button.addEventListener(
+        "click",
+        function(){
+
+          archiveCategory =
+            this.dataset.naCategory;
+
+
+          document
+            .querySelectorAll(
+              "[data-na-category]"
+            )
+            .forEach(btn=>{
+
+              btn.classList.remove(
+                "active"
+              );
+
+            });
+
+
+          this.classList.add(
+            "active"
+          );
+
+
+          renderNewsArchive();
+
+        }
+      );
+
+    });
+
+
+  const latestButton =
+    document.getElementById(
+      "naLatestButton"
+    );
+
+
+  const allButton =
+    document.getElementById(
+      "naAllButton"
+    );
+
+
+  if(latestButton){
+
+    latestButton.addEventListener(
+      "click",
+      function(){
+
+        archiveSortNewest = true;
+
+
+        this.classList.add(
+          "active"
+        );
+
+
+        if(allButton){
+
+          allButton.classList.remove(
+            "active"
+          );
+
+        }
+
+
+        renderNewsArchive();
+
+      }
+    );
+
+  }
+
+
+  if(allButton){
+
+    allButton.addEventListener(
+      "click",
+      function(){
+
+        archiveSortNewest = false;
+
+
+        this.classList.add(
+          "active"
+        );
+
+
+        if(latestButton){
+
+          latestButton.classList.remove(
+            "active"
+          );
+
+        }
+
+
+        renderNewsArchive();
+
+      }
+    );
+
+  }
+
+}
+
+
+/* ======================================================
+   ARCHIVE SORT STATE
+====================================================== */
+
+let archiveSortNewest = false;
+
+
+/* ======================================================
+   FILTER
+====================================================== */
+
+function getFilteredArchive(){
+
+  return SL_NEWS_ARCHIVE
+    .map((item,index)=>({
+
+      ...item,
+
+      archiveIndex:index
+
+    }))
+    .filter(item=>{
+
+
+      const categoryOK =
+        archiveCategory === "すべて" ||
+        item.category === archiveCategory;
+
+
+      if(!categoryOK){
+        return false;
+      }
+
+
+      if(!archiveSearch){
+        return true;
+      }
+
+
+      const text = [
+
+        item.era,
+        item.category,
+        item.title,
+        item.summary,
+        item.body
+
+      ]
+        .join(" ")
+        .toLowerCase();
+
+
+      return text.includes(
+        archiveSearch
+      );
+
+    });
+
+}
+
+
+/* ======================================================
+   ERA ORDER
+====================================================== */
+
+function eraOrder(item){
+
+  const season =
+    Number(item.season) || 0;
+
+
+  let phase = 1;
+
+
+  if(
+    String(item.era)
+      .includes("開幕前")
+  ){
+
+    phase = 0;
+
+  }
+
+
+  if(
+    String(item.era)
+      .includes("終了後")
+  ){
+
+    phase = 2;
+
+  }
+
+
+  return (
+    season * 10 +
+    phase
+  );
+
+}
+
+
+/* ======================================================
+   RENDER ARCHIVE
+====================================================== */
+
+function renderNewsArchive(){
+
+  const resultArea =
+    document.getElementById(
+      "naResults"
+    );
+
+
+  const countArea =
+    document.getElementById(
+      "naCount"
+    );
+
+
+  if(
+    !resultArea ||
+    !countArea
+  ){
+
+    return;
+
+  }
+
+
+  let items =
+    getFilteredArchive();
+
+
+  items.sort(
+    (a,b)=>{
+
+      const difference =
+        eraOrder(a) -
+        eraOrder(b);
+
+
+      if(
+        archiveSortNewest
+      ){
+
+        return -difference;
+
+      }
+
+
+      return difference;
+
+    }
+  );
+
+
+  countArea.textContent =
+    `${items.length}件の記録`;
+
+
+  if(!items.length){
+
+    resultArea.innerHTML = `
+      <div class="card">
+
+        <div class="empty">
+          条件に一致する過去ニュースはありません
+        </div>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let html = "";
+
+  let currentEra = "";
+
+
+  items.forEach(item=>{
+
+
+    if(
+      item.era !==
+      currentEra
+    ){
+
+      currentEra =
+        item.era;
+
+
+      html += `
+        <div class="naEra">
+          ${escapeHTML(
+            currentEra
+          )}
+        </div>
+      `;
+
+    }
+
+
+    html += `
+      <div
+        class="card newsCard slArchiveArticle"
+        data-sl-archive-index="${item.archiveIndex}"
+      >
+
+        <div class="newsCat">
+          ${escapeHTML(
+            item.category
+          )}
+        </div>
+
+
+        <div class="newsTitle">
+          ${escapeHTML(
+            item.title
+          )}
+        </div>
+
+
+        <div class="newsSummary">
+          ${escapeHTML(
+            item.summary
+          )}
+        </div>
+
+
+        <div class="naSource">
+
+          ${archiveSourceLabel(
+            item.source
+          )}
+
+        </div>
+
+
+        <div class="readmore">
+          記事を読む →
+        </div>
+
+      </div>
+    `;
+
+  });
+
+
+  resultArea.innerHTML =
+    html;
+
+}
+
+
+/* ======================================================
+   OPEN ARCHIVE ARTICLE
+====================================================== */
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    const card =
+      event.target.closest(
+        "[data-sl-archive-index]"
+      );
+
+
+    if(!card){
+      return;
+    }
+
+
+    const index =
+      Number(
+        card.dataset
+          .slArchiveIndex
+      );
+
+
+    const item =
+      SL_NEWS_ARCHIVE[index];
+
+
+    if(!item){
+      return;
+    }
+
+
+    /*
+      v1.3本体の安全な
+      openArticle() をそのまま使用
+    */
+
+    if(
+      typeof openArticle ===
+      "function"
+    ){
+
+      openArticle({
+
+        category:
+          `${item.era} / ${item.category}`,
+
+        title:
+          item.title,
+
+        summary:
+          item.summary,
+
+        body:
+          item.body
+
+      });
+
+    }
+
+  }
+);
+
+
+/* ======================================================
+   NEWS TAB LABEL
+====================================================== */
+
+function improveNewsHeading(){
+
+  const newsView =
+    document.getElementById(
+      "news"
+    );
+
+
+  if(!newsView){
+    return;
+  }
+
+
+  const headings =
+    newsView.querySelectorAll(
+      ".sectionTitle"
+    );
+
+
+  headings.forEach(
+    heading=>{
+
+      if(
+        heading.textContent
+          .trim() ===
+        "HISTORICAL NEWS"
+      ){
+
+        heading.textContent =
+          "SL NEWS ARCHIVE";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ======================================================
+   SAFE START
+====================================================== */
+
+function startNewsArchivePatch(){
+
+  try{
+
+    improveNewsHeading();
+
+    buildNewsArchiveUI();
+
+    renderNewsArchive();
+
+
+    console.log(
+      "SL WORLD v1.3.1 NEWS ARCHIVE READY"
+    );
+
+  }catch(error){
+
+    console.error(
+      "SL NEWS ARCHIVE PATCH ERROR:",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+  本体の初期起動後に実行
+*/
+
+if(
+  document.readyState ===
+  "loading"
+){
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    startNewsArchivePatch
+  );
+
+}else{
+
+  startNewsArchivePatch();
+
+}
+
+})();
+</script>
+
+<!-- ===== SL WORLD v1.3.1 NEWS ARCHIVE PATCH END ===== -->
 </body>
 </html>
