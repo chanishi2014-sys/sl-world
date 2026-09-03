@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SL WORLD PLAYER EDITOR</title>
+
+<style>
+:root{
+  --bg:#07111f;
+  --panel:#101d2e;
+  --panel2:#15263a;
+  --line:#29415d;
+  --text:#f4f7fb;
+  --sub:#9eb0c5;
+  --accent:#5bc0ff;
+
+  --blue:#248cff;
+  --red:#ff4d5e;
+  --green:#2fc77a;
+  --gold:#ffc83d;
+  --rainbow:#ff5fd2;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at top,#153154 0,#07111f 42%,#040a12 100%);
+  color:var(--text);
+  font-family:
+    -apple-system,BlinkMacSystemFont,
+    "Hiragino Sans","Yu Gothic UI","Yu Gothic",
+    Meiryo,sans-serif;
+  min-height:100vh;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  padding:15px 18px;
+  background:rgba(5,13,24,.94);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #24415e;
+}
+
+.logo{
+  font-size:12px;
+  letter-spacing:.18em;
+  color:#78cfff;
+  font-weight:800;
+}
+
+h1{
+  margin:3px 0 0;
+  font-size:22px;
+}
+
+header p{
+  color:var(--sub);
+  margin:5px 0 0;
+  font-size:12px;
+}
+
+main{
+  width:min(1180px,100%);
+  margin:auto;
+  padding:16px;
+  padding-bottom:80px;
+}
+
+.card{
+  background:rgba(16,29,46,.94);
+  border:1px solid var(--line);
+  border-radius:16px;
+  margin-bottom:15px;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,.22);
+}
+
+.card-title{
+  padding:13px 15px;
+  background:#14253a;
+  font-weight:800;
+  border-bottom:1px solid var(--line);
+}
+
+.card-body{
+  padding:15px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+
+.grid6{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+}
+
+@media(max-width:800px){
+  .grid6{grid-template-columns:repeat(3,1fr)}
+  .grid3{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:520px){
+  .grid{grid-template-columns:1fr}
+  .grid3{grid-template-columns:repeat(2,1fr)}
+  .grid6{grid-template-columns:repeat(2,1fr)}
+}
+
+label{
+  display:block;
+  font-size:12px;
+  color:var(--sub);
+  margin-bottom:5px;
+  font-weight:700;
+}
+
+input,select,textarea{
+  width:100%;
+  border:1px solid #34506f;
+  background:#081522;
+  color:#fff;
+  border-radius:10px;
+  padding:10px;
+  font-size:16px;
+  outline:none;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#62c6ff;
+  box-shadow:0 0 0 2px rgba(91,192,255,.12);
+}
+
+textarea{
+  min-height:85px;
+  resize:vertical;
+}
+
+.small-note{
+  color:var(--sub);
+  font-size:12px;
+  line-height:1.6;
+  margin-top:8px;
+}
+
+.positions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.pos-btn{
+  border:1px solid #3a5673;
+  background:#0a1827;
+  color:#aebed0;
+  padding:8px 11px;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.pos-btn.on{
+  background:#1479b5;
+  border-color:#69d1ff;
+  color:white;
+  box-shadow:0 0 12px rgba(91,192,255,.35);
+}
+
+.ability-number{
+  text-align:center;
+}
+
+.ability-number input{
+  text-align:center;
+  font-weight:900;
+  font-size:20px;
+}
+
+.special-tabs{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding-bottom:8px;
+}
+
+.tab{
+  white-space:nowrap;
+  border:1px solid #36516e;
+  background:#091726;
+  color:#b5c4d4;
+  padding:9px 12px;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.tab.active{
+  background:#1e5683;
+  color:white;
+  border-color:#69c8ff;
+}
+
+.special-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.sp{
+  border:1px solid #314760;
+  background:#07121e;
+  color:#697b8e;
+  border-radius:10px;
+  padding:9px 11px;
+  cursor:pointer;
+  font-weight:800;
+  transition:.15s;
+}
+
+.sp:hover{
+  transform:translateY(-1px);
+}
+
+.sp.blue.on{
+  background:#123f73;
+  color:#dff1ff;
+  border-color:var(--blue);
+  box-shadow:0 0 12px rgba(36,140,255,.5);
+}
+
+.sp.red.on{
+  background:#5a1822;
+  color:#ffe2e5;
+  border-color:var(--red);
+  box-shadow:0 0 12px rgba(255,77,94,.45);
+}
+
+.sp.green.on{
+  background:#123f2b;
+  color:#dcffed;
+  border-color:var(--green);
+  box-shadow:0 0 12px rgba(47,199,122,.45);
+}
+
+.sp.gold.on{
+  background:#55420c;
+  color:#fff4bd;
+  border-color:var(--gold);
+  box-shadow:0 0 14px rgba(255,200,61,.5);
+}
+
+.sp.rainbow.on{
+  color:#fff;
+  border-color:#fff;
+  background:
+    linear-gradient(
+      110deg,
+      #d72f55,
+      #dc7c24,
+      #b39b1c,
+      #278a50,
+      #287fb5,
+      #7350bb,
+      #c23d9d
+    );
+  box-shadow:0 0 15px rgba(255,255,255,.35);
+}
+
+.disabled-special{
+  opacity:.3;
+  cursor:not-allowed;
+}
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+}
+
+button.action{
+  border:none;
+  border-radius:10px;
+  padding:11px 16px;
+  font-weight:900;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.primary{
+  background:#24a8ed;
+  color:#00101c;
+}
+
+.secondary{
+  background:#253b53;
+  color:white;
+}
+
+.danger{
+  background:#7e2630;
+  color:white;
+}
+
+.success{
+  background:#208a5c;
+  color:white;
+}
+
+.player-list{
+  display:grid;
+  gap:9px;
+}
+
+.player-row{
+  border:1px solid #29435f;
+  background:#091725;
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.player-main{
+  min-width:0;
+}
+
+.player-name{
+  font-size:17px;
+  font-weight:900;
+}
+
+.player-reading{
+  color:#8da2b8;
+  font-size:11px;
+}
+
+.player-meta{
+  color:#b3c3d4;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.row-actions{
+  display:flex;
+  gap:6px;
+}
+
+.row-actions button{
+  border:1px solid #395675;
+  background:#15273a;
+  color:white;
+  border-radius:8px;
+  padding:7px 9px;
+  cursor:pointer;
+}
+
+.badge{
+  display:inline-block;
+  padding:3px 7px;
+  border-radius:999px;
+  background:#20384f;
+  margin-right:4px;
+}
+
+.status{
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%);
+  background:#101c29;
+  border:1px solid #4b6c8d;
+  padding:10px 16px;
+  border-radius:999px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:100;
+  white-space:nowrap;
+}
+
+.status.show{
+  opacity:1;
+}
+
+.section-note{
+  background:#0a1725;
+  border-left:3px solid #4ebfff;
+  padding:10px;
+  margin-bottom:12px;
+  color:#b8c8d9;
+  font-size:12px;
+  line-height:1.6;
+}
+
+.count{
+  color:#79d1ff;
+  font-weight:900;
+}
+
+hr{
+  border:0;
+  border-top:1px solid #263d55;
+  margin:15px 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">SUPER LEAGUE WORLD</div>
+  <h1>PLAYER EDITOR <span style="font-size:12px;color:#7ecfff">v0.1</span></h1>
+  <p>SL WORLD 選手データベース作成ツール</p>
+</header>
+
+<main>
+
+<div class="card">
+  <div class="card-title">基本情報</div>
+  <div class="card-body">
+
+    <div class="grid3">
+
+      <div>
+        <label>所属チーム</label>
+        <select id="team">
+          <option>デビルスターズ</option>
+          <option>大阪桐蔭</option>
+          <option>納東一</option>
+          <option>東海大相模</option>
+          <option>壮青学院</option>
+          <option>日体荏原</option>
+          <option>威伏</option>
+          <option>西東国</option>
+          <option>武勇館</option>
+          <option>明訓</option>
+          <option>頭取商</option>
+          <option>知位学園</option>
+          <option>その他</option>
+        </select>
+      </div>
+
+      <div>
+        <label>選手名</label>
+        <input id="name" placeholder="例：桧山">
+      </div>
+
+      <div>
+        <label>ふりがな</label>
+        <input id="reading" placeholder="例：ひやま">
+      </div>
+
+      <div>
+        <label>背番号</label>
+        <input id="number" type="number" min="0" max="999" placeholder="例：10">
+      </div>
+
+      <div>
+        <label>投げ</label>
+        <select id="throwHand">
+          <option value="右">右投</option>
+          <option value="左">左投</option>
+        </select>
+      </div>
+
+      <div>
+        <label>打ち</label>
+        <select id="batHand">
+          <option value="右">右打</option>
+          <option value="左">左打</option>
+          <option value="両">両打</option>
+        </select>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <label>メインポジション</label>
+    <select id="mainPosition">
+      <option value="投手">投手</option>
+      <option value="捕手">捕手</option>
+      <option value="一塁手">一塁手</option>
+      <option value="二塁手">二塁手</option>
+      <option value="三塁手">三塁手</option>
+      <option value="遊撃手">遊撃手</option>
+      <option value="左翼手">左翼手</option>
+      <option value="中堅手">中堅手</option>
+      <option value="右翼手">右翼手</option>
+    </select>
+
+    <div style="height:12px"></div>
+
+    <label>サブポジション（複数選択可）</label>
+    <div id="subPositions" class="positions"></div>
+
+    <div class="small-note">
+      サブポジションはボタンを押すと登録／解除できます。
+    </div>
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-title">野手能力</div>
+
+  <div class="card-body">
+
+    <div class="section-note">
+      SL WORLD 基礎能力。ミート1〜10、パワー1〜200、
+      走力・肩力・守備力・捕球は1〜20。
+    </div>
+
+    <div class="grid6">
+
+      <div class="ability-number">
+        <label>ミート</label>
+        <input id="meet" type="number" min="1" max="10" value="5">
+      </div>
+
+      <div class="ability-number">
+        <label>パワー</label>
+        <input id="power" type="number" min="1" max="200" value="100">
+      </div>
+
+      <div class="ability-number">
+        <label>走力</label>
+        <input id="speed" type="number" min="1" max="20" value="10">
+      </div>
+
+      <div class="ability-number">
+        <label>肩力</label>
+        <input id="arm" type="number" min="1" max="20" value="10">
+      </div>
+
+      <div class="ability-number">
+        <label>守備力</label>
+        <input id="fielding" type="number" min="1" max="20" value="10">
+      </div>
+
+      <div class="ability-number">
+        <label>捕球</label>
+        <input id="catching" type="number" min="1" max="20" value="10">
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-title">投手能力（暫定）</div>
+
+  <div class="card-body">
+
+    <div class="section-note">
+      投手基礎能力の最終仕様は今後調整できます。
+      現段階では入力欄を先に用意しています。
+    </div>
+
+    <div class="grid3">
+
+      <div>
+        <label>球速 km/h</label>
+        <input id="velocity" type="number" min="80" max="180" value="140">
+      </div>
+
+      <div>
+        <label>コントロール</label>
+        <input id="control" type="number" min="1" max="100" value="50">
+      </div>
+
+      <div>
+        <label>スタミナ</label>
+        <input id="stamina" type="number" min="1" max="100" value="50">
+      </div>
+
+    </div>
+
+    <div style="height:12px"></div>
+
+    <label>変化球・球種メモ</label>
+    <input id="pitchMemo" placeholder="例：スライダー、フォーク、カーブ">
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-title">
+    特殊能力　
+    <span class="count" id="specialCount">0</span> 個選択
+  </div>
+
+  <div class="card-body">
+
+    <div class="section-note">
+      暗いボタン＝未所持。押して発光＝所持。<br>
+      上位能力・排他能力は自動調整します。
+      超特殊能力🌈は原則1選手1個までです。
+    </div>
+
+    <div class="special-tabs">
+      <button class="tab active" data-cat="batting">打撃</button>
+      <button class="tab" data-cat="running">走塁・守備</button>
+      <button class="tab" data-cat="pitcher">投手専用</button>
+      <button class="tab" data-cat="common">共通</button>
+      <button class="tab" data-cat="super">🌈超特殊</button>
+    </div>
+
+    <div id="specialList" class="special-list"></div>
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-title">備考・資料</div>
+
+  <div class="card-body">
+
+    <label>選手メモ</label>
+    <textarea id="notes"
+      placeholder="選手の特徴、経歴、性格、移籍歴、資料元など"></textarea>
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-title">保存</div>
+
+  <div class="card-body">
+
+    <div class="toolbar">
+      <button class="action primary" id="saveBtn">選手を保存</button>
+      <button class="action secondary" id="newBtn">新規選手</button>
+      <button class="action success" id="exportBtn">JSONバックアップ</button>
+      <button class="action secondary" id="importBtn">JSON読込</button>
+      <input id="importFile" type="file" accept=".json" style="display:none">
+    </div>
+
+    <div class="small-note">
+      保存先はこの端末のブラウザ内です。
+      JSONバックアップを取っておけばデータを移動できます。
+    </div>
+
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-title">
+    登録選手一覧　
+    <span class="count" id="playerCount">0</span> 人
+  </div>
+
+  <div class="card-body">
+
+    <input id="search"
+      placeholder="選手名・ふりがな・チーム名で検索">
+
+    <div style="height:12px"></div>
+
+    <div id="playerList" class="player-list"></div>
+
+  </div>
+</div>
+
+</main>
+
+<div id="status" class="status"></div>
+
+
+<script>
+
+/* =========================================================
+   SL WORLD PLAYER EDITOR v0.1
+   ========================================================= */
+
+const STORAGE_KEY = "sl_world_players_v01";
+
+const POSITIONS = [
+  "投手","捕手","一塁手","二塁手","三塁手",
+  "遊撃手","左翼手","中堅手","右翼手"
+];
+
+
+/* =========================================================
+   特殊能力データ
+   color:
+   blue / red / green / gold / rainbow
+   ========================================================= */
+
+const SPECIALS = {
+
+batting:[
+
+["アベレージヒッター","blue"],
+["安打製造機","gold"],
+["パワーヒッター","blue"],
+["長距離砲","gold"],
+["引っ張り屋","blue"],
+["流し打ち","blue"],
+["広角打法","gold"],
+["ラインドライブ","blue"],
+["アーチスト","gold"],
+["選球眼","blue"],
+["悪球打ち","blue"],
+["粘り打ち","blue"],
+["バント○","blue"],
+["バント職人","blue"],
+["満塁男","blue"],
+["サヨナラ男","blue"],
+["逆境","blue"],
+["内野安打○","blue"],
+["代打○","blue"],
+["固め打ち","blue"],
+["連打○","blue"],
+["チャンスメーカー","blue"],
+["チャンス○","blue"],
+["チャンス◎","gold"],
+["ローボールヒッター","blue"],
+["ハイボールヒッター","blue"],
+["いぶし銀","blue"],
+["打者威圧感","gold"],
+["三振癖","red"],
+["対左×","red"],
+["対右×","red"],
+["悪球癖","red"],
+["チャンス×","red"],
+["バント×","red"]
+
+],
+
+running:[
+
+["走塁○","blue"],
+["韋駄天","gold"],
+["走塁×","red"],
+["盗塁○","blue"],
+["影走","gold"],
+["盗塁×","red"],
+["守備職人","blue"],
+["広域守備","gold"],
+["好捕球","blue"],
+["ゲッツー職人","blue"],
+["送球○","blue"],
+["レーザービーム","gold"],
+["送球×","red"],
+["エラー癖","red"],
+["キャッチャー○","blue"],
+["名捕手","gold"],
+["盗塁阻止○","blue"],
+["ブロック○","blue"]
+
+],
+
+pitcher:[
+
+["ノビ○","blue"],
+["怪童","gold"],
+["キレ○","blue"],
+["キレ味抜群","gold"],
+["重い球","blue"],
+["奪三振","gold"],
+["低め○","blue"],
+["緩急○","blue"],
+["リリース○","blue"],
+["逃げ球","blue"],
+["投手威圧感","gold"],
+["クロスファイヤー","blue"],
+
+["対左打者○","blue"],
+["対右打者○","blue"],
+["ピンチ○","blue"],
+["不屈","gold"],
+["立ち上がり○","blue"],
+["尻上がり","blue"],
+["クイック○","blue"],
+["牽制○","blue"],
+
+["力配分","blue"],
+["回復○","blue"],
+
+["先発タイプ","blue"],
+["中継ぎタイプ","blue"],
+["抑えタイプ","blue"],
+
+["ノビ×","red"],
+["キレ×","red"],
+["軽い球","red"],
+["ピンチ×","red"],
+["四球癖","red"]
+
+],
+
+common:[
+
+["安定感","blue"],
+["ムラっ気","green"],
+["大舞台○","blue"],
+["プレッシャー×","red"],
+["人気者","green"],
+["スーパースター","gold"],
+["ケガ○","blue"],
+["ケガ×","red"],
+["ムード○","blue"],
+["ムード×","red"],
+["ムードメーカー","green"],
+["積極打法","green"],
+["慎重打法","green"],
+["積極盗塁","green"],
+["慎重盗塁","green"],
+["代打要員","green"],
+["代走要員","green"],
+["守備要員","green"],
+["チームプレー○","green"],
+["チームプレー×","green"]
+
+],
+
+/*
+  現在検討中の野手打撃系超特殊能力。
+  最終確定前でも後から名前・効果を変更可能。
+*/
+super:[
+
+["勝負師","rainbow"],
+["本塁打王","rainbow"],
+["電光石火","rainbow"],
+["全方位打法","rainbow"]
+
+]
+
+};
+
+
+/* =========================================================
+   上位能力関係
+   上位を選択 → 下位を自動解除
+   下位を選択 → 上位を自動解除
+   ========================================================= */
+
+const UPGRADE_PAIRS = [
+
+["アベレージヒッター","安打製造機"],
+["パワーヒッター","長距離砲"],
+["チャンス○","チャンス◎"],
+["バント○","バント職人"],
+
+["走塁○","韋駄天"],
+["盗塁○","影走"],
+["キャッチャー○","名捕手"],
+
+["ノビ○","怪童"],
+["キレ○","キレ味抜群"],
+["ピンチ○","不屈"],
+
+["人気者","スーパースター"]
+
+];
+
+
+/* =========================================================
+   排他グループ
+   同じグループから同時に1つのみ
+   ========================================================= */
+
+const EXCLUSIVE_GROUPS = [
+
+["引っ張り屋","流し打ち","広角打法"],
+
+["選球眼","悪球打ち","悪球癖"],
+
+["チャンス×","チャンス○","チャンス◎"],
+
+["バント×","バント○","バント職人"],
+
+["走塁×","走塁○","韋駄天"],
+
+["盗塁×","盗塁○","影走"],
+
+["送球×","送球○","レーザービーム"],
+
+["ノビ×","ノビ○","怪童"],
+
+["キレ×","キレ○","キレ味抜群"],
+
+["ピンチ×","ピンチ○","不屈"],
+
+["先発タイプ","中継ぎタイプ","抑えタイプ"],
+
+["大舞台○","プレッシャー×"],
+
+["人気者","スーパースター"],
+
+["ケガ○","ケガ×"],
+
+["ムード○","ムード×"],
+
+["積極打法","慎重打法"],
+
+["積極盗塁","慎重盗塁"],
+
+["チームプレー○","チームプレー×"]
+
+];
+
+
+/*
+  ムード× と ムードメーカーは同時取得不可。
+  ムード○ と ムードメーカーは共存可能。
+*/
+const SPECIAL_CONFLICTS = [
+  ["ムード×","ムードメーカー"]
+];
+
+
+/* =========================================================
+   状態
+   ========================================================= */
+
+let selectedSpecials = new Set();
+
+let selectedSubPositions = new Set();
+
+let currentCategory = "batting";
+
+let editingId = null;
+
+let players = loadPlayers();
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const specialList = $("specialList");
+
+const playerList = $("playerList");
+
+
+/* =========================================================
+   サブポジション
+   ========================================================= */
+
+function renderSubPositions(){
+
+  const box = $("subPositions");
+
+  box.innerHTML = "";
+
+  POSITIONS.forEach(pos=>{
+
+    const btn = document.createElement("button");
+
+    btn.type = "button";
+
+    btn.className =
+      "pos-btn" +
+      (selectedSubPositions.has(pos) ? " on" : "");
+
+    btn.textContent = pos;
+
+    btn.onclick = ()=>{
+
+      if(selectedSubPositions.has(pos)){
+        selectedSubPositions.delete(pos);
+      }else{
+        selectedSubPositions.add(pos);
+      }
+
+      renderSubPositions();
+
+    };
+
+    box.appendChild(btn);
+
+  });
+
+}
+
+
+/* =========================================================
+   特殊能力描画
+   ========================================================= */
+
+function renderSpecials(){
+
+  specialList.innerHTML = "";
+
+  const arr = SPECIALS[currentCategory];
+
+  arr.forEach(([name,color])=>{
+
+    const btn = document.createElement("button");
+
+    btn.type = "button";
+
+    btn.className =
+      `sp ${color}` +
+      (selectedSpecials.has(name) ? " on" : "");
+
+    btn.textContent =
+      color === "rainbow"
+      ? "🌈 " + name
+      : name;
+
+    /*
+      野手の場合、投手専用特殊能力は選択不可。
+      メインポジションが投手なら使用可能。
+    */
+
+    if(
+      currentCategory === "pitcher" &&
+      $("mainPosition").value !== "投手"
+    ){
+
+      btn.classList.add("disabled-special");
+
+      btn.onclick = ()=>showStatus(
+        "投手専用特殊能力は投手のみ取得できます"
+      );
+
+    }else{
+
+      btn.onclick = ()=>toggleSpecial(name,color);
+
+    }
+
+    specialList.appendChild(btn);
+
+  });
+
+  updateSpecialCount();
+
+}
+
+
+/* =========================================================
+   特殊能力選択
+   ========================================================= */
+
+function toggleSpecial(name,color){
+
+  if(selectedSpecials.has(name)){
+
+    selectedSpecials.delete(name);
+
+    renderSpecials();
+
+    return;
+
+  }
+
+  /*
+    虹能力1個制限
+  */
+
+  if(color === "rainbow"){
+
+    const rainbowNames =
+      SPECIALS.super.map(x=>x[0]);
+
+    const existing =
+      [...selectedSpecials]
+      .find(x=>rainbowNames.includes(x));
+
+    if(existing){
+
+      showStatus(
+        `🌈超特殊能力は原則1つまでです（現在：${existing}）`
+      );
+
+      return;
+
+    }
+
+  }
+
+  /*
+    排他グループ
+  */
+
+  EXCLUSIVE_GROUPS.forEach(group=>{
+
+    if(group.includes(name)){
+
+      group.forEach(other=>{
+
+        if(other !== name){
+          selectedSpecials.delete(other);
+        }
+
+      });
+
+    }
+
+  });
+
+  /*
+    個別競合
+  */
+
+  SPECIAL_CONFLICTS.forEach(pair=>{
+
+    if(pair.includes(name)){
+
+      pair.forEach(other=>{
+
+        if(other !== name){
+          selectedSpecials.delete(other);
+        }
+
+      });
+
+    }
+
+  });
+
+  /*
+    上位・下位関係
+  */
+
+  UPGRADE_PAIRS.forEach(([lower,upper])=>{
+
+    if(name === upper){
+      selectedSpecials.delete(lower);
+    }
+
+    if(name === lower){
+      selectedSpecials.delete(upper);
+    }
+
+  });
+
+  selectedSpecials.add(name);
+
+  renderSpecials();
+
+}
+
+
+/* =========================================================
+   タブ
+   ========================================================= */
+
+document.querySelectorAll(".tab").forEach(tab=>{
+
+  tab.onclick = ()=>{
+
+    document
+      .querySelectorAll(".tab")
+      .forEach(t=>t.classList.remove("active"));
+
+    tab.classList.add("active");
+
+    currentCategory = tab.dataset.cat;
+
+    renderSpecials();
+
+  };
+
+});
+
+
+/* =========================================================
+   メインポジション変更
+   ========================================================= */
+
+$("mainPosition").addEventListener("change",()=>{
+
+  /*
+    野手へ変更した場合は投手専用特殊能力を解除
+  */
+
+  if($("mainPosition").value !== "投手"){
+
+    SPECIALS.pitcher.forEach(([name])=>{
+      selectedSpecials.delete(name);
+    });
+
+  }
+
+  renderSpecials();
+
+});
+
+
+/* =========================================================
+   能力値安全化
+   ========================================================= */
+
+function clamp(value,min,max){
+
+  let n = Number(value);
+
+  if(Number.isNaN(n)) n=min;
+
+  return Math.max(min,Math.min(max,n));
+
+}
+
+
+/* =========================================================
+   保存
+   ========================================================= */
+
+$("saveBtn").onclick = ()=>{
+
+  const name = $("name").value.trim();
+
+  if(!name){
+
+    showStatus("選手名を入力してください");
+
+    return;
+
+  }
+
+  const player = {
+
+    id:
+      editingId ||
+      "SLP_" +
+      Date.now() +
+      "_" +
+      Math.random().toString(36).slice(2,7),
+
+    team:$("team").value,
+
+    name,
+
+    reading:$("reading").value.trim(),
+
+    number:$("number").value,
+
+    throwHand:$("throwHand").value,
+
+    batHand:$("batHand").value,
+
+    mainPosition:$("mainPosition").value,
+
+    subPositions:[...selectedSubPositions],
+
+    batting:{
+
+      meet:clamp($("meet").value,1,10),
+
+      power:clamp($("power").value,1,200),
+
+      speed:clamp($("speed").value,1,20),
+
+      arm:clamp($("arm").value,1,20),
+
+      fielding:clamp($("fielding").value,1,20),
+
+      catching:clamp($("catching").value,1,20)
+
+    },
+
+    pitching:{
+
+      velocity:clamp($("velocity").value,80,180),
+
+      control:clamp($("control").value,1,100),
+
+      stamina:clamp($("stamina").value,1,100),
+
+      pitchMemo:$("pitchMemo").value.trim()
+
+    },
+
+    specials:[...selectedSpecials],
+
+    notes:$("notes").value.trim(),
+
+    updatedAt:new Date().toISOString()
+
+  };
+
+
+  if(editingId){
+
+    const index =
+      players.findIndex(p=>p.id===editingId);
+
+    if(index !== -1){
+      players[index]=player;
+    }
+
+    showStatus(`${name} を更新しました`);
+
+  }else{
+
+    players.push(player);
+
+    showStatus(`${name} を登録しました`);
+
+  }
+
+  savePlayers();
+
+  renderPlayers();
+
+  resetEditor();
+
+};
+
+
+/* =========================================================
+   新規
+   ========================================================= */
+
+$("newBtn").onclick = ()=>{
+
+  resetEditor();
+
+  showStatus("新規選手入力に切り替えました");
+
+};
+
+
+/* =========================================================
+   編集
+   ========================================================= */
+
+function editPlayer(id){
+
+  const p =
+    players.find(x=>x.id===id);
+
+  if(!p) return;
+
+  editingId = p.id;
+
+  $("team").value=p.team;
+
+  $("name").value=p.name;
+
+  $("reading").value=p.reading || "";
+
+  $("number").value=p.number || "";
+
+  $("throwHand").value=p.throwHand || "右";
+
+  $("batHand").value=p.batHand || "右";
+
+  $("mainPosition").value=p.mainPosition || "投手";
+
+  selectedSubPositions =
+    new Set(p.subPositions || []);
+
+  $("meet").value=p.batting?.meet ?? 5;
+
+  $("power").value=p.batting?.power ?? 100;
+
+  $("speed").value=p.batting?.speed ?? 10;
+
+  $("arm").value=p.batting?.arm ?? 10;
+
+  $("fielding").value=p.batting?.fielding ?? 10;
+
+  $("catching").value=p.batting?.catching ?? 10;
+
+  $("velocity").value=p.pitching?.velocity ?? 140;
+
+  $("control").value=p.pitching?.control ?? 50;
+
+  $("stamina").value=p.pitching?.stamina ?? 50;
+
+  $("pitchMemo").value=p.pitching?.pitchMemo || "";
+
+  selectedSpecials =
+    new Set(p.specials || []);
+
+  $("notes").value=p.notes || "";
+
+  renderSubPositions();
+
+  renderSpecials();
+
+  $("saveBtn").textContent =
+    "選手データを更新";
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+  showStatus(`${p.name} を編集中`);
+
+}
+
+
+/* =========================================================
+   削除
+   ========================================================= */
+
+function deletePlayer(id){
+
+  const p =
+    players.find(x=>x.id===id);
+
+  if(!p) return;
+
+  const ok =
+    confirm(
+      `${p.name} の選手データを削除しますか？`
+    );
+
+  if(!ok) return;
+
+  players =
+    players.filter(x=>x.id!==id);
+
+  savePlayers();
+
+  renderPlayers();
+
+  if(editingId===id){
+    resetEditor();
+  }
+
+  showStatus(`${p.name} を削除しました`);
+
+}
+
+
+/* =========================================================
+   複製
+   ========================================================= */
+
+function duplicatePlayer(id){
+
+  const p =
+    players.find(x=>x.id===id);
+
+  if(!p) return;
+
+  const copy =
+    JSON.parse(JSON.stringify(p));
+
+  copy.id =
+    "SLP_" +
+    Date.now() +
+    "_" +
+    Math.random().toString(36).slice(2,7);
+
+  copy.name =
+    p.name + " コピー";
+
+  copy.updatedAt =
+    new Date().toISOString();
+
+  players.push(copy);
+
+  savePlayers();
+
+  renderPlayers();
+
+  showStatus(`${p.name} を複製しました`);
+
+}
+
+
+/* =========================================================
+   エディタ初期化
+   ========================================================= */
+
+function resetEditor(){
+
+  editingId=null;
+
+  $("name").value="";
+
+  $("reading").value="";
+
+  $("number").value="";
+
+  $("throwHand").value="右";
+
+  $("batHand").value="右";
+
+  $("mainPosition").value="投手";
+
+  selectedSubPositions.clear();
+
+  $("meet").value=5;
+
+  $("power").value=100;
+
+  $("speed").value=10;
+
+  $("arm").value=10;
+
+  $("fielding").value=10;
+
+  $("catching").value=10;
+
+  $("velocity").value=140;
+
+  $("control").value=50;
+
+  $("stamina").value=50;
+
+  $("pitchMemo").value="";
+
+  selectedSpecials.clear();
+
+  $("notes").value="";
+
+  $("saveBtn").textContent="選手を保存";
+
+  renderSubPositions();
+
+  renderSpecials();
+
+}
+
+
+/* =========================================================
+   選手一覧
+   ========================================================= */
+
+function renderPlayers(){
+
+  const keyword =
+    $("search").value
+    .trim()
+    .toLowerCase();
+
+  const filtered =
+    players.filter(p=>{
+
+      const target =
+        [
+          p.name,
+          p.reading,
+          p.team
+        ]
+        .join(" ")
+        .toLowerCase();
+
+      return target.includes(keyword);
+
+    });
+
+  playerList.innerHTML="";
+
+  if(filtered.length===0){
+
+    playerList.innerHTML=
+      `<div class="small-note">
+        登録選手はいません。
+      </div>`;
+
+  }
+
+  filtered.forEach(p=>{
+
+    const row =
+      document.createElement("div");
+
+    row.className="player-row";
+
+    const left =
+      document.createElement("div");
+
+    left.className="player-main";
+
+    left.innerHTML=`
+
+      <div class="player-reading">
+        ${escapeHtml(p.reading || "　")}
+      </div>
+
+      <div class="player-name">
+        ${escapeHtml(p.name)}
+      </div>
+
+      <div class="player-meta">
+
+        <span class="badge">
+          ${escapeHtml(p.team)}
+        </span>
+
+        <span class="badge">
+          ${escapeHtml(p.mainPosition)}
+        </span>
+
+        ${
+          p.number
+          ? `<span class="badge">#${escapeHtml(p.number)}</span>`
+          : ""
+        }
+
+        特殊能力 ${p.specials?.length || 0}
+
+      </div>
+
+    `;
+
+    const actions =
+      document.createElement("div");
+
+    actions.className="row-actions";
+
+    actions.innerHTML=`
+
+      <button onclick="editPlayer('${p.id}')">
+        編集
+      </button>
+
+      <button onclick="duplicatePlayer('${p.id}')">
+        複製
+      </button>
+
+      <button onclick="deletePlayer('${p.id}')">
+        削除
+      </button>
+
+    `;
+
+    row.appendChild(left);
+
+    row.appendChild(actions);
+
+    playerList.appendChild(row);
+
+  });
+
+  $("playerCount").textContent =
+    players.length;
+
+}
+
+
+/* =========================================================
+   検索
+   ========================================================= */
+
+$("search").addEventListener(
+  "input",
+  renderPlayers
+);
+
+
+/* =========================================================
+   localStorage
+   ========================================================= */
+
+function loadPlayers(){
+
+  try{
+
+    const raw =
+      localStorage.getItem(STORAGE_KEY);
+
+    return raw
+      ? JSON.parse(raw)
+      : [];
+
+  }catch(e){
+
+    console.error(e);
+
+    return [];
+
+  }
+
+}
+
+
+function savePlayers(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(players)
+  );
+
+}
+
+
+/* =========================================================
+   JSON EXPORT
+   ========================================================= */
+
+$("exportBtn").onclick = ()=>{
+
+  const data = {
+
+    format:"SL_WORLD_PLAYER_DB",
+
+    version:"0.1",
+
+    exportedAt:
+      new Date().toISOString(),
+
+    players
+
+  };
+
+  const blob =
+    new Blob(
+      [JSON.stringify(data,null,2)],
+      {type:"application/json"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href=url;
+
+  a.download=
+    "SL_WORLD_PLAYERS_" +
+    new Date()
+      .toISOString()
+      .slice(0,10) +
+    ".json";
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  showStatus(
+    "選手データをJSON保存しました"
+  );
+
+};
+
+
+/* =========================================================
+   JSON IMPORT
+   ========================================================= */
+
+$("importBtn").onclick = ()=>{
+
+  $("importFile").click();
+
+};
+
+
+$("importFile").addEventListener(
+  "change",
+  async e=>{
+
+    const file =
+      e.target.files[0];
+
+    if(!file) return;
+
+    try{
+
+      const text =
+        await file.text();
+
+      const data =
+        JSON.parse(text);
+
+      if(!Array.isArray(data.players)){
+
+        throw new Error(
+          "players がありません"
+        );
+
+      }
+
+      const ok =
+        confirm(
+          `JSONから ${data.players.length} 人を読み込みます。\n現在の選手データは置き換わります。`
+        );
+
+      if(!ok) return;
+
+      players=data.players;
+
+      savePlayers();
+
+      renderPlayers();
+
+      resetEditor();
+
+      showStatus(
+        `${players.length}人を読み込みました`
+      );
+
+    }catch(err){
+
+      console.error(err);
+
+      alert(
+        "SL WORLD選手データとして読み込めませんでした。"
+      );
+
+    }
+
+    e.target.value="";
+
+  }
+);
+
+
+/* =========================================================
+   表示
+   ========================================================= */
+
+function updateSpecialCount(){
+
+  $("specialCount").textContent =
+    selectedSpecials.size;
+
+}
+
+
+function showStatus(text){
+
+  const box=$("status");
+
+  box.textContent=text;
+
+  box.classList.add("show");
+
+  clearTimeout(
+    showStatus.timer
+  );
+
+  showStatus.timer=
+    setTimeout(
+      ()=>box.classList.remove("show"),
+      2200
+    );
+
+}
+
+
+/* =========================================================
+   HTML安全化
+   ========================================================= */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   初期表示
+   ========================================================= */
+
+renderSubPositions();
+
+renderSpecials();
+
+renderPlayers();
+
+</script>
+
+</body>
+</html>
