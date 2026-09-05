@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>SL WORLD PLAYER EDITOR</title>
+<title>SL WORLD 選手エディター v0.2</title>
 
 <style>
 :root{
@@ -413,6 +413,17 @@ button.action{
   font-weight:900;
 }
 
+input[type="checkbox"]{width:auto}
+button:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:520px){.player-row{flex-wrap:wrap}.row-actions{flex-wrap:wrap}}
+
+.pitch-family{border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}
+.pitch-family h3{font-size:14px;margin:0 0 8px}
+.pitch-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.pitch-row button{flex:1;text-align:left;min-width:0}
+.pitch-row label{margin:0;white-space:nowrap}
+.pitch-row select{width:64px;padding:7px}
+
 hr{
   border:0;
   border-top:1px solid #263d55;
@@ -425,7 +436,7 @@ hr{
 
 <header>
   <div class="logo">SUPER LEAGUE WORLD</div>
-  <h1>PLAYER EDITOR <span style="font-size:12px;color:#7ecfff">v0.1</span></h1>
+  <h1>SL WORLD 選手エディター <span style="font-size:12px;color:#7ecfff">v0.2</span></h1>
   <p>SL WORLD 選手データベース作成ツール</p>
 </header>
 
@@ -474,7 +485,7 @@ hr{
       <div>
         <label>投げ</label>
         <select id="throwHand">
-          <option value="右">右投</option>
+          <option value="">未設定</option><option value="右">右投</option>
           <option value="左">左投</option>
         </select>
       </div>
@@ -482,7 +493,7 @@ hr{
       <div>
         <label>打ち</label>
         <select id="batHand">
-          <option value="右">右打</option>
+          <option value="">未設定</option><option value="右">右打</option>
           <option value="左">左打</option>
           <option value="両">両打</option>
         </select>
@@ -492,17 +503,33 @@ hr{
 
     <hr>
 
-    <label>メインポジション</label>
+    <label>選手登録区分</label>
+    <div class="positions">
+      <label><input type="checkbox" id="isFielder"> 野手登録</label>
+      <label><input type="checkbox" id="isPitcher"> 投手登録</label>
+    </div>
+    <div class="small-note" id="registrationNote">登録区分を選択してください。未設定のまま保存することもできます。</div>
+    <div class="grid" style="margin:12px 0">
+      <div><label for="battingStyle">打法（全選手共通）</label><select id="battingStyle">
+        <option value="">未設定</option>
+        <option>スタンダード打法</option><option>オープン打法</option><option>クローズド打法</option>
+        <option>一本足打法</option><option>振り子打法</option><option>神主打法</option>
+      </select></div>
+      <div><label for="pitchingStyle">投法（投手登録のみ）</label><select id="pitchingStyle">
+        <option value="">未設定</option><option>オーバースロー</option><option>スリークォーター</option>
+        <option>サイドスロー</option><option>アンダースロー</option><option>トルネード投法</option>
+      </select></div>
+    </div>
+    <label>投手役割（複数選択可）</label>
+    <div id="pitcherRoles" class="positions"></div>
+    <div class="small-note">起用プロフィールとして保存します。能力補正・役割外登板の能力低下はありません。</div>
+    <hr>
+    <label for="mainPosition">メインポジション</label>
     <select id="mainPosition">
+      <option value="">未設定</option>
       <option value="投手">投手</option>
-      <option value="捕手">捕手</option>
-      <option value="一塁手">一塁手</option>
-      <option value="二塁手">二塁手</option>
-      <option value="三塁手">三塁手</option>
-      <option value="遊撃手">遊撃手</option>
-      <option value="左翼手">左翼手</option>
-      <option value="中堅手">中堅手</option>
-      <option value="右翼手">右翼手</option>
+      <option>捕手</option><option>一塁手</option><option>二塁手</option>
+      <option>三塁手</option><option>遊撃手</option><option value="OF">外野手（OF）</option>
     </select>
 
     <div style="height:12px"></div>
@@ -511,7 +538,7 @@ hr{
     <div id="subPositions" class="positions"></div>
 
     <div class="small-note">
-      サブポジションはボタンを押すと登録／解除できます。
+      サブポジションは登録区分を問わず複数選択できます。投手適性は「投手登録」で管理します。
     </div>
 
   </div>
@@ -525,39 +552,39 @@ hr{
 
     <div class="section-note">
       SL WORLD 基礎能力。ミート1〜10、パワー1〜200、
-      走力・肩力・守備力・捕球は1〜20。
+      走力・肩力・守備力・捕球は1〜20。空欄は未設定です。投手登録のみを含む全登録区分で入力できます。
     </div>
 
     <div class="grid6">
 
       <div class="ability-number">
         <label>ミート</label>
-        <input id="meet" type="number" min="1" max="10" value="5">
+        <input id="meet" type="number" min="1" max="10" placeholder="未設定">
       </div>
 
       <div class="ability-number">
         <label>パワー</label>
-        <input id="power" type="number" min="1" max="200" value="100">
+        <input id="power" type="number" min="1" max="200" placeholder="未設定">
       </div>
 
       <div class="ability-number">
         <label>走力</label>
-        <input id="speed" type="number" min="1" max="20" value="10">
+        <input id="speed" type="number" min="1" max="20" placeholder="未設定">
       </div>
 
       <div class="ability-number">
         <label>肩力</label>
-        <input id="arm" type="number" min="1" max="20" value="10">
+        <input id="arm" type="number" min="1" max="20" placeholder="未設定">
       </div>
 
       <div class="ability-number">
         <label>守備力</label>
-        <input id="fielding" type="number" min="1" max="20" value="10">
+        <input id="fielding" type="number" min="1" max="20" placeholder="未設定">
       </div>
 
       <div class="ability-number">
         <label>捕球</label>
-        <input id="catching" type="number" min="1" max="20" value="10">
+        <input id="catching" type="number" min="1" max="20" placeholder="未設定">
       </div>
 
     </div>
@@ -567,36 +594,41 @@ hr{
 
 
 <div class="card">
-  <div class="card-title">投手能力（暫定）</div>
+  <div class="card-title">投手能力</div>
 
   <div class="card-body">
 
     <div class="section-note">
-      投手基礎能力の最終仕様は今後調整できます。
-      現段階では入力欄を先に用意しています。
+      球速80〜165 km/h、コントロール・スタミナ1〜200。
+      空欄は未設定です。投手登録時のみ設定できます。旧データの範囲外数値は変更しない限り維持します。
     </div>
 
     <div class="grid3">
 
       <div>
         <label>球速 km/h</label>
-        <input id="velocity" type="number" min="80" max="180" value="140">
+        <input id="velocity" type="number" min="80" max="165" placeholder="未設定">
       </div>
 
       <div>
         <label>コントロール</label>
-        <input id="control" type="number" min="1" max="100" value="50">
+        <input id="control" type="number" min="1" max="200" placeholder="未設定">
       </div>
 
       <div>
         <label>スタミナ</label>
-        <input id="stamina" type="number" min="1" max="100" value="50">
+        <input id="stamina" type="number" min="1" max="200" placeholder="未設定">
       </div>
 
     </div>
 
     <div style="height:12px"></div>
 
+    <hr>
+    <label>球種・変化球</label>
+    <div class="small-note">各系統2球種まで。ストレート系は所持のみ、それ以外の変化量は1〜7（選択時は1）です。球種未設定でも保存できます。ストレート・スローボールは全投手の標準球種のため、選択・個別保存は不要です。</div>
+    <div id="pitchRepertoire" class="grid" style="margin-top:12px"></div>
+    <div style="height:12px"></div>
     <label>変化球・球種メモ</label>
     <input id="pitchMemo" placeholder="例：スライダー、フォーク、カーブ">
 
@@ -615,7 +647,7 @@ hr{
     <div class="section-note">
       暗いボタン＝未所持。押して発光＝所持。<br>
       上位能力・排他能力は自動調整します。
-      超特殊能力🌈は原則1選手1個までです。
+      超特殊能力🌈は複数選択できます（所持数制限なし）。
     </div>
 
     <div class="special-tabs">
@@ -693,14 +725,51 @@ hr{
 <script>
 
 /* =========================================================
-   SL WORLD PLAYER EDITOR v0.1
+   SL WORLD PLAYER EDITOR v0.2
    ========================================================= */
 
 const STORAGE_KEY = "sl_world_players_v01";
 
+// 選手固有の正式23球種を一元管理。標準のストレート・スローボールは登録しない。
+const PITCH_FAMILIES = {
+  straight:{label:"ストレート系",names:["ツーシーム","ムービングファスト"]},
+  slider:{label:"スライダー系",names:["スライダー","Hスライダー","カットボール"]},
+  curve:{label:"カーブ系",names:["カーブ","スローカーブ","Sスライダー","Dカーブ","スラーブ","ナックルカーブ"]},
+  fork:{label:"フォーク系",names:["フォーク","SFF","Vスライダー","チェンジアップ","パーム","ナックル"]},
+  sinker:{label:"シンカー系",names:["シンカー","スクリュー","Hシンカー"]},
+  shoot:{label:"シュート系",names:["シュート","Hシュート","シンキングファスト"]}
+};
+
+function emptyPitchRepertoire(){
+  return Object.fromEntries(Object.keys(PITCH_FAMILIES).map(key=>[key,[]]));
+}
+
+// 旧データの項目欠落は未設定。入力済みの不正データは切り捨てず、読込・保存を拒否する。
+function copyPitchRepertoire(value){
+  if(value == null) return emptyPitchRepertoire();
+  if(typeof value !== "object" || Array.isArray(value) || Object.keys(value).some(key=>!Object.hasOwn(PITCH_FAMILIES,key))) throw new Error("球種の系統が不正です");
+  const result = emptyPitchRepertoire();
+  for(const [key,family] of Object.entries(PITCH_FAMILIES)){
+    const source = value[key] ?? [];
+    if(!Array.isArray(source)) throw new Error(`${family.label}の球種データが不正です`);
+    // 旧形式に標準球種が含まれていても読込可能。元データは変更しない。
+    const pitches = key === "straight"
+      ? source.filter(pitch=>!["ストレート","スローボール"].includes(pitch?.name))
+      : source;
+    if(pitches.length > 2) throw new Error(`${family.label}は2球種までです`);
+    const names = new Set();
+    for(const pitch of pitches){
+      if(!pitch || !family.names.includes(pitch.name) || names.has(pitch.name) || (key !== "straight" && (!Number.isInteger(pitch.breakAmount) || pitch.breakAmount < 1 || pitch.breakAmount > 7))) throw new Error(`${family.label}の球種または変化量が不正です`);
+      names.add(pitch.name);
+      // 旧ストレート系の変化量は読込表示・次回保存から除外する。
+      result[key].push(key === "straight" ? {name:pitch.name} : {...pitch});
+    }
+  }
+  return result;
+}
+
 const POSITIONS = [
-  "投手","捕手","一塁手","二塁手","三塁手",
-  "遊撃手","左翼手","中堅手","右翼手"
+  "捕手","一塁手","二塁手","三塁手", "遊撃手","OF"
 ];
 
 
@@ -787,7 +856,6 @@ pitcher:[
 ["リリース○","blue"],
 ["逃げ球","blue"],
 ["投手威圧感","gold"],
-["クロスファイヤー","blue"],
 
 ["対左打者○","blue"],
 ["対右打者○","blue"],
@@ -797,13 +865,11 @@ pitcher:[
 ["尻上がり","blue"],
 ["クイック○","blue"],
 ["牽制○","blue"],
+["クロスファイヤー","blue"],
 
 ["力配分","blue"],
 ["回復○","blue"],
 
-["先発タイプ","blue"],
-["中継ぎタイプ","blue"],
-["抑えタイプ","blue"],
 
 ["ノビ×","red"],
 ["キレ×","red"],
@@ -838,17 +904,28 @@ common:[
 
 ],
 
-/*
-  現在検討中の野手打撃系超特殊能力。
-  最終確定前でも後から名前・効果を変更可能。
-*/
+// 正式超特殊能力：分類は表示・投手登録判定に使用。所持数上限は設けない。
 super:[
-
-["勝負師","rainbow"],
-["本塁打王","rainbow"],
-["電光石火","rainbow"],
-["全方位打法","rainbow"]
-
+["勝負師","rainbow","fielder"],
+["本塁打王","rainbow","fielder"],
+["電光石火","rainbow","fielder"],
+["全方位打法","rainbow","fielder"],
+["打撃の極致","rainbow","fielder"],
+["球界の頭脳","rainbow","fielder"],
+["絶対領域","rainbow","fielder"],
+["華麗なる守備","rainbow","fielder"],
+["外野の覇者","rainbow","fielder"],
+["光速返球","rainbow","fielder"],
+["絶対的エース","rainbow","pitcher"],
+["勝利の架け橋","rainbow","pitcher"],
+["守護神","rainbow","pitcher"],
+["タフネス","rainbow","pitcher"],
+["変幻自在","rainbow","pitcher"],
+["精密機械","rainbow","pitcher"],
+["怪物球威","rainbow","pitcher"],
+["ミスターK","rainbow","pitcher"],
+["鉄仮面","rainbow","pitcher"],
+["強心臓","rainbow","pitcher"]
 ]
 
 };
@@ -907,7 +984,6 @@ const EXCLUSIVE_GROUPS = [
 
 ["ピンチ×","ピンチ○","不屈"],
 
-["先発タイプ","中継ぎタイプ","抑えタイプ"],
 
 ["大舞台○","プレッシャー×"],
 
@@ -947,7 +1023,12 @@ let currentCategory = "batting";
 
 let editingId = null;
 
+let storageLoadFailed = false;
 let players = loadPlayers();
+let selectedPitcherRoles = new Set();
+let selectedPitchRepertoire = emptyPitchRepertoire();
+let registrationTouched = new Set();
+let editingOriginal = null;
 
 
 /* =========================================================
@@ -981,7 +1062,8 @@ function renderSubPositions(){
       "pos-btn" +
       (selectedSubPositions.has(pos) ? " on" : "");
 
-    btn.textContent = pos;
+    btn.textContent = pos === "OF" ? "外野手（OF）" : pos;
+
 
     btn.onclick = ()=>{
 
@@ -1012,7 +1094,22 @@ function renderSpecials(){
 
   const arr = SPECIALS[currentCategory];
 
-  arr.forEach(([name,color])=>{
+  let groupBox = specialList;
+  let previousGroup = null;
+  arr.forEach(([name,color,group])=>{
+    if(currentCategory === "super" && group !== previousGroup){
+      const section = document.createElement("section");
+      section.style.width = "100%";
+      const heading = document.createElement("h3");
+      heading.textContent = group === "fielder" ? "野手用 超特殊能力（10種・野手登録のみ）" : "投手用 超特殊能力（10種・投手登録のみ）";
+      heading.style.fontSize = "14px";
+      section.appendChild(heading);
+      groupBox = document.createElement("div");
+      groupBox.className = "special-list";
+      section.appendChild(groupBox);
+      specialList.appendChild(section);
+      previousGroup = group;
+    }
 
     const btn = document.createElement("button");
 
@@ -1029,15 +1126,17 @@ function renderSpecials(){
 
     /*
       野手の場合、投手専用特殊能力は選択不可。
-      メインポジションが投手なら使用可能。
+      投手登録時のみ使用可能。
     */
 
     if(
-      currentCategory === "pitcher" &&
-      $("mainPosition").value !== "投手"
+      ((currentCategory === "pitcher" || (currentCategory === "super" && group === "pitcher")) && !$("isPitcher").checked) ||
+      (currentCategory === "super" && group === "fielder" && !$("isFielder").checked)
     ){
 
       btn.classList.add("disabled-special");
+      btn.disabled = true;
+      btn.title = "対応する登録区分を選択してください。投手登録解除時は投手専用能力をクリアします。";
 
       btn.onclick = ()=>showStatus(
         "投手専用特殊能力は投手のみ取得できます"
@@ -1049,7 +1148,7 @@ function renderSpecials(){
 
     }
 
-    specialList.appendChild(btn);
+    groupBox.appendChild(btn);
 
   });
 
@@ -1071,31 +1170,6 @@ function toggleSpecial(name,color){
     renderSpecials();
 
     return;
-
-  }
-
-  /*
-    虹能力1個制限
-  */
-
-  if(color === "rainbow"){
-
-    const rainbowNames =
-      SPECIALS.super.map(x=>x[0]);
-
-    const existing =
-      [...selectedSpecials]
-      .find(x=>rainbowNames.includes(x));
-
-    if(existing){
-
-      showStatus(
-        `🌈超特殊能力は原則1つまでです（現在：${existing}）`
-      );
-
-      return;
-
-    }
 
   }
 
@@ -1189,39 +1263,202 @@ document.querySelectorAll(".tab").forEach(tab=>{
    メインポジション変更
    ========================================================= */
 
-$("mainPosition").addEventListener("change",()=>{
-
-  /*
-    野手へ変更した場合は投手専用特殊能力を解除
-  */
-
-  if($("mainPosition").value !== "投手"){
-
-    SPECIALS.pitcher.forEach(([name])=>{
-      selectedSpecials.delete(name);
-    });
-
+// 正規化はコピーに対して行う。起動・編集表示だけでは保存領域へ書き込まない。
+function normalizePlayer(raw){
+  const p = JSON.parse(JSON.stringify(raw));
+  const position = value => ["LF","CF","RF","左翼手","中堅手","右翼手"].includes(value) ? "OF" : (value ?? null);
+  const oldSubs = Array.isArray(p.subPositions) ? p.subPositions : [];
+  if(position(p.mainPosition) !== p.mainPosition || oldSubs.some(x=>position(x)!==x || x === "投手" || x === "P")){
+    p.legacyPositions ??= {mainPosition:p.mainPosition ?? null, subPositions:[...oldSubs]};
   }
-
-  renderSpecials();
-
-});
-
-
-/* =========================================================
-   能力値安全化
-   ========================================================= */
-
-function clamp(value,min,max){
-
-  let n = Number(value);
-
-  if(Number.isNaN(n)) n=min;
-
-  return Math.max(min,Math.min(max,n));
-
+  p.mainPosition = position(p.mainPosition);
+  p.subPositions = [...new Set(oldSubs.map(position))].filter(x=>x !== "投手" && x !== "P"); // 旧投手サブはlegacyPositionsに保全
+  for(const key of ["isFielder","isPitcher"]){
+    p[key] = typeof p[key] === "boolean" ? p[key] : null;
+  }
+  for(const key of ["throwHand","battingStyle","pitchingStyle"]) p[key] ??= null;
+  p.batHand ??= p.batSide ?? null; // v0.1の打席フィールドを継続使用
+  p.batting = {...p.batting};
+  p.pitching = {...p.pitching};
+  for(const key of ["meet","power","speed","arm","fielding","catching"]) p.batting[key] ??= null;
+  for(const key of ["velocity","control","stamina"]) p.pitching[key] ??= null;
+  const roles = {"先発タイプ":"先発","中継ぎタイプ":"中継ぎ","抑えタイプ":"抑え"};
+  const specials = Array.isArray(p.specials) ? p.specials : [];
+  const oldRoles = specials.filter(x=>Object.hasOwn(roles,x));
+  if(oldRoles.length) p.legacyRoleSpecials = [...new Set([...(p.legacyRoleSpecials || []),...oldRoles])];
+  p.pitcherRoles = [...new Set([...(Array.isArray(p.pitcherRoles) ? p.pitcherRoles : []),...oldRoles.map(x=>roles[x])])];
+  p.specials = specials.filter(x=>!Object.hasOwn(roles,x));
+  p.pitchRepertoire = copyPitchRepertoire(p.pitchRepertoire);
+  return p;
 }
 
+function validatePlayers(data){
+  const list = Array.isArray(data) ? data : data?.players;
+  if(!Array.isArray(list)) throw new Error("players がありません");
+  const ids = new Set();
+  list.forEach(p=>{
+    if(!p || typeof p !== "object" || Array.isArray(p) ||
+       !["string","number"].includes(typeof p.id) || p.id === "" || ids.has(p.id)){
+      throw new Error("選手IDが不正または重複しています。既存データは変更しません。");
+    }
+    copyPitchRepertoire(p.pitchRepertoire);
+    ids.add(p.id);
+  });
+  return list;
+}
+
+function renderPitchRepertoire(){
+  const box = $("pitchRepertoire");
+  box.innerHTML = "";
+  const enabled = $("isPitcher").checked;
+  for(const [key,family] of Object.entries(PITCH_FAMILIES)){
+    const pitches = selectedPitchRepertoire[key];
+    const section = document.createElement("section");
+    section.className = "pitch-family";
+    section.dataset.family = key;
+    const heading = document.createElement("h3");
+    heading.textContent = `${family.label}（${pitches.length}/2）`;
+    section.appendChild(heading);
+    for(const name of family.names){
+      const selected = pitches.find(pitch=>pitch.name === name);
+      const row = document.createElement("div");
+      row.className = "pitch-row";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "pos-btn" + (selected ? " on" : "");
+      button.textContent = name;
+      button.setAttribute("aria-pressed",String(!!selected));
+      button.disabled = !enabled || (!selected && pitches.length >= 2);
+      button.onclick = ()=>{
+        if(!$("isPitcher").checked) return;
+        if(selected) selectedPitchRepertoire[key] = pitches.filter(pitch=>pitch.name !== name);
+        else if(pitches.length < 2) pitches.push(key === "straight" ? {name} : {name,breakAmount:1});
+        renderPitchRepertoire();
+      };
+      row.appendChild(button);
+      if(selected && key !== "straight"){
+        const label = document.createElement("label");
+        const id = `pitch-${key}-${family.names.indexOf(name)}`;
+        label.htmlFor = id;
+        label.textContent = "変化量";
+        const select = document.createElement("select");
+        select.id = id;
+        select.setAttribute("aria-label",`${name}の変化量`);
+        for(let amount=1;amount<=7;amount++){
+          const option = document.createElement("option");
+          option.value = String(amount);
+          option.textContent = String(amount);
+          select.appendChild(option);
+        }
+        select.value = String(selected.breakAmount);
+        select.disabled = !enabled;
+        select.onchange = ()=>{
+          if($("isPitcher").checked) selected.breakAmount = Number(select.value);
+        };
+        row.appendChild(label);
+        row.appendChild(select);
+      }
+      section.appendChild(row);
+    }
+    box.appendChild(section);
+  }
+}
+
+function renderPitcherRoles(){
+  const box = $("pitcherRoles");
+  box.innerHTML = "";
+  ["先発","中継ぎ","抑え"].forEach(role=>{
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = role;
+    btn.className = "pos-btn" + (selectedPitcherRoles.has(role) ? " on" : "");
+    btn.disabled = !$("isPitcher").checked;
+    btn.onclick = ()=>{
+      if(selectedPitcherRoles.has(role)) selectedPitcherRoles.delete(role);
+      else selectedPitcherRoles.add(role);
+      renderPitcherRoles();
+    };
+    box.appendChild(btn);
+  });
+}
+
+// 通常27種・虹特10種は定義から取得し、野手・共通能力には触れない。
+function pitcherSpecialNames(){
+  return new Set([
+    ...SPECIALS.pitcher.map(([name])=>name),
+    ...SPECIALS.super.filter(([, ,group])=>group === "pitcher").map(([name])=>name),
+    "先発タイプ","中継ぎタイプ","抑えタイプ"
+  ]);
+}
+
+function clearPitcherEditor(){
+  const names = pitcherSpecialNames();
+  selectedSpecials = new Set([...selectedSpecials].filter(name=>!names.has(name)));
+  selectedPitcherRoles.clear();
+  selectedPitchRepertoire = emptyPitchRepertoire();
+  ["pitchingStyle","velocity","control","stamina","pitchMemo"].forEach(id=>$(id).value="");
+}
+
+// 保存経路共通の安全策。読み込み時には実行せず、元オブジェクトも変更しない。
+function enforcePitcherRegistration(player){
+  if(player.isPitcher === true) return {...player,pitchRepertoire:copyPitchRepertoire(player.pitchRepertoire)};
+  const names = pitcherSpecialNames();
+  const clean = {
+    ...player,
+    specials:(player.specials || []).filter(name=>!names.has(name)),
+    pitchingStyle:null,
+    pitcherRoles:[],
+    pitchRepertoire:emptyPitchRepertoire(),
+    pitching:{...player.pitching,velocity:null,control:null,stamina:null,pitchMemo:""}
+  };
+  // 旧役割の互換情報から再編集時に役割が復活するのを防ぐ。
+  delete clean.legacyRoleSpecials;
+  return clean;
+}
+
+function updateRegistration(){
+  ["velocity","control","stamina","pitchMemo","pitchingStyle"].forEach(id=>$(id).disabled=!$("isPitcher").checked);
+  // 野手メイン＋投手登録も可能。サブポジションは登録区分に連動させない。
+  $("mainPosition").disabled = false;
+  [...$("mainPosition").options].forEach(option=>{
+    option.disabled = option.value === "投手" && !$("isPitcher").checked;
+  });
+  $("registrationNote").textContent = "メイン投手には投手登録が必要です。サブポジションは全区分で複数選択できます。投手登録を解除すると投手専用能力・役割・投法・投手能力値・球種・変化量・球種メモをクリアします。野手系・共通データは保持します。投手登録が未設定の旧データも、保存時には投手専用情報をクリアします。";
+  renderSubPositions();
+  renderPitcherRoles();
+  renderPitchRepertoire();
+  renderSpecials();
+}
+["isFielder","isPitcher"].forEach(id=>$(id).addEventListener("change",()=>{
+  if(id === "isPitcher" && !$(id).checked && $("mainPosition").value === "投手"){
+    $(id).checked = true;
+    showStatus("先にメインポジションを投手以外または未設定へ変更してください");
+    return;
+  }
+  registrationTouched.add(id);
+  if(id === "isPitcher" && !$(id).checked){
+    clearPitcherEditor();
+    showStatus("投手登録を解除したため、投手専用能力をクリアしました");
+  }
+  updateRegistration();
+}));
+
+function registrationValue(key){
+  if(editingOriginal && $(key).checked !== (editingOriginal[key] === true)) return $(key).checked;
+  return registrationTouched.has(key) || !editingOriginal
+    ? $(key).checked
+    : (editingOriginal[key] ?? null);
+}
+
+function abilityValue(key,group,min,max){
+  const value = $(key).value;
+  const old = editingOriginal?.[group]?.[key];
+  // 範囲外も含め、旧数値を未編集のまま保存した場合は維持する。
+  if(old != null && String(old) === value) return old;
+  if(value.trim() === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.max(min,Math.min(max,n)) : null;
+}
 
 /* =========================================================
    保存
@@ -1239,10 +1476,36 @@ $("saveBtn").onclick = ()=>{
 
   }
 
+  // 旧範囲外数値の据え置き保存は許可。新規・変更値は丸めず入力修正を求める。
+  for(const [key,label,min,max] of [["velocity","球速",80,165],["control","コントロール",1,200],["stamina","スタミナ",1,200]]){
+    if(!$("isPitcher").checked) continue;
+    const input = $(key);
+    const old = editingOriginal?.pitching?.[key];
+    if(old != null && String(old) === input.value) continue;
+    if(input.validity.badInput || (input.value !== "" && (!Number.isFinite(Number(input.value)) || Number(input.value)<min || Number(input.value)>max))){
+      showStatus(`${label}は${min}〜${max}または未設定で入力してください`);
+      input.focus();
+      return;
+    }
+  }
+  if($("mainPosition").value === "投手" && !$("isPitcher").checked &&
+     (editingOriginal?.mainPosition !== "投手" || registrationTouched.has("isPitcher"))){
+    showStatus("メインポジションを投手にする場合は投手登録を選択してください");
+    return;
+  }
+
   const player = {
 
+    ...editingOriginal,
+    isFielder:registrationValue("isFielder"),
+    isPitcher:registrationValue("isPitcher"),
+    battingStyle:$("battingStyle").value || null,
+    pitchingStyle:$("pitchingStyle").value || null,
+    pitcherRoles:[...selectedPitcherRoles],
+    pitchRepertoire:selectedPitchRepertoire,
+
     id:
-      editingId ||
+      editingId ??
       "SLP_" +
       Date.now() +
       "_" +
@@ -1256,37 +1519,39 @@ $("saveBtn").onclick = ()=>{
 
     number:$("number").value,
 
-    throwHand:$("throwHand").value,
+    throwHand:$("throwHand").value || null,
 
-    batHand:$("batHand").value,
+    batHand:$("batHand").value || null,
 
-    mainPosition:$("mainPosition").value,
+    mainPosition:$("mainPosition").value || null,
 
     subPositions:[...selectedSubPositions],
 
     batting:{
+      ...editingOriginal?.batting,
 
-      meet:clamp($("meet").value,1,10),
+      meet:abilityValue("meet","batting",1,10),
 
-      power:clamp($("power").value,1,200),
+      power:abilityValue("power","batting",1,200),
 
-      speed:clamp($("speed").value,1,20),
+      speed:abilityValue("speed","batting",1,20),
 
-      arm:clamp($("arm").value,1,20),
+      arm:abilityValue("arm","batting",1,20),
 
-      fielding:clamp($("fielding").value,1,20),
+      fielding:abilityValue("fielding","batting",1,20),
 
-      catching:clamp($("catching").value,1,20)
+      catching:abilityValue("catching","batting",1,20)
 
     },
 
     pitching:{
+      ...editingOriginal?.pitching,
 
-      velocity:clamp($("velocity").value,80,180),
+      velocity:abilityValue("velocity","pitching",80,165),
 
-      control:clamp($("control").value,1,100),
+      control:abilityValue("control","pitching",1,200),
 
-      stamina:clamp($("stamina").value,1,100),
+      stamina:abilityValue("stamina","pitching",1,200),
 
       pitchMemo:$("pitchMemo").value.trim()
 
@@ -1301,7 +1566,7 @@ $("saveBtn").onclick = ()=>{
   };
 
 
-  if(editingId){
+  if(editingId !== null){
 
     const index =
       players.findIndex(p=>p.id===editingId);
@@ -1320,7 +1585,7 @@ $("saveBtn").onclick = ()=>{
 
   }
 
-  savePlayers();
+  if(!savePlayers()) return;
 
   renderPlayers();
 
@@ -1348,47 +1613,54 @@ $("newBtn").onclick = ()=>{
 
 function editPlayer(id){
 
-  const p =
-    players.find(x=>x.id===id);
+  const raw = players.find(x=>x.id===id);
+  const p = raw ? normalizePlayer(raw) : null;
 
   if(!p) return;
 
   editingId = p.id;
+  editingOriginal = p;
+  registrationTouched.clear();
+  for(const key of ["isFielder","isPitcher"]) $(key).checked = p[key] === true;
+  setSelectValue("battingStyle",p.battingStyle);
+  setSelectValue("pitchingStyle",p.pitchingStyle);
+  selectedPitcherRoles = new Set(p.pitcherRoles);
+  selectedPitchRepertoire = copyPitchRepertoire(p.pitchRepertoire);
 
-  $("team").value=p.team;
+  setSelectValue("team",p.team);
 
   $("name").value=p.name;
 
   $("reading").value=p.reading || "";
 
-  $("number").value=p.number || "";
+  $("number").value=p.number ?? "";
 
-  $("throwHand").value=p.throwHand || "右";
+  setSelectValue("throwHand",p.throwHand);
 
-  $("batHand").value=p.batHand || "右";
+  setSelectValue("batHand",p.batHand);
 
-  $("mainPosition").value=p.mainPosition || "投手";
+  setSelectValue("mainPosition",p.mainPosition);
 
   selectedSubPositions =
     new Set(p.subPositions || []);
 
-  $("meet").value=p.batting?.meet ?? 5;
+  $("meet").value=p.batting?.meet ?? "";
 
-  $("power").value=p.batting?.power ?? 100;
+  $("power").value=p.batting?.power ?? "";
 
-  $("speed").value=p.batting?.speed ?? 10;
+  $("speed").value=p.batting?.speed ?? "";
 
-  $("arm").value=p.batting?.arm ?? 10;
+  $("arm").value=p.batting?.arm ?? "";
 
-  $("fielding").value=p.batting?.fielding ?? 10;
+  $("fielding").value=p.batting?.fielding ?? "";
 
-  $("catching").value=p.batting?.catching ?? 10;
+  $("catching").value=p.batting?.catching ?? "";
 
-  $("velocity").value=p.pitching?.velocity ?? 140;
+  $("velocity").value=p.pitching?.velocity ?? "";
 
-  $("control").value=p.pitching?.control ?? 50;
+  $("control").value=p.pitching?.control ?? "";
 
-  $("stamina").value=p.pitching?.stamina ?? 50;
+  $("stamina").value=p.pitching?.stamina ?? "";
 
   $("pitchMemo").value=p.pitching?.pitchMemo || "";
 
@@ -1401,6 +1673,7 @@ function editPlayer(id){
 
   renderSpecials();
 
+  updateRegistration();
   $("saveBtn").textContent =
     "選手データを更新";
 
@@ -1435,7 +1708,7 @@ function deletePlayer(id){
   players =
     players.filter(x=>x.id!==id);
 
-  savePlayers();
+  if(!savePlayers()) return;
 
   renderPlayers();
 
@@ -1476,7 +1749,7 @@ function duplicatePlayer(id){
 
   players.push(copy);
 
-  savePlayers();
+  if(!savePlayers()) return;
 
   renderPlayers();
 
@@ -1492,6 +1765,13 @@ function duplicatePlayer(id){
 function resetEditor(){
 
   editingId=null;
+  editingOriginal=null;
+  registrationTouched.clear();
+  selectedPitcherRoles.clear();
+  selectedPitchRepertoire = emptyPitchRepertoire();
+  for(const key of ["isFielder","isPitcher"]) $(key).checked=false;
+  $("battingStyle").value="";
+  $("pitchingStyle").value="";
 
   $("name").value="";
 
@@ -1499,31 +1779,31 @@ function resetEditor(){
 
   $("number").value="";
 
-  $("throwHand").value="右";
+  $("throwHand").value="";
 
-  $("batHand").value="右";
+  $("batHand").value="";
 
-  $("mainPosition").value="投手";
+  $("mainPosition").value="";
 
   selectedSubPositions.clear();
 
-  $("meet").value=5;
+  $("meet").value="";
 
-  $("power").value=100;
+  $("power").value="";
 
-  $("speed").value=10;
+  $("speed").value="";
 
-  $("arm").value=10;
+  $("arm").value="";
 
-  $("fielding").value=10;
+  $("fielding").value="";
 
-  $("catching").value=10;
+  $("catching").value="";
 
-  $("velocity").value=140;
+  $("velocity").value="";
 
-  $("control").value=50;
+  $("control").value="";
 
-  $("stamina").value=50;
+  $("stamina").value="";
 
   $("pitchMemo").value="";
 
@@ -1532,6 +1812,7 @@ function resetEditor(){
   $("notes").value="";
 
   $("saveBtn").textContent="選手を保存";
+  updateRegistration();
 
   renderSubPositions();
 
@@ -1578,7 +1859,8 @@ function renderPlayers(){
 
   }
 
-  filtered.forEach(p=>{
+  filtered.forEach(raw=>{
+    const p = normalizePlayer(raw);
 
     const row =
       document.createElement("div");
@@ -1607,7 +1889,7 @@ function renderPlayers(){
         </span>
 
         <span class="badge">
-          ${escapeHtml(p.mainPosition)}
+          ${escapeHtml(p.mainPosition === "OF" ? "外野手（OF）" : (p.mainPosition || "未設定"))}
         </span>
 
         ${
@@ -1627,21 +1909,12 @@ function renderPlayers(){
 
     actions.className="row-actions";
 
-    actions.innerHTML=`
-
-      <button onclick="editPlayer('${p.id}')">
-        編集
-      </button>
-
-      <button onclick="duplicatePlayer('${p.id}')">
-        複製
-      </button>
-
-      <button onclick="deletePlayer('${p.id}')">
-        削除
-      </button>
-
-    `;
+    [["編集",editPlayer],["複製",duplicatePlayer],["削除",deletePlayer]].forEach(([label,action])=>{
+      const button = document.createElement("button");
+      button.textContent = label;
+      button.onclick = ()=>action(p.id);
+      actions.appendChild(button);
+    });
 
     row.appendChild(left);
 
@@ -1679,13 +1952,13 @@ function loadPlayers(){
       localStorage.getItem(STORAGE_KEY);
 
     return raw
-      ? JSON.parse(raw)
+      ? validatePlayers(JSON.parse(raw))
       : [];
 
   }catch(e){
 
     console.error(e);
-
+    storageLoadFailed = true;
     return [];
 
   }
@@ -1694,12 +1967,18 @@ function loadPlayers(){
 
 
 function savePlayers(){
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(players)
-  );
-
+  try{
+    if(storageLoadFailed) throw new Error("保存データを読み込めなかったため、上書きを停止しました。");
+    const consistentPlayers = players.map(enforcePitcherRegistration);
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(consistentPlayers));
+    players = consistentPlayers;
+    return true;
+  }catch(error){
+    console.error(error);
+    players = loadPlayers();
+    showStatus("保存できませんでした。ブラウザの保存設定・空き容量を確認してください。");
+    return false;
+  }
 }
 
 
@@ -1713,12 +1992,12 @@ $("exportBtn").onclick = ()=>{
 
     format:"SL_WORLD_PLAYER_DB",
 
-    version:"0.1",
+    version:"0.2",
 
     exportedAt:
       new Date().toISOString(),
 
-    players
+    players:players.map(player=>({...player,pitchRepertoire:copyPitchRepertoire(player.pitchRepertoire)}))
 
   };
 
@@ -1782,7 +2061,8 @@ $("importFile").addEventListener(
       const data =
         JSON.parse(text);
 
-      if(!Array.isArray(data.players)){
+      const imported = validatePlayers(data);
+      if(!Array.isArray(imported)){
 
         throw new Error(
           "players がありません"
@@ -1792,14 +2072,14 @@ $("importFile").addEventListener(
 
       const ok =
         confirm(
-          `JSONから ${data.players.length} 人を読み込みます。\n現在の選手データは置き換わります。`
+          `JSONから ${imported.length} 人を読み込みます。\n現在の選手データは置き換わります。`
         );
 
       if(!ok) return;
 
-      players=data.players;
+      players=imported;
 
-      savePlayers();
+      if(!savePlayers()) return;
 
       renderPlayers();
 
@@ -1862,6 +2142,18 @@ function showStatus(text){
    HTML安全化
    ========================================================= */
 
+function setSelectValue(id,value){
+  const select = $(id);
+  const text = value == null ? "" : String(value);
+  if(![...select.options].some(o=>o.value===text)){
+    const option = document.createElement("option");
+    option.value=text;
+    option.textContent=text + "（既存データ）";
+    select.appendChild(option);
+  }
+  select.value=text;
+}
+
 function escapeHtml(value){
 
   return String(value)
@@ -1883,6 +2175,12 @@ renderSubPositions();
 renderSpecials();
 
 renderPlayers();
+updateRegistration();
+if(storageLoadFailed){
+  $("saveBtn").disabled=true;
+  $("importBtn").disabled=true;
+  $("registrationNote").textContent="保存データを読み込めませんでした。元データ保護のため保存・JSON読込を停止しています。";
+}
 
 </script>
 
