@@ -3,7 +3,18 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SL WORLD — TEST MATCH #001</title>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--panel:#101d2e;--line:#29415d;--text:#f4f7fb;--sub:#a4b7cc;--accent:#5bc0ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#153154,#07111f 50%);color:var(--text);font:15px system-ui,"Yu Gothic",sans-serif}header,main{max-width:1180px;margin:auto;padding:20px}header{padding-bottom:0}.logo{font-size:12px;letter-spacing:.15em;color:var(--accent)}h1{font-size:25px;margin:8px 0}h2{font-size:17px;margin:0 0 12px}h3{font-size:15px}p{line-height:1.7}.note{font-size:12px;color:var(--sub)}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.setup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}label{display:block;font-size:12px;color:var(--sub);margin-bottom:5px}input,select,button{font:inherit;border-radius:8px;padding:10px;border:1px solid #395675;background:#091726;color:white}input,select{width:100%}button{cursor:pointer}button:hover{border-color:var(--accent)}button:disabled{opacity:.4;cursor:default}.primary{background:#1687bc}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}td,th{padding:8px;text-align:center;border-bottom:1px solid var(--line)}th{color:var(--sub)}td:first-child,th:first-child{text-align:left}.metric{font-size:22px;font-weight:bold;color:var(--accent)}.bases{display:grid;gap:8px}.base{padding:9px;background:#081522;border:1px solid var(--line);border-radius:8px}#log{max-height:330px;overflow:auto;font:12px ui-monospace,monospace;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}#status{min-height:1.6em;color:#ffd477}.pill{padding:3px 7px;background:#20384f;border-radius:9px}.stats{margin-top:14px}@media(max-width:650px){.grid,.setup{grid-template-columns:1fr}header,main{padding:12px}h1{font-size:21px}button{font-size:12px}.card{padding:12px}}
-</style></head><body>
+</style>
+<!-- SL WORLD PWA -->
+<meta name="theme-color" content="#07111f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="SL WORLD">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<script src="./pwa-register.js" defer></script>
+<!-- /SL WORLD PWA -->
+</head><body>
 <header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #001</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p></header>
 <main>
 <section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
