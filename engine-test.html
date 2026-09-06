@@ -17,6 +17,15 @@
 #statistics>section+section{border-top:1px solid var(--line);margin-top:24px;padding-top:8px}
 #scoreboard td:first-child,#scoreboard th:first-child{position:sticky;left:0;background:var(--panel);white-space:normal;min-width:100px;max-width:180px;overflow-wrap:anywhere}
 @media(max-width:650px){.team-summary{grid-template-columns:1fr}.stat-list,.stat-list.pitching{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}.stat-list dt{font-size:14px}.stat-list dd{font-size:18px}.player-stat h5{font-size:16px}.metric{font-size:20px}}
+
+/* Compact overview only; detailed player cards keep their existing layout. */
+.appearance-table{table-layout:fixed;white-space:normal;font-size:15px;font-variant-numeric:tabular-nums}
+.appearance-table th,.appearance-table td{padding:8px 4px}
+.appearance-table th:first-child{width:34%;overflow-wrap:anywhere}
+.appearance-table tbody th{color:var(--text);font-weight:400}
+.appearance-table thead th{font-size:14px;word-break:normal;overflow-wrap:anywhere}
+.appearance-heading{overflow-wrap:anywhere}
+@media(max-width:650px){.appearance-table th,.appearance-table td{padding:7px 2px}.appearance-table th:first-child{width:30%}.appearance-table thead th{line-height:1.3}}
 </style>
 <!-- SL WORLD PWA -->
 <meta name="theme-color" content="#07111f">
@@ -36,7 +45,8 @@
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
 <section class="card"><h2 id="matchTitle"></h2><div id="teamSummary" class="team-summary"></div><div class="scroll" role="region" aria-label="イニング別得点（横にスクロールできます）" tabindex="0"><table id="scoreboard"></table></div><p class="note">失策：未実装のため表示していません。</p><p id="phase" class="metric"></p><div class="grid"><div><div id="count" class="metric"></div><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></div><div id="bases" class="bases"></div></div>
 <div class="toolbar"><button class="primary" id="pitch">PLAY ONE PITCH</button><button id="atbat">PLAY ONE AT-BAT</button><button id="inning">PLAY ONE INNING</button><button id="game">SIMULATE GAME</button></div><div class="note">ONE INNINGは現在の回の裏終了まで進みます。延長なし／同点は引き分け。</div></section>
-<section class="card"><h2>プレイログ</h2><div id="log"></div><p class="note">画面は最新150球。JSONには全投球・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
+<section class="card"><h2>プレイログ</h2><div id="log" role="region" aria-label="全投球のプレイログ" tabindex="0"></div><p class="note">画面は1回表の初球から全投球を表示します。枠内を上にスクロールすると過去のログを確認できます（RESETで新しい試合に切り替わります）。JSONには全投球・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
+<div id="appearanceOverview"></div>
 <section class="card"><h2>打撃・投手成績</h2><p class="note">自責点は現在のルール範囲（失策・捕逸なし）で集計しています。投球回の「1/3」「2/3」はアウト1個・2個を表します。</p><div id="statistics"></div></section>
 <section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量はログに保持し、固有効果は未接続です。特殊能力も参照用で効果は未実装です。守備AI・エラー・盗塁・併殺・犠打・犠飛・死球・交代AI・勝敗投手・セーブは未実装。安打は打球結果の塁数分だけ全走者が進塁し、打球アウトでは進塁しません。</section>
 </main>
@@ -187,11 +197,35 @@ function exportGame(g){return {format:"SL_WORLD_ENGINE_TEST",version:g.config.ve
 globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher};
 // ==================== UI ====================
 if(typeof document!=="undefined"){
- const $=id=>document.getElementById(id);let game;
+ const $=id=>document.getElementById(id);let game,appearanceTeams=[];
  const labels={ball:"ボール",calledStrike:"見逃しストライク",swingingStrike:"空振り",foul:"ファウル",strikeout:"三振",walk:"四球",single:"単打",double:"二塁打",triple:"三塁打",homeRun:"本塁打",groundout:"ゴロアウト",flyout:"フライアウト",lineout:"ライナーアウト"};
  function table(target,headers,rows){target.replaceChildren();for(const [i,row]of [headers,...rows].entries()){const tr=document.createElement("tr");for(const item of row){const cell=document.createElement(i===0?"th":"td");cell.textContent=String(item);tr.appendChild(cell);}target.appendChild(tr);}}
  function statList(entries,kind=""){const list=document.createElement("dl");list.className="stat-list "+kind;entries.forEach(([label,value])=>{const item=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=label;dd.textContent=String(value);item.append(dt,dd);list.appendChild(item);});return list;}
  function playerStats(parent,name,entries,kind=""){const card=document.createElement("article"),h=document.createElement("h5");card.className="player-stat";h.textContent=name;card.append(h,statList(entries,kind));parent.appendChild(card);}
+ // Retain everyone seen in this game's lineup, pitching slot or events; no nine-player cap.
+ // Future substitution code can also supply team.appearances for fielding-only appearances between renders.
+ function renderAppearanceOverview(){
+  game.teams.forEach((t,i)=>{for(const p of [...t.lineup,t.pitcher,...(t.appearances||[])]){if(p)appearanceTeams[i].set(p.key,p);}});
+  for(const e of game.state.events){const side=e.half==="top"?0:1;
+   for(const p of [e.batter,...e.runnersBefore,...e.runnersAfter]){if(p)appearanceTeams[side].set(p.key,p);}
+   if(e.pitcher)appearanceTeams[1-side].set(e.pitcher.key,e.pitcher);
+  }
+  $("appearanceOverview").replaceChildren();
+  game.teams.forEach((t,i)=>{
+   const section=document.createElement("section"),heading=document.createElement("h2"),overview=document.createElement("table");
+   section.className="card";heading.className="appearance-heading";heading.id="appearance-heading-"+i;heading.textContent=t.name+" 出場選手成績一覧";
+   overview.className="appearance-table";overview.setAttribute("aria-labelledby",heading.id);
+   const head=document.createElement("thead"),hr=document.createElement("tr");
+   for(const label of ["選手名","打数","安打","二塁打","三塁打","本塁打","打点"]){const th=document.createElement("th");th.scope="col";th.textContent=label;hr.appendChild(th);}head.appendChild(hr);
+   const body=document.createElement("tbody");
+   for(const p of appearanceTeams[i].values()){
+    const row=document.createElement("tr"),name=document.createElement("th");name.scope="row";name.textContent=p.name;row.appendChild(name);
+    const stats=game.state.batting[p.key];
+    for(const key of ["AB","H","doubles","triples","HR","RBI"]){const td=document.createElement("td");td.textContent=String(stats?.[key]??"—");row.appendChild(td);}body.appendChild(row);
+   }
+   overview.append(head,body);section.append(heading,overview);$("appearanceOverview").appendChild(section);
+  });
+ }
  function render(){const s=game.state;$("matchTitle").textContent=`${game.teams[0].name} vs ${game.teams[1].name} / seed: ${game.seed}`;
   table($("scoreboard"),["チーム",1,2,3,4,5,6,7,8,9,"得点","安打"],game.teams.map((t,i)=>[t.name,...s.lines[i].map(x=>x===null?"—":x),s.score[i],s.hits[i]]));
   const reason={draw:"引き分け",walkoff:"サヨナラ終了",homeLeadAfterTop9:"9回表終了・後攻勝利",nineInnings:"9回終了"};
@@ -201,7 +235,10 @@ if(typeof document!=="undefined"){
   $("pitcher").textContent=`投手：${pitcher.name}`;$("batter").textContent=s.finished?"打者：—":`打者：${s.order[offense(game)]+1}番 ${batter.name}`;
   $("pitchCount").textContent=game.teams.map(t=>`${t.pitcher.name} ${s.pitching[t.pitcher.key].pitches}球`).join(" / ");
   $("bases").replaceChildren();s.bases.forEach((p,i)=>{const div=document.createElement("div");div.className="base";div.textContent=`${i+1}塁：${p?p.name:"なし"}`;$("bases").appendChild(div);});
-  $("log").textContent=s.events.slice(-150).map(e=>`#${e.sequence} ${e.inning}${e.half==="top"?"表":"裏"} ${e.pitcher.name} → ${e.batter.name} / ${e.pitchType} ${e.pitchSpeed}km/h / ${labels[e.result]} / ${e.scoreAfter.join("−")}`).join("\n")||"まだ投球していません。";
+  const log=$("log"),previousTop=log.scrollTop,followLatest=log.scrollHeight-log.clientHeight-previousTop<=32;
+  log.textContent=s.events.map(e=>`#${e.sequence} ${e.inning}${e.half==="top"?"表":"裏"} ${e.pitcher.name} → ${e.batter.name} / ${e.pitchType} ${e.pitchSpeed}km/h / ${labels[e.result]} / ${e.scoreAfter.join("−")}`).join("\n")||"まだ投球していません。";
+  log.scrollTop=s.events.length===0?0:followLatest?log.scrollHeight:previousTop;
+  renderAppearanceOverview();
   $("teamSummary").replaceChildren();
   game.teams.forEach((t,i)=>{const card=document.createElement("div"),h=document.createElement("h3");card.className="team-result";h.textContent=t.name;card.append(h,statList([["得点",s.score[i]],["安打",s.hits[i]]]));$("teamSummary").appendChild(card);});
   $("statistics").replaceChildren();game.teams.forEach(t=>{
@@ -216,7 +253,7 @@ if(typeof document!=="undefined"){
  }
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
-  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);
+  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());
   $("source").textContent=db.message+" / "+teams.map(t=>`${t.name}：実選手${9-t.testCount}人、TEST PLAYER ${t.testCount}人、未設定能力補完 ${t.lineup.reduce((n,p)=>n+p.fallbacks.length,0)}項目`).join(" / ");$("status").textContent="";render();
  }
  ["pitch","atbat","inning","game"].forEach(id=>$(id).onclick=()=>{try{advance(game,id);$("status").textContent="";}catch(e){$("status").textContent=e.message;}render();});$("reset").onclick=reset;
