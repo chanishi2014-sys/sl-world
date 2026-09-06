@@ -137,7 +137,11 @@
    lamps.forEach(({row,lights,label,key})=>{const raw=s[key];row.setAttribute('aria-label',s.finished?`${label}：試合終了（終了時${raw}）`:`${label} ${raw}`);row.dataset.count=String(raw);lights.forEach((light,i)=>light.classList.toggle('is-on',!s.finished&&i<raw))});
    s.runners.forEach((runner,i)=>root.querySelector(`[data-base="${i+1}"]`).classList.toggle('is-on',!!runner));
    const runners=s.runners.map((p,i)=>p?`${i+1}塁：${p.name}`:null).filter(Boolean);
-   const runnerText=root.querySelector('.sb-runner-text');runnerText.textContent=runners.length?`走者 ${runners.length}人`:'走者なし';runnerText.title=runners.join(' ／ ');root.querySelector('.sb-runners').setAttribute('aria-label',runners.join(' ／ ')||'走者なし');
+   const occupied=s.runners.flatMap((runner,i)=>runner?[i+1]:[]);
+   const runnerText=root.querySelector('.sb-runner-text');
+   if(occupied.length===3)runnerText.textContent='満塁';
+   else runnerText.replaceChildren(make('span','ランナー'),make('span',occupied.length?occupied.join('・')+'塁':'なし'));
+   runnerText.title=runners.join(' ／ ');root.querySelector('.sb-runners').setAttribute('aria-label',runnerText.textContent+(runners.length?'：'+runners.join(' ／ '):''));
    root.classList.toggle('sb-extra-innings',s.innings>9);
   }
   return {update};
