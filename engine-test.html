@@ -35,6 +35,17 @@
  .appearance-table tbody td{display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:15px}
  .appearance-label{display:block;font-size:14px;color:var(--sub);line-height:1.3;overflow-wrap:anywhere;text-align:center}
 }
+
+#balancePanel>summary{cursor:pointer;font-size:17px;font-weight:700;min-height:44px;line-height:1.5;padding:8px 0}
+.balance-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.balance-controls label{font-size:14px}.balance-controls select,.balance-controls input{font-size:16px;min-width:0}
+.balance-result{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:#081522;overflow-wrap:anywhere}
+.balance-result h3{margin:0 0 8px}.balance-result h4{margin:16px 0 10px;font-size:14px}
+.balance-result .stat-list{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px 8px}
+.balance-result .stat-list dt{font-size:14px}.balance-result .stat-list dd{font-size:18px}
+#balanceStatus{color:#ffd477;min-height:1.6em;overflow-wrap:anywhere}
+#balancePanel button{font-size:14px;min-height:44px}
+@media(max-width:650px){.balance-controls{grid-template-columns:1fr}.balance-result{padding:10px}}
 </style>
 <!-- SL WORLD PWA -->
 <meta name="theme-color" content="#07111f">
@@ -56,26 +67,64 @@
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
 <section class="card"><h2 id="matchTitle"></h2><div id="teamSummary" class="team-summary"></div><div class="scroll" role="region" aria-label="イニング別得点（横にスクロールできます）" tabindex="0"><table id="scoreboard"></table></div><p class="note">失策：未実装のため表示していません。</p><p id="phase" class="metric"></p><div class="grid"><div><div id="count" class="metric"></div><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></div><div id="bases" class="bases"></div></div>
 <div class="toolbar"><button class="primary" id="pitch">PLAY ONE PITCH</button><button id="atbat">PLAY ONE AT-BAT</button><button id="inning">PLAY ONE INNING</button><button id="game">SIMULATE GAME</button></div><div class="note">ONE INNINGは現在の回の裏終了まで進みます。延長なし／同点は引き分け。</div></section>
-<section class="card"><h2>プレイログ</h2><div id="log" role="region" aria-label="全投球のプレイログ" tabindex="0"></div><p class="note">画面は1回表の初球から全投球を表示します。枠内を上にスクロールすると過去のログを確認できます（RESETで新しい試合に切り替わります）。JSONには全投球・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
+<section class="card"><h2>プレイログ</h2><div id="log" role="region" aria-label="全投球のプレイログ" tabindex="0"></div><p class="note">画面は1回表の初球から全投球を表示します。枠内を上にスクロールすると過去のログを確認できます（RESETで新しい試合に切り替わります）。JSONには全投球・投球品質・打球品質・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
 <div id="appearanceOverview"></div>
 <section class="card"><h2>打撃・投手成績</h2><p class="note">自責点は現在のルール範囲（失策・捕逸なし）で集計しています。投球回の「1/3」「2/3」はアウト1個・2個を表します。</p><div id="statistics"></div></section>
-<section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量はログに保持し、固有効果は未接続です。特殊能力も参照用で効果は未実装です。守備AI・エラー・盗塁・併殺・犠打・犠飛・死球・交代AI・勝敗投手・セーブは未実装。安打は打球結果の塁数分だけ全走者が進塁し、打球アウトでは進塁しません。</section>
+<details class="card" id="balancePanel">
+<summary>能力差テスト / BALANCE TEST（開発用）</summary>
+<p class="note">通常試合と同じ5段階の判定を、仮想選手で比較します。通常試合・選手DBには影響しません。数値は初期調整用で、リーグやチーム名による補正はありません。</p>
+<div class="balance-controls">
+ <div><label for="balanceSeed">テスト用seed</label><input id="balanceSeed" value="BALANCE-001"></div>
+ <div><label for="balancePreset">打者 vs 投手</label><select id="balancePreset"></select></div>
+ <div><label for="balanceCount">各条件の打席数</label><select id="balanceCount"><option value="1000">1,000打席</option><option value="10000">10,000打席</option></select></div>
+ <div><label for="balancePitchCount">各打席の開始時投球済み数（疲労比較）</label><input id="balancePitchCount" type="number" min="0" max="500" step="1" value="0"></div>
+</div>
+<p class="note">打席比較は毎打席、走者なし・0ボール0ストライク・指定投球数から開始します。その打席内では投球数と疲労が進みます。未設定能力は従来の仮値で補完されるため、「最底辺」は能力を明示的に80 / 1 / 1にした条件です。</p>
+<div class="toolbar"><button id="balanceRun" class="primary">打席テストを実行</button><button id="balanceCancel" disabled>テストを中止</button></div>
+<div id="balanceStatus" role="status" aria-live="polite"></div>
+<div id="balanceResults"></div>
+<h3>仮想チーム比較</h3>
+<p class="note">先発を含む9人全員に同じ打撃能力を設定し、通常の9回制で対戦します。先攻・後攻は交互。投球数と疲労は試合中に蓄積し、次の試合ではリセットします。HIGH・MID・LOWは能力プリセットの表示名です。</p>
+<div class="balance-controls">
+ <div><label for="teamBalancePreset">チーム比較条件</label><select id="teamBalancePreset"></select></div>
+ <div><label for="teamBalanceCount">各条件の試合数</label><select id="teamBalanceCount"><option value="50">50試合</option><option value="100">100試合</option></select></div>
+</div>
+<div class="toolbar"><button id="teamBalanceRun">チームテストを実行</button></div>
+<div id="teamBalanceResults"></div>
+<p class="note">打率＝安打÷打数、出塁率＝（安打＋四球）÷打席、長打率＝塁打÷打数、OPS＝出塁率＋長打率。凡打率は三振を除く打球アウト÷打席。本塁打率・三振率・四球率の分母も打席数です。5打数0安打は四球を除いた連続5打数ごとの実測です。</p>
+</details>
+<section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の個別効果は未実装です。守備AI・エラー・盗塁・併殺・犠打・犠飛・死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。走塁死・打球アウトでの進塁は未実装です。</section>
 </main>
 <script>
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-001-alpha1", innings:9, maxPitchesPerAction:20000,
+ version:"test-match-002-quality-alpha1", innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
- pitch:{weights:{straight:6,slow:1,moving:2,breaking:2},speedOffsets:{straight:0,slow:-30,moving:-2,breaking:-15},jitter:2},
- fatigue:{baseBudget:45,staminaBudget:0.65,window:80,zonePenalty:0.06,contactBonus:0.05,speedLoss:3},
- zone:{base:0.55,controlEffect:0.16,min:0.35,max:0.75},
- swing:{inZone:0.68,chase:0.25},
- contact:{base:0.76,meetEffect:0.18,velocityEffect:0.10,chasePenalty:0.16,min:0.3,max:0.95,foul:0.32},
- batted:{hitBase:0.29,meetEffect:0.08,speedEffect:0.04,hitMin:0.15,hitMax:0.45,
- hrBase:0.07,hrPower:0.08,doubleBase:0.18,doublePower:0.08,tripleBase:0.015,tripleSpeed:0.025,
- outs:{groundout:0.5,flyout:0.35,lineout:0.15}}
+ // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
+ pitch:{weights:{straight:6,slow:1,moving:2,breaking:2},jitter:2,
+  profiles:{straight:{speedOffset:0,quality:0,movement:0},slow:{speedOffset:-30,quality:.12,movement:.15},moving:{speedOffset:-2,quality:.025,movement:.25},breaking:{speedOffset:-15,quality:.10,movement:null}},
+  qualityBase:.10,velocityWeight:.60,controlWeight:.12,movementWeight:.10,noise:.12,
+  mistakeBase:.025,mistakeControl:.14,mistakeLoss:.22,excellentChance:.035,excellentBonus:.18,
+  movementControlCost:.08,movementNoise:.12,movementExecutionBase:.35,movementExecutionControl:.65},
+ fatigue:{baseBudget:45,staminaBudget:.65,window:80,speedLoss:4,controlLoss:.12,qualityLoss:.035},
+ judgment:{zoneBase:.44,zoneControl:.24,zoneMin:.30,zoneMax:.78,inZoneSwing:.72,chase:.19,
+  protectZone:.09,protectChase:.08,threeBallPatience:.05,mistakeAttack:.10,deceptionChase:.06},
+ contact:{baseLogit:1.45,duelWeight:3.2,gapCurve:.65,chasePenalty:.65,min:.12,max:.975,foulBase:.29,foulDifficulty:.12,foulMin:.18,foulMax:.42},
+ batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,noise:.18,
+  thresholds:{perfect:.82,strong:.62,normal:.38,jammed:.18},
+  // Direct outcome distributions conditioned on batted quality, never a team/league strength table.
+  outcomes:{
+   perfect:{groundout:.07,flyout:.10,lineout:.09,single:.38,double:.22,triple:.02,homeRun:.12},
+   strong:{groundout:.16,flyout:.20,lineout:.14,single:.25,double:.17,triple:.02,homeRun:.06},
+   normal:{groundout:.33,flyout:.23,lineout:.12,single:.23,double:.075,triple:.005,homeRun:.01},
+   jammed:{groundout:.48,flyout:.25,lineout:.10,single:.15,double:.017,triple:.002,homeRun:.001},
+   touch:{groundout:.60,flyout:.24,lineout:.06,single:.096,double:.004,triple:0,homeRun:0}},
+  hrPowerBase:.12,hrPowerWeight:1.35,doublePowerBase:.65,doublePowerWeight:.70,
+  tripleSpeedBase:.30,tripleSpeedWeight:1.40,longBallSuppression:.65,
+  infieldBase:.015,infieldSpeed:.10},
+ running:{extraBase:.08,speedWeight:.62,twoOutBonus:.12,strongHitBonus:.08,min:.02,max:.85}
 };
 const STORAGE_KEY="sl_world_players_v01";
 const PITCH_CATALOG={straight:["ツーシーム","ムービングファスト"],slider:["スライダー","Hスライダー","カットボール"],curve:["カーブ","スローカーブ","Sスライダー","Dカーブ","スラーブ","ナックルカーブ"],fork:["フォーク","SFF","Vスライダー","チェンジアップ","パーム","ナックル"],sinker:["シンカー","スクリュー","Hシンカー"],shoot:["シュート","Hシュート","シンキングファスト"]};
@@ -133,10 +182,16 @@ function creditRun(g,runner,batter,pitcher){const s=g.state,side=offense(g);s.sc
  // All runs are earned under the current rules (no errors or passed balls).
  s.pitching[pitcher.key].ER++;}
 function walkOff(g){const s=g.state;return s.inning===g.config.innings&&s.half==="bottom"&&s.score[1]>s.score[0];}
-function advanceHit(g,batter,pitcher,bases){
+function advanceHit(g,batter,pitcher,bases,hit={}){
  const s=g.state,previous=[...s.bases];s.bases=[null,null,null];
  // Score lead runners first. A non-HR walk-off ends scoring at the winning run.
- for(let i=2;i>=0;i--){const runner=previous[i];if(!runner)continue;const target=i+bases;
+ for(let i=2;i>=0;i--){const runner=previous[i];if(!runner)continue;let target=i+bases;
+  // Safe extra advancement only: no new fielding errors or baserunning outs.
+  if(bases<3&&!hit.infieldHit&&target<3){
+   const c=g.config.running,extra=target+1;
+   const chance=clamp(c.extraBase+c.speedWeight*scaled(runner,"speed",g.config)+(s.outs===2?c.twoOutBonus:0)+(hit.battedQuality>=g.config.batted.thresholds.strong?c.strongHitBonus:0)+specialModifiers(runner,pitcher).baserunning,c.min,c.max);
+   if((extra>=3||!s.bases[extra])&&g.rng()<chance)target=extra;
+  }
   if(target>=3){creditRun(g,runner,batter,pitcher);if(bases!==4&&walkOff(g)){finish(g,"walkoff");return;}}
   else s.bases[target]=runner;
  }
@@ -144,29 +199,96 @@ function advanceHit(g,batter,pitcher,bases){
  if(walkOff(g))finish(g,"walkoff");
 }
 function advanceWalk(g,batter,pitcher){const s=g.state;if(s.bases[0]){if(s.bases[1]){if(s.bases[2])creditRun(g,s.bases[2],batter,pitcher);s.bases[2]=s.bases[1];}s.bases[1]=s.bases[0];}s.bases[0]=batter;if(walkOff(g))finish(g,"walkoff");}
-// ==================== batted-ball resolution (future fielding boundary) ====================
-function resolveBattedBall(g,batter){const c=g.config.batted,r=g.rng;const meet=scaled(batter,"meet",g.config),power=scaled(batter,"power",g.config),speed=scaled(batter,"speed",g.config);
- const hit=clamp(c.hitBase+c.meetEffect*(meet-.5)+c.speedEffect*(speed-.5),c.hitMin,c.hitMax);
- if(r()>=hit)return weighted(r,Object.entries(c.outs));
- const hr=c.hrBase+c.hrPower*power,dbl=c.doubleBase+c.doublePower*power,triple=c.tripleBase+c.tripleSpeed*speed;
- return weighted(r,[["homeRun",hr],["double",dbl],["triple",triple],["single",1-hr-dbl-triple]]);
-}
-// ==================== pitch resolution (future pitch / ability hooks) ====================
-function resolvePitch(g,pitcher,batter){const c=g.config,ps=g.state.pitching[pitcher.key];
- const stamina=clamp(pitcher.effective.stamina,...c.ranges.stamina);
- const fatigue=clamp((ps.pitches-(c.fatigue.baseBudget+stamina*c.fatigue.staminaBudget))/c.fatigue.window,0,1);
- const pitch=weighted(g.rng,pitcher.repertoire.map(p=>[p,c.pitch.weights[p.kind]]));
- const pitchSpeed=Math.round((clamp(pitcher.effective.velocity,...c.ranges.velocity)+c.pitch.speedOffsets[pitch.kind]+(g.rng()*2-1)*c.pitch.jitter-fatigue*c.fatigue.speedLoss)*10)/10;
- const zoneChance=clamp(c.zone.base+c.zone.controlEffect*(scaled(pitcher,"control",c)-.5)-fatigue*c.fatigue.zonePenalty,c.zone.min,c.zone.max);
- const inZone=g.rng()<zoneChance,swing=g.rng()<(inZone?c.swing.inZone:c.swing.chase);
- let outcome;
- if(!swing)outcome=inZone?"calledStrike":"ball";
- else{const velocityScale=(pitchSpeed-c.ranges.velocity[0])/(c.ranges.velocity[1]-c.ranges.velocity[0]);
-  const contact=clamp(c.contact.base+c.contact.meetEffect*(scaled(batter,"meet",c)-.5)-c.contact.velocityEffect*(velocityScale-.5)-(inZone?0:c.contact.chasePenalty)+fatigue*c.fatigue.contactBonus,c.contact.min,c.contact.max);
-  if(g.rng()>=contact)outcome="swingingStrike";else outcome=g.rng()<c.contact.foul?"foul":"inPlay";
+// ==================== individual special-effect extension points ====================
+// Empty in this alpha: all stored specials remain intact, but none receive an invented effect.
+// A future handler is keyed by a special ability, not a player/team/league name.
+// Return additive deltas: quality scores, judgment probability, contact logit,
+// extra-base weight multiplier and baserunning probability, respectively.
+const SPECIAL_EFFECT_HANDLERS=Object.create(null);
+function specialModifiers(batter,pitcher){
+ const effects={pitchQuality:0,judgment:0,contact:0,battedQuality:0,extraBase:0,baserunning:0};
+ for(const [role,player] of [["batter",batter],["pitcher",pitcher]]){
+  for(const ability of player?.specials||[]){const handler=SPECIAL_EFFECT_HANDLERS[ability];if(typeof handler!=="function")continue;
+   const changes=handler({role,player,batter,pitcher})||{};
+   for(const key of Object.keys(effects))if(Number.isFinite(changes[key]))effects[key]+=changes[key];
+  }
  }
- return {pitchType:pitch.name,pitchFamily:pitch.family,breakAmount:pitch.breakAmount,pitchSpeed,inZone,swing,outcome,fatigue,
-  battedResult:outcome==="inPlay"?resolveBattedBall(g,batter):null};
+ return effects;
+}
+const centeredNoise=rng=>rng()+rng()-1;
+const logistic=x=>1/(1+Math.exp(-x));
+// ==================== 1. pitch quality ====================
+function generatePitchQuality(g,pitcher,effects){
+ const c=g.config,pc=c.pitch,r=g.rng;
+ const stamina=clamp(pitcher.effective.stamina,...c.ranges.stamina);
+ const fatigue=clamp((g.state.pitching[pitcher.key].pitches-(c.fatigue.baseBudget+stamina*c.fatigue.staminaBudget))/c.fatigue.window,0,1);
+ const pitch=weighted(r,pitcher.repertoire.map(p=>[p,pc.weights[p.kind]]));
+ const profile=pc.profiles[pitch.kind];
+ // Missing breaking amounts are explicitly neutral, not silently treated as level 7.
+ const movement=profile.movement??(pitch.breakAmount===null?0:(pitch.breakAmount-1)/6);
+ const control=clamp(scaled(pitcher,"control",c)-fatigue*c.fatigue.controlLoss,0,1);
+ const effectiveControl=clamp(control-pc.movementControlCost*movement*(1-control),0,1);
+ const movementExecution=movement*(pc.movementExecutionBase+pc.movementExecutionControl*control);
+ const mistakeChance=pc.mistakeBase+pc.mistakeControl*(1-effectiveControl)**2;
+ const isMistake=r()<mistakeChance,excellent=r()<pc.excellentChance;
+ const pitchSpeed=Math.round((clamp(pitcher.effective.velocity,...c.ranges.velocity)+profile.speedOffset+(r()*2-1)*pc.jitter-fatigue*c.fatigue.speedLoss)*10)/10;
+ const velocity=clamp((pitchSpeed-c.ranges.velocity[0])/(c.ranges.velocity[1]-c.ranges.velocity[0]),0,1);
+ const pitchQuality=clamp(pc.qualityBase+pc.velocityWeight*velocity+pc.controlWeight*effectiveControl+profile.quality+pc.movementWeight*movementExecution
+  -fatigue*c.fatigue.qualityLoss+(pc.noise+pc.movementNoise*movement*(1-control))*centeredNoise(r)+(excellent?pc.excellentBonus:0)-(isMistake?pc.mistakeLoss:0)+effects.pitchQuality,.02,.98);
+ return {pitchType:pitch.name,pitchFamily:pitch.family,breakAmount:pitch.breakAmount,pitchSpeed,fatigue,effectiveControl,movement,movementExecution,mistakeChance,isMistake,excellent,pitchQuality};
+}
+// ==================== 2. judgment (independent of meet/power) ====================
+function judgePitch(g,pitch,effects){
+ const c=g.config.judgment,s=g.state;
+ const zoneChance=clamp(c.zoneBase+c.zoneControl*pitch.effectiveControl,c.zoneMin,c.zoneMax);
+ const inZone=g.rng()<zoneChance;
+ // Count-based basic judgment; future plate-discipline/approach effects belong here.
+ const swingChance=clamp(inZone
+  ? c.inZoneSwing+(s.strikes===2?c.protectZone:0)-(s.balls===3?c.threeBallPatience:0)+(pitch.isMistake?c.mistakeAttack:0)
+  : c.chase+(s.strikes===2?c.protectChase:0)-(s.balls===3?c.threeBallPatience:0)+c.deceptionChase*pitch.movementExecution-effects.judgment,.03,.97);
+ return {zoneChance,inZone,swingChance,swing:g.rng()<swingChance};
+}
+// ==================== 3. contact duel ====================
+function resolveContact(g,batter,pitch,effects){
+ const c=g.config.contact,meet=scaled(batter,"meet",g.config),gap=meet-pitch.pitchQuality;
+ const contactChance=clamp(logistic(c.baseLogit+c.duelWeight*(gap+c.gapCurve*gap**3)-(pitch.inZone?0:c.chasePenalty)+effects.contact),c.min,c.max);
+ const foulChance=clamp(c.foulBase+c.foulDifficulty*(pitch.pitchQuality-meet),c.foulMin,c.foulMax);
+ const outcome=!pitch.swing?(pitch.inZone?"calledStrike":"ball")
+  :g.rng()>=contactChance?"swingingStrike":g.rng()<foulChance?"foul":"inPlay";
+ return {contactChance,foulChance,outcome};
+}
+// ==================== 4. batted quality: centering, force, pitcher disruption ====================
+function generateBattedQuality(g,batter,pitch,effects){
+ const c=g.config.batted,meet=scaled(batter,"meet",g.config),power=scaled(batter,"power",g.config);
+ const score=clamp(c.qualityBase+c.meetWeight*(meet-.5)+c.powerWeight*(power-.5)-c.pitchWeight*(pitch.pitchQuality-.5)+c.noise*centeredNoise(g.rng)+effects.battedQuality,0,1);
+ const grade=Object.entries(c.thresholds).find(([,threshold])=>score>=threshold)?.[0]||"touch";
+ return {score,grade};
+}
+// ==================== 5. final outcome conditioned on batted quality ====================
+function resolveFinalResult(g,batter,pitch,ball,effects){
+ const c=g.config.batted,power=scaled(batter,"power",g.config),speed=scaled(batter,"speed",g.config);
+ const weights={...c.outcomes[ball.grade]};
+ const suppression=clamp(1-c.longBallSuppression*(pitch.pitchQuality-.5),.60,1.40);
+ const extraBase=clamp(1+effects.extraBase,.10,3);
+ weights.homeRun*=(c.hrPowerBase+c.hrPowerWeight*power)*suppression*extraBase;
+ weights.double*=(c.doublePowerBase+c.doublePowerWeight*power)*Math.sqrt(suppression)*extraBase;
+ weights.triple*=(c.tripleSpeedBase+c.tripleSpeedWeight*speed)*Math.sqrt(suppression)*extraBase;
+ let result=weighted(g.rng,Object.entries(weights)),infieldHit=false;
+ if(result==="groundout"&&g.rng()<clamp(c.infieldBase+c.infieldSpeed*speed,0,.25)){result="single";infieldHit=true;}
+ return {battedResult:result,battedQuality:ball.score,battedGrade:ball.grade,infieldHit};
+}
+// Keep the exposed helper's string result for callers of the earlier alpha.
+function resolveBattedBall(g,batter,pitch={pitchQuality:.5},effects=specialModifiers(batter,null)){
+ return resolveFinalResult(g,batter,pitch,generateBattedQuality(g,batter,pitch,effects),effects).battedResult;
+}
+function resolvePitch(g,pitcher,batter){
+ const effects=specialModifiers(batter,pitcher);
+ const pitch=generatePitchQuality(g,pitcher,effects);
+ Object.assign(pitch,judgePitch(g,pitch,effects));
+ Object.assign(pitch,resolveContact(g,batter,pitch,effects));
+ return Object.assign(pitch,{battedResult:null,battedQuality:null,battedGrade:null,infieldHit:false},
+  pitch.outcome==="inPlay"?resolveFinalResult(g,batter,pitch,generateBattedQuality(g,batter,pitch,effects),effects):{},
+  {specialModifiers:effects});
 }
 // ==================== plate appearance / outs ====================
 function recordOut(g,pitcher){g.state.outs++;g.state.pitching[pitcher.key].outs++;}
@@ -178,7 +300,7 @@ function applyPitch(g,pitch,batter,pitcher){const s=g.state,bs=s.batting[batter.
  else if(pitch.outcome==="inPlay"){
   result=pitch.battedResult;bs.AB++;ended=true;
   const distances={single:1,double:2,triple:3,homeRun:4};
-  if(Object.hasOwn(distances,result)){bs.H++;ps.H++;s.hits[offense(g)]++;if(result==="double")bs.doubles++;if(result==="triple")bs.triples++;if(result==="homeRun"){bs.HR++;ps.HR++;}advanceHit(g,batter,pitcher,distances[result]);}
+  if(Object.hasOwn(distances,result)){bs.H++;ps.H++;s.hits[offense(g)]++;if(result==="double")bs.doubles++;if(result==="triple")bs.triples++;if(result==="homeRun"){bs.HR++;ps.HR++;}advanceHit(g,batter,pitcher,distances[result],pitch);}
   else recordOut(g,pitcher);
  }
  return {result,ended};
@@ -204,8 +326,101 @@ function advance(g,mode){let count=0;const pa=g.state.paCompleted,inning=g.state
  return count;
 }
 function exportGame(g){return {format:"SL_WORLD_ENGINE_TEST",version:g.config.version,seed:g.seed,config:clone(g.config),teams:clone(g.teams),state:clone(g.state)};}
+// ==================== isolated balance experiments (same match engine, no DB/storage) ====================
+const BALANCE_PROFILES={
+ topBatter:{meet:10,power:200,speed:20},highBatter:{meet:9,power:180,speed:18},
+ midBatter:{meet:8,power:150,speed:14},teamLowBatter:{meet:4,power:80,speed:8},
+ standardBatter:{meet:5,power:100,speed:10},lowBatter:{meet:3,power:50,speed:5},
+ lowestPitcher:{velocity:80,control:1,stamina:1},standardPitcher:{velocity:140,control:100,stamina:100},
+ midPitcher:{velocity:155,control:160,stamina:160},highPitcher:{velocity:160,control:180,stamina:180},
+ peakPitcher:{velocity:165,control:200,stamina:200},lowPitcher:{velocity:130,control:50,stamina:50}
+};
+const BALANCE_PRESETS=[
+ {id:"top-lowest",label:"最上位打者 vs 最底辺投手",batting:"topBatter",pitching:"lowestPitcher",breaking:0},
+ {id:"top-mid",label:"最上位打者 vs 中位相当投手",batting:"topBatter",pitching:"midPitcher",breaking:4},
+ {id:"top-peak",label:"最上位打者 vs 最高峰投手",batting:"topBatter",pitching:"peakPitcher",breaking:7},
+ {id:"standard",label:"標準打者 vs 標準投手",batting:"standardBatter",pitching:"standardPitcher",breaking:0},
+ {id:"low-peak",label:"低能力打者 vs 最高峰投手",batting:"lowBatter",pitching:"peakPitcher",breaking:7},
+ {id:"compare-low",label:"旧版比較：標準打者 vs 低め投手",batting:"standardBatter",pitching:"lowPitcher",breaking:0},
+ {id:"compare-high",label:"旧版比較：標準打者 vs 高め投手",batting:"standardBatter",pitching:"highPitcher",breaking:0}
+];
+const TEAM_BALANCE_PROFILES={
+ HIGH:{batting:"highBatter",pitching:"highPitcher",breaking:6},
+ MID:{batting:"midBatter",pitching:"midPitcher",breaking:4},
+ LOW:{batting:"teamLowBatter",pitching:"lowPitcher",breaking:0}
+};
+const TEAM_BALANCE_PRESETS=[
+ {id:"high-low",label:"HIGH vs LOW",opponent:"LOW"},
+ {id:"high-mid",label:"HIGH vs MID",opponent:"MID"},
+ {id:"high-high",label:"HIGH vs HIGH",opponent:"HIGH"}
+];
+function virtualTeam(label,side,batting,pitching,breaking,cfg=CONFIG){
+ const lineup=Array.from({length:9},(_,i)=>adaptPlayer({id:`VIRTUAL_${side}_${i}`,name:`${label} ${i+1}`,isPitcher:i===8,isFielder:i!==8,
+  batting:{...batting},pitching:{...pitching},specials:[],
+  pitchRepertoire:breaking?{slider:[{name:"スライダー",breakAmount:breaking}],fork:[{name:"フォーク",breakAmount:breaking}]}:{}},`${side}_${i}`,cfg));
+ return {name:label,lineup,pitcher:lineup[8],rosterCount:9,testCount:0};
+}
+function balanceDescription(preset){
+ const b=BALANCE_PROFILES[preset.batting],p=BALANCE_PROFILES[preset.pitching];
+ return `打者：ミート${b.meet} / パワー${b.power} / 走力${b.speed}　投手：${p.velocity}km/h / 制球${p.control} / スタミナ${p.stamina} / ${preset.breaking?`スライダー・フォーク各変化量${preset.breaking}`:"追加球種なし"}`;
+}
+function createDuelTest(preset,seed,startPitches=0,cfg=CONFIG){
+ if(!Number.isInteger(startPitches)||startPitches<0||startPitches>500)throw Error("開始投球数は0〜500の整数で指定してください。");
+ const batting=BALANCE_PROFILES[preset.batting],pitching=BALANCE_PROFILES[preset.pitching];
+ const teams=[virtualTeam("BATTER","away",batting,pitching,0,cfg),virtualTeam("PITCHER","home",batting,pitching,preset.breaking,cfg)];
+ return {game:newGame(teams,seed,cfg),startPitches,counts:{PA:0,AB:0,H:0,TB:0,single:0,double:0,triple:0,homeRun:0,strikeout:0,walk:0,groundout:0,flyout:0,lineout:0},fiveAB:{atBats:0,hits:0,groups:0,hitless:0}};
+}
+function stepDuelTest(test){
+ const g=test.game,s=g.state;
+ // Each PA begins empty, top 1, same hitter/pitcher and selected fatigue baseline.
+ // RNG continues across PAs. Within a PA, normal onePitch/applyPitch and fatigue apply.
+ s.inning=1;s.half="top";s.outs=0;s.balls=0;s.strikes=0;s.bases=[null,null,null];
+ s.score=[0,0];s.lines=[Array(g.config.innings).fill(null),Array(g.config.innings).fill(null)];s.lines[0][0]=0;
+ s.order=[0,0];s.finished=false;s.finishReason=null;s.events.length=0;
+ s.pitching[g.teams[1].pitcher.key].pitches=test.startPitches;
+ advance(g,"atbat");
+ const result=s.events.at(-1).result,c=test.counts,bases={single:1,double:2,triple:3,homeRun:4}[result]||0;
+ if(!Object.hasOwn(c,result))throw Error(`未集計の打席結果：${result}`);
+ c.PA++;c[result]++;
+ if(result!=="walk"){
+  c.AB++;c.H+=bases?1:0;c.TB+=bases;
+  test.fiveAB.atBats++;test.fiveAB.hits+=bases?1:0;
+  if(test.fiveAB.atBats===5){test.fiveAB.groups++;if(test.fiveAB.hits===0)test.fiveAB.hitless++;test.fiveAB.atBats=0;test.fiveAB.hits=0;}
+ }
+ return result;
+}
+function duelTestSummary(test){
+ const c=test.counts,divide=(a,b)=>b?a/b:null;
+ const AVG=divide(c.H,c.AB),OBP=divide(c.H+c.walk,c.PA),SLG=divide(c.TB,c.AB);
+ return {...c,AVG,OBP,SLG,OPS:OBP===null||SLG===null?null:OBP+SLG,
+  outRate:divide(c.groundout+c.flyout+c.lineout,c.PA),HRRate:divide(c.homeRun,c.PA),KRate:divide(c.strikeout,c.PA),BBRate:divide(c.walk,c.PA),
+  fiveABGroups:test.fiveAB.groups,hitlessFiveAB:test.fiveAB.hitless,hitlessFiveRate:divide(test.fiveAB.hitless,test.fiveAB.groups)};
+}
+function createTeamTest(preset,seed,cfg=CONFIG){
+ return {preset,seed,config:clone(cfg),games:0,wins:0,losses:0,draws:0,runs:0,allowed:0,largeMargins:0,shutouts:0,scores:[]};
+}
+function stepTeamTest(test){
+ const profile=TEAM_BALANCE_PROFILES.HIGH,other=TEAM_BALANCE_PROFILES[test.preset.opponent],side=test.games%2;
+ const make=(p,label,slot)=>virtualTeam(label,slot,BALANCE_PROFILES[p.batting],BALANCE_PROFILES[p.pitching],p.breaking,test.config);
+ const high=make(profile,"HIGH",side===0?"away":"home"),opponent=make(other,test.preset.opponent,side===0?"home":"away");
+ const g=newGame(side===0?[high,opponent]:[opponent,high],`${test.seed}/game/${test.games}`,test.config);
+ advance(g,"game");
+ const runs=g.state.score[side],allowed=g.state.score[1-side];
+ test.games++;test.runs+=runs;test.allowed+=allowed;
+ if(runs>allowed)test.wins++;else if(runs<allowed)test.losses++;else test.draws++;
+ if(Math.abs(runs-allowed)>=10)test.largeMargins++;
+ if(allowed===0)test.shutouts++;
+ test.scores.push([runs,allowed]);
+ return g;
+}
+function teamTestSummary(test){
+ const n=test.games,decisions=test.wins+test.losses;
+ return {games:n,wins:test.wins,losses:test.losses,draws:test.draws,winRate:decisions?test.wins/decisions:null,
+  runs:n?test.runs/n:null,allowed:n?test.allowed/n:null,margin:n?(test.runs-test.allowed)/n:null,
+  largeMargins:test.largeMargins,shutouts:test.shutouts,scores:test.scores.map(score=>[...score])};
+}
 // Exposed core for deterministic tests and later extraction into modules.
-globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher};
+globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher,generatePitchQuality,judgePitch,resolveContact,generateBattedQuality,resolveFinalResult,specialModifiers,SPECIAL_EFFECT_HANDLERS,BALANCE_PROFILES,BALANCE_PRESETS,TEAM_BALANCE_PROFILES,TEAM_BALANCE_PRESETS,createDuelTest,stepDuelTest,duelTestSummary,createTeamTest,stepTeamTest,teamTestSummary};
 // ==================== UI ====================
 if(typeof document!=="undefined"){
  const $=id=>document.getElementById(id);let game,appearanceTeams=[];
@@ -263,6 +478,76 @@ if(typeof document!=="undefined"){
   });
   ["pitch","atbat","inning","game"].forEach(id=>$(id).disabled=s.finished);
  }
+ // The development panel owns separate game instances and RNG streams.
+ let balanceJob=null;
+ const rate=value=>value===null?"—":value.toFixed(3);
+ const percent=value=>value===null?"—":`${(value*100).toFixed(1)}%`;
+ function fillBalanceOptions(id,presets){
+  const select=$(id),all=document.createElement("option");all.value="all";all.textContent="全条件を比較";select.appendChild(all);
+  presets.forEach(p=>{const option=document.createElement("option");option.value=p.id;option.textContent=p.label;select.appendChild(option);});
+ }
+ function balanceCard(parent,title,description){
+  const card=document.createElement("section"),h=document.createElement("h3"),note=document.createElement("p"),body=document.createElement("div");
+  card.className="balance-result";h.textContent=title;note.className="note";note.textContent=description;
+  card.append(h,note,body);parent.appendChild(card);return body;
+ }
+ function showDuelResult(body,test){
+  const s=duelTestSummary(test);body.replaceChildren(statList([
+   ["打席数",s.PA],["打数",s.AB],["打率",rate(s.AVG)],["出塁率",rate(s.OBP)],["長打率",rate(s.SLG)],["OPS",rate(s.OPS)],
+   ["単打",s.single],["二塁打",s.double],["三塁打",s.triple],["本塁打",s.homeRun],["三振",s.strikeout],["四球",s.walk],
+   ["凡打率",percent(s.outRate)],["本塁打率",percent(s.HRRate)],["三振率",percent(s.KRate)]]));
+  const h=document.createElement("h4");h.textContent="投手側の成績";
+  const note=document.createElement("p");note.className="note";note.textContent=`5打数0安打：${s.hitlessFiveAB} / ${s.fiveABGroups}組（${percent(s.hitlessFiveRate)}）`;
+  body.append(h,statList([["被打率",rate(s.AVG)],["被長打率",rate(s.SLG)],["奪三振率",percent(s.KRate)],["与四球率",percent(s.BBRate)]]),note);
+ }
+ function showTeamResult(body,test){
+  const s=teamTestSummary(test);body.replaceChildren(statList([
+   ["試合数",s.games],["勝利",s.wins],["敗戦",s.losses],["引き分け",s.draws],["勝率",percent(s.winRate)],
+   ["平均得点",s.runs===null?"—":s.runs.toFixed(2)],["平均失点",s.allowed===null?"—":s.allowed.toFixed(2)],
+   ["平均得点差",s.margin===null?"—":s.margin.toFixed(2)],["10点差以上",s.largeMargins],["完封数",s.shutouts]]));
+  const note=document.createElement("p");note.className="note";note.textContent="先に表記したHIGH側の成績。勝率は引き分けを除外。10点差以上は勝敗を問わず集計、完封数は相手を0点に抑えた試合数です。";
+  const scores=document.createElement("details"),summary=document.createElement("summary"),list=document.createElement("p");summary.textContent="全試合のスコア";list.className="note";
+  list.textContent=s.scores.map((score,i)=>`${i+1}試合目 ${score[0]}−${score[1]}`).join(" / ");scores.append(summary,list);body.append(note,scores);
+ }
+ const yieldBalance=()=>new Promise(resolve=>setTimeout(resolve,0));
+ async function runBalance(kind){
+  if(balanceJob)return;
+  const ids=["balanceRun","teamBalanceRun","balanceSeed","balancePreset","balanceCount","balancePitchCount","teamBalancePreset","teamBalanceCount"];
+  const job={cancelled:false};balanceJob=job;ids.forEach(id=>$(id).disabled=true);$("balanceCancel").disabled=false;
+  let completed=0,total=0;
+  try{
+   const isDuel=kind==="duel",catalog=isDuel?BALANCE_PRESETS:TEAM_BALANCE_PRESETS;
+   const selected=$(isDuel?"balancePreset":"teamBalancePreset").value;
+   const presets=selected==="all"?catalog:catalog.filter(p=>p.id===selected);
+   const count=Number($(isDuel?"balanceCount":"teamBalanceCount").value),seed=$("balanceSeed").value;
+   if(!presets.length||!(isDuel?[1000,10000]:[50,100]).includes(count))throw Error("テスト条件を選択してください。");
+   const pitchText=$("balancePitchCount").value,startPitches=Number(pitchText);
+   if(isDuel&&(pitchText.trim()===""||!Number.isInteger(startPitches)||startPitches<0||startPitches>500))throw Error("開始投球数は0〜500の整数で指定してください。");
+   total=presets.length*count;
+   const parent=$(isDuel?"balanceResults":"teamBalanceResults");parent.replaceChildren();
+   for(const preset of presets){
+    if(job.cancelled)break;
+    const testSeed=`${seed}/${preset.id}`;
+    const test=isDuel?createDuelTest(preset,testSeed,startPitches):createTeamTest(preset,testSeed);
+    const teamSpec=profile=>balanceDescription(TEAM_BALANCE_PROFILES[profile]);
+    const description=isDuel?balanceDescription(preset)+` / 毎打席の開始投球数 ${startPitches}`:`HIGH：${teamSpec("HIGH")} / 相手：${teamSpec(preset.opponent)}`;
+    const body=balanceCard(parent,preset.label,`${description} / seed: ${testSeed} / ${CONFIG.version}`);
+    const display=()=>isDuel?showDuelResult(body,test):showTeamResult(body,test);
+    display();
+    for(let i=0;i<count&&!job.cancelled;){
+     const end=Math.min(count,i+(isDuel?100:1));
+     for(;i<end;i++){if(isDuel)stepDuelTest(test);else stepTeamTest(test);completed++;}
+     display();$("balanceStatus").textContent=`${preset.label}：${i.toLocaleString()} / ${count.toLocaleString()}${isDuel?"打席":"試合"}（全体 ${completed.toLocaleString()} / ${total.toLocaleString()}）`;
+     await yieldBalance();
+    }
+   }
+   $("balanceStatus").textContent=`${job.cancelled?"中止・途中集計":"完了"}：${completed.toLocaleString()} / ${total.toLocaleString()}${isDuel?"打席":"試合"}。通常試合の状態は変更していません。`;
+  }catch(error){$("balanceStatus").textContent=`テスト停止：${error.message}（表示済み結果は途中集計）`;}
+  finally{balanceJob=null;ids.forEach(id=>$(id).disabled=false);$("balanceCancel").disabled=true;}
+ }
+ fillBalanceOptions("balancePreset",BALANCE_PRESETS);fillBalanceOptions("teamBalancePreset",TEAM_BALANCE_PRESETS);
+ $("balanceRun").onclick=()=>runBalance("duel");$("teamBalanceRun").onclick=()=>runBalance("team");
+ $("balanceCancel").onclick=()=>{if(balanceJob)balanceJob.cancelled=true;};
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
   const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());
