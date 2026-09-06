@@ -47,6 +47,9 @@
 #balancePanel button{font-size:14px;min-height:44px}
 @media(max-width:650px){.balance-controls{grid-template-columns:1fr}.balance-result{padding:10px}}
 .engine-version{margin:8px 0 0;text-align:right;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+
+#matchViewer canvas{display:block;width:100%;max-height:65vh;aspect-ratio:8/5;object-fit:contain;background:#071a27;border-radius:10px}#matchViewer [data-score],#matchViewer [data-detail]{overflow-wrap:anywhere;font-size:14px}#matchViewer [data-result]{font-weight:bold;color:#ffd477;min-height:1.7em}#matchViewer button{min-height:44px;font-size:14px}#matchViewer [hidden]{display:none}#matchViewer .toolbar label{margin:0;min-width:110px}
+[data-watch-mode][aria-pressed="true"]{background:#1687bc;border-color:#8bd7ff;box-shadow:0 0 0 2px #8bd7ff55}[data-watch-mode]{font-size:14px;min-height:44px}
 </style>
 <!-- SL WORLD PWA -->
 <meta name="theme-color" content="#07111f">
@@ -67,7 +70,10 @@
 <div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
 <section class="card"><h2 id="matchTitle"></h2><div id="teamSummary" class="team-summary"></div><div class="scroll" role="region" aria-label="イニング別得点（横にスクロールできます）" tabindex="0"><table id="scoreboard"></table></div><p class="note">失策：未実装のため表示していません。</p><p id="phase" class="metric"></p><div class="grid"><div><div id="count" class="metric"></div><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></div><div id="bases" class="bases"></div></div>
-<div class="toolbar"><button class="primary" id="pitch">PLAY ONE PITCH</button><button id="atbat">PLAY ONE AT-BAT</button><button id="inning">PLAY ONE INNING</button><button id="game">SIMULATE GAME</button></div><div class="note">ONE INNINGは現在の回の裏終了まで進みます。延長なし／同点は引き分け。</div></section>
+<div class="toolbar" aria-label="観戦モード"><button data-watch-mode="FULL" aria-pressed="true">フル観戦</button><button data-watch-mode="MINI" aria-pressed="false">ミニ観戦</button><button data-watch-mode="HIGHLIGHT" aria-pressed="false">ハイライト</button><button data-watch-mode="SKIP" aria-pressed="false">スキップ</button></div>
+<p class="note">フル：1球ずつ ／ ミニ：打席結果を短く再生 ／ ハイライト：重要場面を自動抽出 ／ スキップ：即時終了。切替時は確定済みのプレー後から継続します。</p>
+<details><summary>開発用：文字ベース進行</summary><div class="toolbar"><button id="pitch">1球進行</button><button id="atbat">1打席進行</button><button id="inning">1イニング進行</button><button id="game">試合終了まで進行</button></div><p class="note">1イニングは現在の回の裏終了まで。延長なし／同点は引き分け。</p></details></section>
+<section class="card" id="matchViewer"></section>
 <section class="card"><h2>プレイログ</h2><div id="log" role="region" aria-label="全投球のプレイログ" tabindex="0"></div><p class="note">画面は1回表の初球から全投球を表示します。枠内を上にスクロールすると過去のログを確認できます（RESETで新しい試合に切り替わります）。JSONには全投球・投球品質・打球品質・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
 <div id="appearanceOverview"></div>
 <section class="card"><h2>打撃・投手成績</h2><p class="note">自責点は現在のルール範囲（失策・捕逸なし）で集計しています。投球回の「1/3」「2/3」はアウト1個・2個を表します。</p><div id="statistics"></div></section>
@@ -96,6 +102,7 @@
 </details>
 <section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の個別効果は未実装です。守備AI・エラー・盗塁・併殺・犠打・犠飛・死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。走塁死・打球アウトでの進塁は未実装です。</section>
 </main>
+<script src="./match-viewer.js"></script>
 <script>
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
@@ -428,7 +435,7 @@ function teamTestSummary(test){
 globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher,generatePitchQuality,judgePitch,resolveContact,generateBattedQuality,resolveFinalResult,specialModifiers,SPECIAL_EFFECT_HANDLERS,BALANCE_PROFILES,BALANCE_PRESETS,TEAM_BALANCE_PROFILES,TEAM_BALANCE_PRESETS,createDuelTest,stepDuelTest,duelTestSummary,createTeamTest,stepTeamTest,teamTestSummary};
 // ==================== UI ====================
 if(typeof document!=="undefined"){
- const $=id=>document.getElementById(id);let game,appearanceTeams=[];
+ const $=id=>document.getElementById(id);let game,viewer,appearanceTeams=[];
  $("engineVersion").textContent=`ENGINE VERSION: ${CONFIG.version}`;
  const labels={ball:"ボール",calledStrike:"見逃しストライク",swingingStrike:"空振り",foul:"ファウル",strikeout:"三振",walk:"四球",single:"単打",double:"二塁打",triple:"三塁打",homeRun:"本塁打",groundout:"ゴロアウト",flyout:"フライアウト",lineout:"ライナーアウト"};
  function table(target,headers,rows){target.replaceChildren();for(const [i,row]of [headers,...rows].entries()){const tr=document.createElement("tr");for(const item of row){const cell=document.createElement(i===0?"th":"td");cell.textContent=String(item);tr.appendChild(cell);}target.appendChild(tr);}}
@@ -483,6 +490,7 @@ if(typeof document!=="undefined"){
    playerStats(team,t.pitcher.name,[["投球回",innings],["投球数",ps.pitches],["被安打",ps.H],["被本塁打",ps.HR],["失点",ps.R],["自責点",ps.ER],["与四球",ps.BB],["奪三振",ps.K]],"pitching");$("statistics").appendChild(team);
   });
   ["pitch","atbat","inning","game"].forEach(id=>$(id).disabled=s.finished);
+  viewer?.sync();
  }
  // The development panel owns separate game instances and RNG streams.
  let balanceJob=null;
@@ -556,11 +564,12 @@ if(typeof document!=="undefined"){
  $("balanceCancel").onclick=()=>{if(balanceJob)balanceJob.cancelled=true;};
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
-  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());
+  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());viewer?.reset();
   $("source").textContent=db.message+" / "+teams.map(t=>`${t.name}：実選手${9-t.testCount}人、TEST PLAYER ${t.testCount}人、未設定能力補完 ${t.lineup.reduce((n,p)=>n+p.fallbacks.length,0)}項目`).join(" / ");$("status").textContent="";render();
  }
  ["pitch","atbat","inning","game"].forEach(id=>$(id).onclick=()=>{try{advance(game,id);$("status").textContent="";}catch(e){$("status").textContent=e.message;}render();});$("reset").onclick=reset;
  $("export").onclick=()=>{const blob=new Blob([JSON.stringify(exportGame(game),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="SL_WORLD_TEST_MATCH_001.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ viewer=SL_MATCH_VIEWER.create({root:$("matchViewer"),getGame:()=>game,step:mode=>{const start=game.state.events.length;advance(game,mode);return game.state.events.slice(start);},onChange:render});
  reset();
 }
 </script></body></html>
