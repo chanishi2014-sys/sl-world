@@ -578,53 +578,57 @@ nav button.active{
 }
 
 /* Opening is independent of HOME, management views and saved data. */
-html.sl-opening-active, html.sl-opening-active body { overflow:hidden; }
+html.sl-opening-active, html.sl-opening-active body { overflow:hidden; overscroll-behavior:none; background:#000; }
 #slOpening {
   position:fixed; inset:0; z-index:10000; width:100%; height:100%;
-  margin:0; padding:24px; border:0; border-radius:0; overflow:hidden;
-  display:grid; place-items:center; background:#020406; color:#eef7ff;
+  margin:0; padding:0; border:0; border-radius:0; outline:0; box-shadow:none; appearance:none; -webkit-appearance:none; -webkit-tap-highlight-color:transparent; overflow:hidden;
+  display:grid; place-items:center; background:#000; color:#eef7ff;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   text-align:center; cursor:pointer; touch-action:manipulation;
   animation:sl-opening-exit var(--opening-duration,5000ms) linear forwards;
 }
 #slOpening[hidden] { display:none; }
-#slOpening:focus-visible { outline:2px solid #a9d9ff; outline-offset:-5px; }
-.sl-opening-scene { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-.sl-opening-scene::before { content:""; position:absolute; inset:-12px;
-  background:url("./sl-world-opening-portrait.png") center / cover no-repeat;
-  filter:blur(12px) brightness(.12); }
-/* Keep the full 941 x 1672 composition, including lamps and home plate. */
-.sl-opening-picture { position:absolute; width:min(100%,56.28vh); height:min(100%,177.683vw);
-  left:50%; top:50%; transform:translate(-50%,-50%); }
-.sl-opening-photo, .sl-opening-reveal { position:absolute; inset:0; width:100%; height:100%; }
-.sl-opening-photo { object-fit:contain; filter:brightness(.085); }
-.sl-opening-reveal { background:url("./sl-world-opening-portrait.png") center / 100% 100% no-repeat;
-  opacity:0; filter:brightness(.85); animation-duration:var(--opening-duration,5000ms);
+#slOpening:focus-visible { outline:0; box-shadow:none; }
+#slOpening:focus-visible .sl-opening-skip { text-decoration:underline; }
+.sl-opening-scene { position:absolute; inset:0; overflow:hidden; pointer-events:none; background:#000; }
+/* Cover portrait with one registered coordinate plane for image, masks and lights. */
+.sl-opening-picture { position:absolute; width:max(100%,56.28vh); height:max(100%,177.683vw);
+  left:50%; top:50%; transform:translate(-50%,-50%); background:#000; }
+.sl-opening-photo { position:absolute; inset:0; display:block; width:100%; height:100%;
+  object-fit:cover; object-position:center; margin:0; padding:0; border:0; filter:brightness(.8); }
+.sl-opening-curtain { position:absolute; inset:0; background:#000; opacity:1;
+  animation:sl-opening-curtain var(--opening-duration,5000ms) linear both; }
+.sl-opening-reveal { position:absolute; inset:0; background:url("./sl-world-opening-portrait.png") center / cover no-repeat;
+  opacity:0; filter:brightness(.65); animation-duration:var(--opening-duration,5000ms);
   animation-timing-function:linear; animation-fill-mode:both;
   -webkit-mask-image:var(--reveal-mask); mask-image:var(--reveal-mask); }
-.sl-opening-reveal-left { --reveal-mask:radial-gradient(ellipse 60% 52% at 4% 23%,#000 15%,transparent 100%);
-  animation-name:sl-opening-left; }
-.sl-opening-reveal-right { --reveal-mask:radial-gradient(ellipse 60% 52% at 96% 23%,#000 15%,transparent 100%);
-  animation-name:sl-opening-right; }
-.sl-opening-reveal-field { --reveal-mask:linear-gradient(transparent 45%,#000 74%);
-  filter:brightness(.72); animation-name:sl-opening-field; }
-.sl-opening-reveal-outfield { --reveal-mask:linear-gradient(transparent 34%,#000 56%,transparent 83%);
-  filter:brightness(.65); animation-name:sl-opening-outfield; }
-.sl-opening-reveal-logo { --reveal-mask:radial-gradient(ellipse 43% 24% at 50% 27%,#000 35%,transparent 100%);
-  filter:brightness(1.06); animation-name:sl-opening-logo; }
+.sl-opening-reveal-left { --reveal-mask:radial-gradient(ellipse 42% 35% at 6% 20%,#000 8%,transparent 100%); animation-name:sl-opening-left; }
+.sl-opening-reveal-right { --reveal-mask:radial-gradient(ellipse 42% 35% at 94% 20%,#000 8%,transparent 100%); animation-name:sl-opening-right; }
+.sl-opening-logo-shade { position:absolute; inset:0;
+  background:radial-gradient(ellipse 38% 23% at 50% 27%,#000 35%,transparent 100%);
+  animation:sl-opening-logo-shade var(--opening-duration,5000ms) linear both; }
+.sl-opening-glow { position:absolute; inset:0; opacity:0; filter:blur(5px);
+  background:radial-gradient(ellipse 9% 7% at var(--light-x) 20%,#f2faff90 0%,#b6d9ff25 45%,transparent 100%);
+  animation:var(--light-animation) var(--opening-duration,5000ms) linear both; }
+.sl-opening-glow-left { --light-x:6%; --light-animation:sl-opening-left; }
+.sl-opening-glow-right { --light-x:94%; --light-animation:sl-opening-right; }
 .sl-opening-gold { position:absolute; inset:0;
-  background:radial-gradient(ellipse 24% 17% at 50% 27%,#edba5420,transparent);
+  background:radial-gradient(ellipse 24% 17% at 50% 27%,#edba542d,transparent);
   opacity:0; animation:sl-opening-logo var(--opening-duration,5000ms) linear both; }
+@media (orientation:landscape) {
+  .sl-opening-picture { width:56.28vh; height:100%; }
+}
 .sl-opening-skip {
   position:absolute; bottom:calc(24px + env(safe-area-inset-bottom,0px));
-  left:0; right:0; font-size:11px; letter-spacing:.2em; color:#748493;
+  left:0; right:0; font-size:11px; letter-spacing:.2em; color:#748493; animation:sl-opening-skip var(--opening-duration,5000ms) linear both;
 }
-/* A single duration drives all phases; no zoom or orientation lock. */
-@keyframes sl-opening-left { 0%,14% {opacity:0} 28%,84% {opacity:.85} 90%,100% {opacity:1} }
-@keyframes sl-opening-right { 0%,28% {opacity:0} 42%,84% {opacity:.85} 90%,100% {opacity:1} }
-@keyframes sl-opening-field { 0%,42% {opacity:0} 54% {opacity:.8} 60%,100% {opacity:1} }
-@keyframes sl-opening-outfield { 0%,48% {opacity:0} 60%,100% {opacity:1} }
-@keyframes sl-opening-logo { 0%,60% {opacity:0} 84% {opacity:.85} 90%,100% {opacity:1} }
+/* 0-.8 black, .8-1.5 left, 1.5-2.2 right, 2.2-3.3 curtain, 3.3-4.3 logo. */
+@keyframes sl-opening-left { 0%,16% {opacity:0} 30%,86% {opacity:.8} 90%,100% {opacity:1} }
+@keyframes sl-opening-right { 0%,30% {opacity:0} 44%,86% {opacity:.8} 90%,100% {opacity:1} }
+@keyframes sl-opening-curtain { 0%,44% {opacity:1} 52% {opacity:.85} 60% {opacity:.5} 66%,100% {opacity:.12} }
+@keyframes sl-opening-logo-shade { 0%,66% {opacity:1} 86%,100% {opacity:0} }
+@keyframes sl-opening-logo { 0%,66% {opacity:0} 86%,100% {opacity:1} }
+@keyframes sl-opening-skip { 0%,16% {opacity:0} 24%,100% {opacity:1} }
 @keyframes sl-opening-exit { 0%,90% {opacity:1;visibility:visible} 100% {opacity:0;visibility:hidden} }
 @media (max-height:450px) {
   .sl-opening-skip { bottom:calc(10px + env(safe-area-inset-bottom,0px)); }
@@ -646,11 +650,12 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; }
   <span class="sl-opening-scene" aria-hidden="true">
     <span class="sl-opening-picture">
       <img class="sl-opening-photo" src="./sl-world-opening-portrait.png" alt="" fetchpriority="high" decoding="async" width="941" height="1672">
+      <span class="sl-opening-curtain"></span>
       <span class="sl-opening-reveal sl-opening-reveal-left"></span>
       <span class="sl-opening-reveal sl-opening-reveal-right"></span>
-      <span class="sl-opening-reveal sl-opening-reveal-field"></span>
-      <span class="sl-opening-reveal sl-opening-reveal-outfield"></span>
-      <span class="sl-opening-reveal sl-opening-reveal-logo"></span>
+      <span class="sl-opening-logo-shade"></span>
+      <span class="sl-opening-glow sl-opening-glow-left"></span>
+      <span class="sl-opening-glow sl-opening-glow-right"></span>
       <span class="sl-opening-gold"></span>
     </span>
   </span>
