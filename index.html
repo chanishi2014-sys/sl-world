@@ -584,9 +584,51 @@ nav button.active{
 <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
 <script src="./pwa-register.js" defer></script>
 <!-- /SL WORLD PWA -->
+<link rel="stylesheet" href="./sl-home.css">
 </head>
 
 <body>
+<!-- SL WORLD HOME: navigation only; existing management UI stays below. -->
+<main id="slHome" class="sl-home" aria-labelledby="slHomeTitle">
+  <div class="sl-home-hero">
+    <p class="sl-home-eyebrow">SUPER LEAGUE WORLD</p>
+    <h1 id="slHomeTitle" tabindex="-1">SL WORLD HOME</h1>
+    <p class="sl-home-intro">試合も、選手も、リーグの記録も。<br>ここからSL WORLDの各機能へ。</p>
+  </div>
+  <div class="sl-home-grid" role="navigation" aria-label="SL WORLD メニュー">
+    <a class="sl-home-card" href="#management">
+      <span class="sl-home-number" aria-hidden="true">01 / WORLD</span>
+      <span class="sl-home-name">SL WORLD 本編・管理 <span aria-hidden="true">→</span></span>
+      <span class="sl-home-description">大会・チーム・移籍・NEWS・歴史を確認・管理</span>
+    </a>
+    <a class="sl-home-card" href="./engine-test.html">
+      <span class="sl-home-number" aria-hidden="true">02 / BASEBALL</span>
+      <span class="sl-home-name">試合 / ENGINE TEST <span aria-hidden="true">→</span></span>
+      <span class="sl-home-description">試合を進めて、プレイログと選手成績を確認</span>
+    </a>
+    <a class="sl-home-card" href="./player-editor.html">
+      <span class="sl-home-number" aria-hidden="true">03 / PLAYERS</span>
+      <span class="sl-home-name">選手作成・編集 <span aria-hidden="true">→</span></span>
+      <span class="sl-home-description">所属チーム・能力・球種・特殊能力を登録</span>
+    </a>
+    <a class="sl-home-card" href="./sim.html">
+      <span class="sl-home-number" aria-hidden="true">04 / SIMULATION</span>
+      <span class="sl-home-name">SL SIM <span aria-hidden="true">→</span></span>
+      <span class="sl-home-description">チームを選んでシミュレーションをプレイ</span>
+    </a>
+    <details class="sl-home-card sl-home-future">
+      <summary><span class="sl-home-number">05 / LIBRARY · 準備中</span><span class="sl-home-name">資料・情報</span></summary>
+      <p class="sl-home-description">SL WORLDの資料をまとめる場所です。現在のNEWS・歴史は「SL WORLD 本編・管理」から確認できます。</p>
+    </details>
+    <details class="sl-home-card sl-home-future">
+      <summary><span class="sl-home-number">06 / DATA · 準備中</span><span class="sl-home-name">データ管理</span></summary>
+      <p class="sl-home-description">データ管理の共通メニューは準備中です。管理データのバックアップは本編の「管理」、選手データのJSON保存・読込は「選手作成・編集」をご利用ください。</p>
+    </details>
+  </div>
+</main>
+<div id="slManagement" hidden>
+<div class="sl-home-return"><a href="#home">← SL WORLD HOME</a></div>
+
 
 <header>
   <div class="headerTop">
@@ -1218,6 +1260,26 @@ nav button.active{
 </nav>
 
 
+</div>
+<script>
+// HOME routing is independent of management tabs and never touches storage.
+(() => {
+  const home = document.getElementById("slHome");
+  const management = document.getElementById("slManagement");
+  function showHomeRoute(moveFocus = false){
+    const inManagement = location.hash === "#management";
+    home.hidden = inManagement;
+    management.hidden = !inManagement;
+    if(moveFocus){
+      window.scrollTo(0,0);
+      (inManagement ? management.querySelector(".sl-home-return a") : document.getElementById("slHomeTitle")).focus({preventScroll:true});
+    }
+  }
+  window.addEventListener("hashchange",()=>showHomeRoute(true));
+  window.addEventListener("pageshow",()=>showHomeRoute());
+  showHomeRoute();
+})();
+</script>
 <script>
 
 const $ = id => document.getElementById(id);

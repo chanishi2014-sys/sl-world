@@ -1,0 +1,32 @@
+/* Shared HOME navigation only. No existing page classes or storage access. */
+#slHome[hidden],#slManagement[hidden]{display:none!important}
+.sl-home-return{box-sizing:border-box;max-width:1180px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}
+.sl-home-return a{display:inline-flex;align-items:center;min-height:44px;padding:10px 14px;border:1px solid #345070;border-radius:12px;background:#101d2e;color:#d9ecff;text-decoration:none;font:600 14px/1.5 system-ui,-apple-system,sans-serif}
+.sl-home{box-sizing:border-box;max-width:1100px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));color:#f4f7fb;font-family:system-ui,-apple-system,"Yu Gothic",sans-serif}
+.sl-home-hero{padding:24px 0 28px;border-bottom:1px solid #29415d;margin-bottom:24px}
+.sl-home-eyebrow{margin:0 0 12px;color:#82caff;font-size:12px;letter-spacing:.18em}
+.sl-home h1{margin:0;font-size:clamp(26px,6vw,42px);line-height:1.2;letter-spacing:.02em}
+.sl-home-intro{margin:16px 0 0;color:#b3c5d9;font-size:16px;line-height:1.8}
+.sl-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.sl-home-card{box-sizing:border-box;display:block;min-width:0;margin:0;padding:22px;border:1px solid #29415d;border-radius:16px;background:linear-gradient(135deg,#14283f,#101b2b);color:#f4f7fb;text-decoration:none;overflow-wrap:anywhere}
+a.sl-home-card:hover,.sl-home-return a:hover{border-color:#82caff;background:#18314b}
+.sl-home-number{display:block;margin-bottom:10px;color:#82caff;font-size:12px;letter-spacing:.08em}
+.sl-home-name{display:block;font-size:19px;font-weight:700;line-height:1.5}
+.sl-home-name>span{float:right;margin-left:8px;color:#82caff}
+.sl-home-description{display:block;margin:10px 0 0;color:#b3c5d9;font-size:14px;line-height:1.7}
+.sl-home-future{padding:0;background:#101b2b}
+.sl-home-future summary{padding:20px 22px;cursor:pointer;min-height:92px}
+.sl-home-future summary::marker{color:#91a3c0}
+.sl-home-future .sl-home-number{display:inline;color:#a4b7cc}
+.sl-home-future .sl-home-name{margin-top:10px}
+.sl-home-future>.sl-home-description{margin:0;padding:0 22px 22px}
+.sl-home a:focus-visible,.sl-home summary:focus-visible,.sl-home-return a:focus-visible{outline:3px solid #82caff;outline-offset:4px}
+@media(max-width:650px){
+ .sl-home-grid{grid-template-columns:1fr;gap:12px}
+ .sl-home-hero{padding-top:12px;margin-bottom:20px}
+ .sl-home-card{padding:18px}
+ .sl-home-name{font-size:18px}
+ .sl-home-future{padding:0}
+ .sl-home-future summary{padding:18px}
+ .sl-home-future>.sl-home-description{padding:0 18px 18px}
+}
