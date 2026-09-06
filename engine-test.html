@@ -46,6 +46,7 @@
 #balanceStatus{color:#ffd477;min-height:1.6em;overflow-wrap:anywhere}
 #balancePanel button{font-size:14px;min-height:44px}
 @media(max-width:650px){.balance-controls{grid-template-columns:1fr}.balance-result{padding:10px}}
+.engine-version{margin:8px 0 0;text-align:right;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
 </style>
 <!-- SL WORLD PWA -->
 <meta name="theme-color" content="#07111f">
@@ -60,7 +61,7 @@
 <link rel="stylesheet" href="./sl-home.css">
 </head><body>
 <div class="sl-home-return"><a href="./index.html#home">← SL WORLD HOME</a></div>
-<header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #001</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p></header>
+<header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #001</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p><p id="engineVersion" class="note engine-version"></p></header>
 <main>
 <section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
 <div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
@@ -99,7 +100,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-002-quality-alpha2", innings:9, maxPitchesPerAction:20000,
+ version:"test-match-002-quality-alpha3", innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -113,7 +114,7 @@ const CONFIG = {
   protectZone:.09,protectChase:.08,threeBallPatience:.05,mistakeAttack:.10,deceptionChase:.06},
  // Lower the small-gap slope; the cubic term retains the extreme-gap advantage.
  contact:{baseLogit:1.45,duelWeight:2.8,gapCurve:.90,chasePenalty:.65,min:.12,max:.975,foulBase:.29,foulDifficulty:.12,foulMin:.18,foulMax:.42},
- batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,gapCompression:.85,extremeGap:.40,noise:.18,
+ batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,gapCompression:.83,extremeGap:.40,noise:.18,
   thresholds:{perfect:.82,strong:.62,normal:.38,jammed:.18},
   // Direct outcome distributions conditioned on batted quality, never a team/league strength table.
   outcomes:{
@@ -428,6 +429,7 @@ globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG
 // ==================== UI ====================
 if(typeof document!=="undefined"){
  const $=id=>document.getElementById(id);let game,appearanceTeams=[];
+ $("engineVersion").textContent=`ENGINE VERSION: ${CONFIG.version}`;
  const labels={ball:"ボール",calledStrike:"見逃しストライク",swingingStrike:"空振り",foul:"ファウル",strikeout:"三振",walk:"四球",single:"単打",double:"二塁打",triple:"三塁打",homeRun:"本塁打",groundout:"ゴロアウト",flyout:"フライアウト",lineout:"ライナーアウト"};
  function table(target,headers,rows){target.replaceChildren();for(const [i,row]of [headers,...rows].entries()){const tr=document.createElement("tr");for(const item of row){const cell=document.createElement(i===0?"th":"td");cell.textContent=String(item);tr.appendChild(cell);}target.appendChild(tr);}}
  function statList(entries,kind=""){const list=document.createElement("dl");list.className="stat-list "+kind;entries.forEach(([label,value])=>{const item=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=label;dd.textContent=String(value);item.append(dt,dd);list.appendChild(item);});return list;}
