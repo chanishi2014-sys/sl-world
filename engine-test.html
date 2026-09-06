@@ -99,7 +99,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-002-quality-alpha1", innings:9, maxPitchesPerAction:20000,
+ version:"test-match-002-quality-alpha2", innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -111,8 +111,9 @@ const CONFIG = {
  fatigue:{baseBudget:45,staminaBudget:.65,window:80,speedLoss:4,controlLoss:.12,qualityLoss:.035},
  judgment:{zoneBase:.44,zoneControl:.24,zoneMin:.30,zoneMax:.78,inZoneSwing:.72,chase:.19,
   protectZone:.09,protectChase:.08,threeBallPatience:.05,mistakeAttack:.10,deceptionChase:.06},
- contact:{baseLogit:1.45,duelWeight:3.2,gapCurve:.65,chasePenalty:.65,min:.12,max:.975,foulBase:.29,foulDifficulty:.12,foulMin:.18,foulMax:.42},
- batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,noise:.18,
+ // Lower the small-gap slope; the cubic term retains the extreme-gap advantage.
+ contact:{baseLogit:1.45,duelWeight:2.8,gapCurve:.90,chasePenalty:.65,min:.12,max:.975,foulBase:.29,foulDifficulty:.12,foulMin:.18,foulMax:.42},
+ batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,gapCompression:.85,extremeGap:.40,noise:.18,
   thresholds:{perfect:.82,strong:.62,normal:.38,jammed:.18},
   // Direct outcome distributions conditioned on batted quality, never a team/league strength table.
   outcomes:{
@@ -260,7 +261,10 @@ function resolveContact(g,batter,pitch,effects){
 // ==================== 4. batted quality: centering, force, pitcher disruption ====================
 function generateBattedQuality(g,batter,pitch,effects){
  const c=g.config.batted,meet=scaled(batter,"meet",g.config),power=scaled(batter,"power",g.config);
- const score=clamp(c.qualityBase+c.meetWeight*(meet-.5)+c.powerWeight*(power-.5)-c.pitchWeight*(pitch.pitchQuality-.5)+c.noise*centeredNoise(g.rng)+effects.battedQuality,0,1);
+ // Compress small/mid individual matchup margins; restore full weight at extremeGap.
+ const gap=c.meetWeight*(meet-.5)+c.powerWeight*(power-.5)-c.pitchWeight*(pitch.pitchQuality-.5);
+ const gapScale=c.gapCompression+(1-c.gapCompression)*Math.min(1,(Math.abs(gap)/c.extremeGap)**2);
+ const score=clamp(c.qualityBase+gap*gapScale+c.noise*centeredNoise(g.rng)+effects.battedQuality,0,1);
  const grade=Object.entries(c.thresholds).find(([,threshold])=>score>=threshold)?.[0]||"touch";
  return {score,grade};
 }
