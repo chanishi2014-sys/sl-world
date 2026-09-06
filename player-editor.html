@@ -461,21 +461,7 @@ hr{
 
       <div>
         <label>所属チーム</label>
-        <select id="team">
-          <option>デビルスターズ</option>
-          <option>大阪桐蔭</option>
-          <option>納東一</option>
-          <option>東海大相模</option>
-          <option>壮青学院</option>
-          <option>日体荏原</option>
-          <option>威伏</option>
-          <option>西東国</option>
-          <option>武勇館</option>
-          <option>明訓</option>
-          <option>頭取商</option>
-          <option>知位学園</option>
-          <option>その他</option>
-        </select>
+        <select id="team"></select>
       </div>
 
       <div>
@@ -740,6 +726,27 @@ hr{
    ========================================================= */
 
 const STORAGE_KEY = "sl_world_players_v01";
+
+// 正式な所属チームと旧名の対応を一元管理。今後の追加もこの一覧で行う。
+const TEAMS = [
+  {name:"デビルスターズ"},
+  {name:"桐蔭フロンティア",legacy:"大阪桐蔭"},
+  {name:"アステリア",legacy:"納東一"},
+  {name:"東海ユナイテッド",legacy:"東海大相模"},
+  {name:"ブルーマリナーズ",legacy:"壮青学院"},
+  {name:"東京アスレチックス",legacy:"日体荏原"},
+  {name:"明道仁球会",legacy:"威伏"},
+  {name:"キューバ・リベルタード",legacy:"西東国"},
+  {name:"武勇館"},
+  {name:"明訓ベースボールクラブ",legacy:"明訓"},
+  {name:"鳥取野球倶楽部",legacy:"頭取商"},
+  {name:"知略野球研究所",legacy:"知位学園"}
+];
+const LEGACY_TEAM_NAMES = new Map(TEAMS.filter(team=>team.legacy).map(team=>[team.legacy,team.name]));
+
+function normalizeTeamName(name){
+  return LEGACY_TEAM_NAMES.get(name) ?? name;
+}
 
 // 選手固有の正式23球種を一元管理。標準のストレート・スローボールは登録しない。
 const PITCH_FAMILIES = {
@@ -1048,6 +1055,13 @@ let editingOriginal = null;
 
 const $ = id => document.getElementById(id);
 
+for(const team of TEAMS){
+  const option = document.createElement("option");
+  option.value = team.name;
+  option.textContent = team.name;
+  $("team").appendChild(option);
+}
+
 const specialList = $("specialList");
 
 const playerList = $("playerList");
@@ -1277,6 +1291,7 @@ document.querySelectorAll(".tab").forEach(tab=>{
 // 正規化はコピーに対して行う。起動・編集表示だけでは保存領域へ書き込まない。
 function normalizePlayer(raw){
   const p = JSON.parse(JSON.stringify(raw));
+  if(LEGACY_TEAM_NAMES.has(p.team)) p.team = normalizeTeamName(p.team);
   const position = value => ["LF","CF","RF","左翼手","中堅手","右翼手"].includes(value) ? "OF" : (value ?? null);
   const oldSubs = Array.isArray(p.subPositions) ? p.subPositions : [];
   if(position(p.mainPosition) !== p.mainPosition || oldSubs.some(x=>position(x)!==x || x === "投手" || x === "P")){
@@ -1315,7 +1330,8 @@ function validatePlayers(data){
     copyPitchRepertoire(p.pitchRepertoire);
     ids.add(p.id);
   });
-  return list;
+  // チーム名だけをコピー上で正規化し、ID・能力・追加フィールドをそのまま保つ。
+  return list.map(p=>LEGACY_TEAM_NAMES.has(p.team) ? {...p,team:normalizeTeamName(p.team)} : p);
 }
 
 function renderPitchRepertoire(){
