@@ -50,6 +50,25 @@
 
 #matchViewer canvas{display:block;width:100%;max-height:65vh;aspect-ratio:8/5;object-fit:contain;background:#071a27;border-radius:10px}#matchViewer [data-score],#matchViewer [data-detail]{overflow-wrap:anywhere;font-size:14px}#matchViewer [data-result]{font-weight:bold;color:#ffd477;min-height:1.7em}#matchViewer button{min-height:44px;font-size:14px}#matchViewer [hidden]{display:none}#matchViewer .toolbar label{margin:0;min-width:110px}
 [data-watch-mode][aria-pressed="true"]{background:#1687bc;border-color:#8bd7ff;box-shadow:0 0 0 2px #8bd7ff55}[data-watch-mode]{font-size:14px;min-height:44px}
+
+/* One shared scoreboard for every viewing mode, including final SKIP results. */
+.stadium-board{margin:12px 0 18px;padding:14px;border:1px solid #344c59;border-radius:10px;background:radial-gradient(#41607818 .6px,transparent .8px) 0 0/5px 5px,#030b12;box-shadow:inset 0 0 24px #0008,0 4px 12px #0003;color:#dcebe6;font-variant-numeric:tabular-nums}
+.sb-brand{display:flex;justify-content:space-between;gap:8px;color:#94acae;font-size:11px;letter-spacing:.14em;margin-bottom:9px}.sb-brand span:first-child{font-weight:800;color:#d3dec8}
+.sb-table{width:100%;table-layout:fixed;border-collapse:collapse;white-space:normal;font:18px ui-monospace,SFMono-Regular,Consolas,monospace}
+.sb-name-col{width:22%}.sb-total-col{width:9%}
+.sb-table th,.sb-table td{border-bottom:1px solid #243a40;border-right:1px solid #1d3035;padding:8px 2px;text-align:center}
+.sb-table thead th{font:12px system-ui;color:#809f9f}.sb-table tbody th{text-align:left;padding-left:7px;color:#dcebe6;font:600 14px system-ui;overflow-wrap:anywhere}
+.sb-table td{color:#e6f6d4;text-shadow:0 0 7px #9eb96b35}.sb-table .sb-total{color:#f8d982;font-size:25px;font-weight:800;background:#dec26509;border-right:0}
+.sb-table .sb-current-col{background:#539b9b12;color:#b0ebdf}.sb-table .sb-active-cell{box-shadow:inset 0 0 0 1px #83cdbb; background:#559f8128}
+.sb-table .sb-batting th{border-left:3px solid #83cdbb;padding-left:4px}
+.sb-status{display:grid;grid-template-columns:100px minmax(0,1fr) 100px;gap:14px;align-items:center;padding-top:12px}
+.sb-lamp-row{display:flex;gap:7px;align-items:center;height:21px}.sb-lamp-row b{width:14px;color:#a2b7bd;font:600 13px system-ui}.sb-lamp{width:12px;height:12px;border-radius:50%;background:#18252a;border:1px solid #36454b}
+.sb-s .is-on{background:#f2cb62;box-shadow:0 0 7px #f2cb6255}.sb-b .is-on{background:#79cda0;box-shadow:0 0 7px #79cda055}.sb-o .is-on{background:#ed8277;box-shadow:0 0 7px #ed827755}
+.sb-phase{text-align:center;min-width:0}.sb-phase strong{display:block;font-size:20px;color:#ccece1}.sb-phase span{display:block;margin-top:5px;color:#97afb1;font-size:12px;overflow-wrap:anywhere}
+.sb-runners{display:flex;align-items:center;flex-direction:column;gap:4px}.sb-base-map{width:48px;height:34px;position:relative}.sb-base-map i{width:11px;height:11px;transform:rotate(45deg);position:absolute;border:1px solid #496466;background:#142329}.sb-base-map [data-base="2"]{left:18px;top:1px}.sb-base-map [data-base="3"]{left:3px;top:17px}.sb-base-map [data-base="1"]{right:3px;top:17px}.sb-base-map .is-on{background:#f2cf76;border-color:#f9e1a7}.sb-runner-text{font-size:12px;color:#b4c6c4}
+.sb-note{font-size:11px!important;color:#839b9d;margin:9px 0 0;line-height:1.4}
+.sb-extra-innings .sb-table-wrap{overflow-x:auto}.sb-extra-innings .sb-table{min-width:580px}
+@media(max-width:650px){.stadium-board{padding:9px 6px}.sb-name-col{width:22%}.sb-total-col{width:9%}.sb-table{font-size:14px}.sb-table th,.sb-table td{padding:7px 1px}.sb-table tbody th{font-size:12px;padding-left:3px}.sb-table .sb-total{font-size:20px}.sb-table thead th{font-size:11px}.sb-status{grid-template-columns:70px minmax(0,1fr) 60px;gap:5px;padding-top:9px}.sb-phase strong{font-size:17px}.sb-phase span{font-size:11px}.sb-lamp-row{gap:4px;height:19px}.sb-lamp{width:11px;height:11px}.sb-brand{font-size:10px;letter-spacing:.09em}.sb-note{font-size:10px!important}}
 </style>
 <!-- SL WORLD PWA -->
 <meta name="theme-color" content="#07111f">
@@ -69,7 +88,7 @@
 <section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
 <div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
-<section class="card"><h2 id="matchTitle"></h2><div id="teamSummary" class="team-summary"></div><div class="scroll" role="region" aria-label="イニング別得点（横にスクロールできます）" tabindex="0"><table id="scoreboard"></table></div><p class="note">失策：未実装のため表示していません。</p><p id="phase" class="metric"></p><div class="grid"><div><div id="count" class="metric"></div><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></div><div id="bases" class="bases"></div></div>
+<section class="card"><p id="matchTitle" class="note"></p><details><summary>投打者・投球数</summary><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></details>
 <div class="toolbar" aria-label="観戦モード"><button data-watch-mode="FULL" aria-pressed="true">フル観戦</button><button data-watch-mode="MINI" aria-pressed="false">ミニ観戦</button><button data-watch-mode="HIGHLIGHT" aria-pressed="false">ハイライト</button><button data-watch-mode="SKIP" aria-pressed="false">スキップ</button></div>
 <p class="note">フル：1球ずつ ／ ミニ：打席結果を短く再生 ／ ハイライト：重要場面を自動抽出 ／ スキップ：即時終了。切替時は確定済みのプレー後から継続します。</p>
 <details><summary>開発用：文字ベース進行</summary><div class="toolbar"><button id="pitch">1球進行</button><button id="atbat">1打席進行</button><button id="inning">1イニング進行</button><button id="game">試合終了まで進行</button></div><p class="note">1イニングは現在の回の裏終了まで。延長なし／同点は引き分け。</p></details></section>
@@ -466,21 +485,14 @@ if(typeof document!=="undefined"){
    overview.append(head,body);section.append(heading,overview);$("appearanceOverview").appendChild(section);
   });
  }
- function render(){const s=game.state;$("matchTitle").textContent=`${game.teams[0].name} vs ${game.teams[1].name} / seed: ${game.seed}`;
-  table($("scoreboard"),["チーム",1,2,3,4,5,6,7,8,9,"得点","安打"],game.teams.map((t,i)=>[t.name,...s.lines[i].map(x=>x===null?"—":x),s.score[i],s.hits[i]]));
-  const reason={draw:"引き分け",walkoff:"サヨナラ終了",homeLeadAfterTop9:"9回表終了・後攻勝利",nineInnings:"9回終了"};
-  $("phase").textContent=s.finished?`試合終了 — ${reason[s.finishReason]}`:`${s.inning}回${s.half==="top"?"表":"裏"}`;
-  $("count").textContent=`アウト ${s.outs} / ボール ${s.balls} / ストライク ${s.strikes}`;
+ function render(){const s=game.state;$("matchTitle").textContent=`試合seed：${game.seed}`;
   const pitcher=currentPitcher(game),batter=currentBatter(game);
   $("pitcher").textContent=`投手：${pitcher.name}`;$("batter").textContent=s.finished?"打者：—":`打者：${s.order[offense(game)]+1}番 ${batter.name}`;
   $("pitchCount").textContent=game.teams.map(t=>`${t.pitcher.name} ${s.pitching[t.pitcher.key].pitches}球`).join(" / ");
-  $("bases").replaceChildren();s.bases.forEach((p,i)=>{const div=document.createElement("div");div.className="base";div.textContent=`${i+1}塁：${p?p.name:"なし"}`;$("bases").appendChild(div);});
   const log=$("log"),previousTop=log.scrollTop,followLatest=log.scrollHeight-log.clientHeight-previousTop<=32;
   log.textContent=s.events.map(e=>`#${e.sequence} ${e.inning}${e.half==="top"?"表":"裏"} ${e.pitcher.name} → ${e.batter.name} / ${e.pitchType} ${e.pitchSpeed}km/h / ${labels[e.result]} / ${e.scoreAfter.join("−")}`).join("\n")||"まだ投球していません。";
   log.scrollTop=s.events.length===0?0:followLatest?log.scrollHeight:previousTop;
   renderAppearanceOverview();
-  $("teamSummary").replaceChildren();
-  game.teams.forEach((t,i)=>{const card=document.createElement("div"),h=document.createElement("h3");card.className="team-result";h.textContent=t.name;card.append(h,statList([["得点",s.score[i]],["安打",s.hits[i]]]));$("teamSummary").appendChild(card);});
   $("statistics").replaceChildren();game.teams.forEach(t=>{
    const team=document.createElement("section"),h=document.createElement("h3");h.textContent=t.name;team.appendChild(h);
    const bat=document.createElement("h4");bat.textContent="打撃成績";team.appendChild(bat);
