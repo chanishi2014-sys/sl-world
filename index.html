@@ -589,18 +589,31 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; }
 }
 #slOpening[hidden] { display:none; }
 #slOpening:focus-visible { outline:2px solid #a9d9ff; outline-offset:-5px; }
-.sl-opening-lights {
-  position:absolute; inset:0; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 44%,#91cfff20 0,transparent 46%),
-    radial-gradient(ellipse at 10% 19%,#c5eaff40 0,transparent 23%),
-    radial-gradient(ellipse at 90% 19%,#c5eaff40 0,transparent 23%);
-  animation:sl-opening-lights var(--opening-duration,5000ms) ease-out both;
-}
-.sl-opening-lights::after {
-  content:""; position:absolute; left:9%; right:9%; bottom:-22%; height:52%;
-  border-radius:50%; border-top:1px solid #bbdfff32;
-  box-shadow:0 -18px 65px #9bcfff12,0 -3px 12px #9bcfff16;
-}
+.sl-opening-stadium { position:absolute; inset:0; overflow:hidden; pointer-events:none;
+  background:linear-gradient(#010308 0%,#040b16 45%,#020507 100%); }
+.sl-opening-bowl { position:absolute; width:140%; left:-20%; bottom:-4%; height:76%; }
+.sl-opening-stands { fill:#070e18; stroke:#142231; stroke-width:2; opacity:.65; }
+.sl-opening-stands path { fill:none; stroke:#192733; stroke-width:2; }
+.sl-opening-field { opacity:.015; animation:sl-opening-field var(--opening-duration,5000ms) linear both; }
+.sl-opening-tower { position:absolute; top:23%; width:22%; height:36%; }
+.sl-opening-tower-left { left:4%; --lamp-animation:sl-opening-left; }
+.sl-opening-tower-right { right:4%; --lamp-animation:sl-opening-right; }
+.sl-opening-tower::before { content:""; position:absolute; top:14%; bottom:0; left:43%; width:14%;
+  background:repeating-linear-gradient(35deg,transparent 0 18px,#263343 19px 21px,transparent 22px 37px);
+  border-left:3px solid #172331; border-right:3px solid #172331; }
+.sl-opening-rack { position:absolute; inset:0 0 auto; height:17%; min-height:27px;
+  background:#111c29; border:3px solid #253446; transform:perspective(500px) rotateX(-8deg); }
+.sl-opening-rack::after { content:""; position:absolute; inset:3px;
+  background:radial-gradient(ellipse,#effaff 0 22%,#9ecae4 27% 37%,transparent 48%) 0 0 / 16.666% 50%;
+  opacity:.02; box-shadow:0 0 24px #b7ddff70;
+  animation:var(--lamp-animation) var(--opening-duration,5000ms) linear both; }
+.sl-opening-beam { position:absolute; top:24%; bottom:0; width:90%; opacity:0;
+  background:linear-gradient(180deg,#bfddf922, #6fa6cf0c 55%,transparent 90%);
+  animation:var(--lamp-animation) var(--opening-duration,5000ms) linear both; }
+.sl-opening-beam-left { left:3%; --lamp-animation:sl-opening-left; clip-path:polygon(2% 0,23% 0,100% 100%,10% 100%); }
+.sl-opening-beam-right { right:3%; --lamp-animation:sl-opening-right; clip-path:polygon(77% 0,98% 0,90% 100%,0 100%); }
+.sl-opening-stadium::after { content:""; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 53%,transparent 15%,#00000035 68%,#0000009c 100%); }
 .sl-opening-wordmark { position:relative; display:block; max-width:100%; }
 .sl-opening-title {
   display:block; font-size:clamp(36px,10vw,94px); font-weight:900;
@@ -616,20 +629,18 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; }
   position:absolute; bottom:calc(24px + env(safe-area-inset-bottom,0px));
   left:0; right:0; font-size:11px; letter-spacing:.2em; color:#748493;
 }
-@keyframes sl-opening-lights {
-  0% { opacity:.08; } 20% { opacity:.35; } 50% { opacity:.65; }
-  80%,100% { opacity:1; }
-}
+/* Percentages share the existing 5000ms duration: left .7s, right 1.4s, field 2.1s, logo 3s. */
+@keyframes sl-opening-left { 0%,14% {opacity:.02} 23%,80% {opacity:.65} 88%,100% {opacity:1} }
+@keyframes sl-opening-right { 0%,28% {opacity:.02} 37%,80% {opacity:.65} 88%,100% {opacity:1} }
+@keyframes sl-opening-field { 0%,14% {opacity:.015} 28% {opacity:.06} 42% {opacity:.12} 60%,80% {opacity:.48} 88%,100% {opacity:.63} }
 @keyframes sl-opening-title {
-  0%,20% { opacity:0; transform:scale(.96); text-shadow:none; }
-  50%,78% { opacity:1; transform:scale(1); text-shadow:0 0 22px #a9d9ff25; }
-  88%,100% { opacity:1; transform:scale(1.015); text-shadow:0 0 28px #c0e4ff70; }
+  0%,60% { opacity:0; transform:scale(.96); text-shadow:none; }
+  84% { opacity:1; transform:scale(1); text-shadow:0 0 22px #a9d9ff25; }
+  90%,100% { opacity:1; transform:scale(1.015); text-shadow:0 0 28px #c0e4ff70; }
 }
-@keyframes sl-opening-subtitle {
-  0%,50% { opacity:0; } 66%,100% { opacity:1; }
-}
+@keyframes sl-opening-subtitle { 0%,66% { opacity:0; } 84%,100% { opacity:1; } }
 @keyframes sl-opening-exit {
-  0%,84% { opacity:1; visibility:visible; }
+  0%,90% { opacity:1; visibility:visible; }
   100% { opacity:0; visibility:hidden; }
 }
 @media (prefers-reduced-motion:reduce) {
@@ -653,7 +664,34 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; }
 
 <body>
 <button id="slOpening" type="button" aria-label="SL WORLD オープニングをスキップ">
-  <span class="sl-opening-lights" aria-hidden="true"></span>
+  <span class="sl-opening-stadium" aria-hidden="true">
+    <svg class="sl-opening-bowl" viewBox="0 0 1000 650" preserveAspectRatio="none" focusable="false">
+      <defs>
+        <radialGradient id="slOpeningGrass"><stop stop-color="#244b45"/><stop offset="1" stop-color="#0a201e"/></radialGradient>
+        <linearGradient id="slOpeningDirt" x2="0" y2="1"><stop stop-color="#695949"/><stop offset="1" stop-color="#3c3630"/></linearGradient>
+      </defs>
+      <g class="sl-opening-stands">
+        <path d="M-80 290 Q500 -25 1080 290 L1080 570 Q500 70 -80 570Z" style="fill:#080f19"/>
+        <path d="M-80 310 Q500 0 1080 310 M-80 340 Q500 22 1080 340 M-80 370 Q500 44 1080 370 M-80 402 Q500 66 1080 402 M-80 435 Q500 88 1080 435 M-80 470 Q500 110 1080 470 M-80 508 Q500 132 1080 508"/>
+        <path d="M30 270L-20 480 M160 215L100 388 M290 180L240 321 M420 162L400 282 M580 162L600 282 M710 180L760 321 M840 215L900 388 M970 270L1020 480"/>
+      </g>
+      <g class="sl-opening-field">
+        <path d="M500 590L85 365 Q500 120 915 365Z" fill="url(#slOpeningGrass)" stroke="#31483f" stroke-width="3"/>
+        <path d="M500 590L220 296 M500 590L360 245 M500 590L640 245 M500 590L780 296" stroke="#68907a" stroke-opacity=".08" stroke-width="48"/>
+        <path d="M500 580L335 467Q330 418 500 363Q670 418 665 467Z" fill="url(#slOpeningDirt)"/>
+        <path d="M500 552L387 465L500 390L613 465Z" fill="#284a40"/>
+        <path d="M90 366L500 565L910 366 M500 565L382 465L500 388L618 465Z" fill="none" stroke="#bec9be" stroke-opacity=".55" stroke-width="2"/>
+        <ellipse cx="500" cy="474" rx="22" ry="11" fill="#8c7b64"/>
+        <path d="M494 474H506" stroke="#d7d9cd" stroke-width="3"/>
+        <g fill="#d4dace"><path d="M493 565L500 571L507 565V560H493Z"/><path d="M375 465L382 461L389 465L382 470Z M493 388L500 384L507 388L500 393Z M611 465L618 461L625 465L618 470Z"/></g>
+        <path d="M475 579L475 561H486 M525 579L525 561H514" fill="none" stroke="#adb6ac" stroke-opacity=".35"/>
+      </g>
+    </svg>
+    <span class="sl-opening-beam sl-opening-beam-left"></span>
+    <span class="sl-opening-beam sl-opening-beam-right"></span>
+    <span class="sl-opening-tower sl-opening-tower-left"><span class="sl-opening-rack"></span></span>
+    <span class="sl-opening-tower sl-opening-tower-right"><span class="sl-opening-rack"></span></span>
+  </span>
   <span class="sl-opening-wordmark" aria-hidden="true">
     <span class="sl-opening-title">SL WORLD</span>
     <span class="sl-opening-subtitle">SUPER LEAGUE WORLD</span>
@@ -748,17 +786,12 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; }
       <span class="sl-home-name">選手作成・編集 <span aria-hidden="true">→</span></span>
       <span class="sl-home-description">所属チーム・能力・球種・特殊能力を登録</span>
     </a>
-    <a class="sl-home-card" href="./sim.html">
-      <span class="sl-home-number" aria-hidden="true">04 / SIMULATION</span>
-      <span class="sl-home-name">SL SIM <span aria-hidden="true">→</span></span>
-      <span class="sl-home-description">チームを選んでシミュレーションをプレイ</span>
-    </a>
     <details class="sl-home-card sl-home-future">
-      <summary><span class="sl-home-number">05 / LIBRARY · 準備中</span><span class="sl-home-name">資料・情報</span></summary>
+      <summary><span class="sl-home-number">04 / LIBRARY · 準備中</span><span class="sl-home-name">資料・情報</span></summary>
       <p class="sl-home-description">SL WORLDの資料をまとめる場所です。現在のNEWS・歴史は「SL WORLD 本編・管理」から確認できます。</p>
     </details>
     <details class="sl-home-card sl-home-future">
-      <summary><span class="sl-home-number">06 / DATA · 準備中</span><span class="sl-home-name">データ管理</span></summary>
+      <summary><span class="sl-home-number">05 / DATA · 準備中</span><span class="sl-home-name">データ管理</span></summary>
       <p class="sl-home-description">データ管理の共通メニューは準備中です。管理データのバックアップは本編の「管理」、選手データのJSON保存・読込は「選手作成・編集」をご利用ください。</p>
     </details>
   </div>
@@ -8429,5 +8462,10 @@ if(
  PART 3 / 3
  COMPLETE
 ======================================================= -->
+
+<script>
+// Retired SL SIM save only; management and player storage are untouched.
+try { localStorage.removeItem("sl_sim_alpha01"); } catch (_) {}
+</script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 'use strict';
 // Bump VERSION when changing worker/precache structure. HTML updates do not
 // require a bump: every online request bypasses the HTTP cache first.
-const VERSION = 'v4';
+const VERSION = 'v6';
 const BASE = new URL('./', self.location.href);
 const PREFIX = `sl-world-pwa:${BASE.pathname}:`;
 const CACHE = PREFIX + VERSION;
 const ASSETS = [
-  './', 'index.html', 'player-editor.html', 'sim.html', 'engine-test.html',
+  './', 'index.html', 'player-editor.html', 'engine-test.html',
   'manifest.webmanifest', 'pwa-register.js', 'sl-home.css',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'
 ].map(path => new URL(path, BASE).href);

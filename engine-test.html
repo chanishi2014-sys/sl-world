@@ -100,7 +100,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-002-quality-alpha3", innings:9, maxPitchesPerAction:20000,
+ version:"test-match-002-quality-alpha4", innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -114,7 +114,7 @@ const CONFIG = {
   protectZone:.09,protectChase:.08,threeBallPatience:.05,mistakeAttack:.10,deceptionChase:.06},
  // Lower the small-gap slope; the cubic term retains the extreme-gap advantage.
  contact:{baseLogit:1.45,duelWeight:2.8,gapCurve:.90,chasePenalty:.65,min:.12,max:.975,foulBase:.29,foulDifficulty:.12,foulMin:.18,foulMax:.42},
- batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,gapCompression:.83,extremeGap:.40,noise:.18,
+ batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,gapCompression:.82,extremeGap:.40,noise:.18,
   thresholds:{perfect:.82,strong:.62,normal:.38,jammed:.18},
   // Direct outcome distributions conditioned on batted quality, never a team/league strength table.
   outcomes:{
