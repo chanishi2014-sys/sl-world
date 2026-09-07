@@ -21,7 +21,7 @@ for (const team of result) {
   assert.equal(team.players[0].batting[0].status,'unset'); // Never engine fallback meet:10.
   assert.equal(team.players[1].pitching.length,3);
   assert.equal(team.players[1].batting.length,6);
-  assert.equal(team.players[1].batting[1].status,'pending');
+  assert.equal(team.players[1].batting[1].rank,'S');
   assert.equal(team.players[1].pitching[0].rank,'S');
   assert.equal(team.players[1].pitching[1].rank,'A');
   assert.equal(team.players[8].pitching.length,3);
@@ -35,11 +35,13 @@ assert.equal(core(fs.readFileSync('engine-test.html','utf8')).replace(/\r\n/g,'\
 // Independent expected strings transcribed from the official tables, every valid integer.
 const repeat = (rank,n) => rank.repeat(n);
 const expected = {
+ meet: { min:1, ranks:'GFFEDDCBAS' },
+ speed: { min:1, ranks:'GGGFFFEEEDDDCCCBBAAS' },
  control: { min:1, ranks:repeat('G',39)+repeat('F',30)+repeat('E',30)+repeat('D',30)+repeat('C',25)+repeat('B',20)+repeat('A',15)+repeat('S',11) },
  velocity: { min:80, ranks:repeat('G',5)+repeat('F',5)+repeat('E',10)+repeat('D',15)+repeat('C',15)+repeat('B',15)+repeat('A',10)+repeat('S',11) }
 };
 for (const [type, profile] of Object.entries(expected)) {
- const types=type==='control'?['control','stamina']:[type];
+ const types=type==='control'?['power','control','stamina']:type==='speed'?['speed','arm','fielding','catching']:[type];
  for (const stat of types) {
   [...profile.ranks].forEach((rank,i)=>assert.equal(D.getAbilityRank(stat,profile.min+i),rank,stat+':'+(profile.min+i)));
   for(const value of [profile.min-1,profile.min+profile.ranks.length,profile.min+.5]) {
@@ -51,8 +53,6 @@ for (const [type, profile] of Object.entries(expected)) {
 assert.equal(D.getAbilityRank('unknown',10),null);
 assert.equal(D.getAbilityRank('velocity',80),'G');
 assert.equal(D.getAbilityRank('velocity',79),null);
-for(const type of ['meet','power','speed','arm','fielding','catching']) {
- assert.equal(D.ABILITIES[type].thresholds,null);
- for(const value of [1,10,20,200]) {assert.equal(D.getAbilityRank(type,value),null);assert.equal(D.describeAbility(type,value).status,'pending');}
-}
-console.log('PASS: all 486 valid pitcher integer values, fielder ratings deferred, all boundaries, null/out-of-table inputs, both lineups and two-way groups, no DB mutation or engine changes.');
+assert.equal(D.getAbilityRank('power',200),'S');
+assert.equal(D.getAbilityRank('meet',9),'A');
+console.log('PASS: all 776 valid integer values for nine abilities, all boundaries, null/out-of-table inputs, both lineups and two-way groups, no DB mutation or engine changes.');

@@ -13,6 +13,6 @@
 .ability-rank{display:inline-flex;align-items:center;justify-content:center;min-width:1.7em;padding:2px 5px;margin:0;border-radius:4px;background:#07111f;font-size:14px;font-weight:750;line-height:1.4}
 .rank-G{color:#b6bec8}.rank-F{color:#71b7ff}.rank-E{color:#76d79b}.rank-D{color:#f1e569}
 .rank-C{color:#ffb66b}.rank-B{color:#ff8585}.rank-A{color:#f7a5d3}.rank-S{color:#e9c35d}
-.rank-unset,.rank-pending,.rank-unsupported{color:#a4b7cc;font-weight:400}.rank-pending,.rank-unsupported{font-size:12px}
+.rank-unset,.rank-unsupported{color:#a4b7cc;font-weight:400}.rank-unsupported{font-size:12px}
 .lineup-legend{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
 @media(max-width:700px){.lineup-teams{grid-template-columns:minmax(0,1fr)}.lineup-abilities{gap:8px 12px}.lineup-player{padding:10px}.lineup-ability{font-size:14px}}

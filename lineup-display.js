@@ -3,19 +3,21 @@
   'use strict';
   const RANKS = Object.freeze(['G', 'F', 'E', 'D', 'C', 'B', 'A', 'S']);
   // Official pitcher criteria: latest user specification and image0 (1).png.
-  // Fielder ratings are deferred by the latest request, including prior tables.
+  // Official fielder criteria: user-supplied image1.png (basic abilities only).
   // Inclusive integer intervals: do not clamp, round or invent out-of-table ranks.
   const table = rows => Object.freeze(rows.map(([min, max, rank]) => Object.freeze({ min, max, rank })));
+  const MEET = table([[1,1,'G'],[2,3,'F'],[4,4,'E'],[5,6,'D'],[7,7,'C'],[8,8,'B'],[9,9,'A'],[10,10,'S']]);
+  const SCALE_20 = table([[1,3,'G'],[4,6,'F'],[7,9,'E'],[10,12,'D'],[13,15,'C'],[16,17,'B'],[18,19,'A'],[20,20,'S']]);
   const SCALE_200 = table([[1,39,'G'],[40,69,'F'],[70,99,'E'],[100,129,'D'],[130,154,'C'],[155,174,'B'],[175,189,'A'],[190,200,'S']]);
   // The revised official velocity table includes G:80–84, F:85–89, E:90–99.
   const VELOCITY = table([[80,84,'G'],[85,89,'F'],[90,99,'E'],[100,114,'D'],[115,129,'C'],[130,144,'B'],[145,154,'A'],[155,165,'S']]);
   const ABILITIES = Object.freeze({
-    meet: Object.freeze({ label: 'ミート', group: 'batting', thresholds: null }),
-    power: Object.freeze({ label: 'パワー', group: 'batting', thresholds: null }),
-    speed: Object.freeze({ label: '走力', group: 'batting', thresholds: null }),
-    arm: Object.freeze({ label: '肩力', group: 'batting', thresholds: null }),
-    fielding: Object.freeze({ label: '守備力', group: 'batting', thresholds: null }),
-    catching: Object.freeze({ label: '捕球', group: 'batting', thresholds: null }),
+    meet: Object.freeze({ label: 'ミート', group: 'batting', thresholds: MEET }),
+    power: Object.freeze({ label: 'パワー', group: 'batting', thresholds: SCALE_200 }),
+    speed: Object.freeze({ label: '走力', group: 'batting', thresholds: SCALE_20 }),
+    arm: Object.freeze({ label: '肩力', group: 'batting', thresholds: SCALE_20 }),
+    fielding: Object.freeze({ label: '守備力', group: 'batting', thresholds: SCALE_20 }),
+    catching: Object.freeze({ label: '捕球', group: 'batting', thresholds: SCALE_20 }),
     velocity: Object.freeze({ label: '球速', group: 'pitching', thresholds: VELOCITY }),
     control: Object.freeze({ label: 'コントロール', group: 'pitching', thresholds: SCALE_200 }),
     stamina: Object.freeze({ label: 'スタミナ', group: 'pitching', thresholds: SCALE_200 })
@@ -28,7 +30,7 @@
   }
   function describeAbility(type, value) {
     const rank = getAbilityRank(type, value);
-    return { label: ABILITIES[type].label, rank, status: !hasValue(value) ? 'unset' : rank ? 'ranked' : ABILITIES[type].thresholds === null ? 'pending' : 'unsupported' };
+    return { label: ABILITIES[type].label, rank, status: !hasValue(value) ? 'unset' : rank ? 'ranked' : 'unsupported' };
   }
   const positionNames = { P: '投', C: '捕', '1B': '一', '2B': '二', '3B': '三', SS: '遊', LF: '左', CF: '中', RF: '右', OF: '外', DH: '指' };
   function lineupModel(teams) {
@@ -57,7 +59,7 @@
     };
     root.replaceChildren();
     root.append(make('h2', '', 'オーダー / LINEUP'));
-    root.append(make('p', 'note', '登録された基本能力を表示します。—：未設定 ／ 評価待：野手の正式基準待ち ／ 対象外：評価表の範囲外・整数以外。試合中の成績や能力補完は反映しません。守備は登録位置（先発は投）を表示します。'));
+    root.append(make('p', 'note', '登録された基本能力を表示します。—：未設定 ／ 対象外：評価表の範囲外・整数以外。試合中の成績や能力補完は反映しません。守備は登録位置（先発は投）を表示します。'));
     const legend = make('div', 'lineup-legend');
     legend.setAttribute('aria-label', '能力ランクの色（GからS）');
     for (const rank of RANKS) legend.append(make('span', `ability-rank rank-${rank}`, rank));
@@ -69,7 +71,7 @@
       const list = make('dl', 'lineup-abilities');
       for (const entry of entries) {
         const item = make('div', 'lineup-ability');
-        const value = entry.rank || (entry.status === 'unset' ? '—' : entry.status === 'pending' ? '評価待' : '対象外');
+        const value = entry.rank || (entry.status === 'unset' ? '—' : '対象外');
         const badge = make('dd', `ability-rank ${entry.rank ? 'rank-' + entry.rank : 'rank-' + entry.status}`, value);
         if (entry.status === 'unset') badge.setAttribute('aria-label', '未設定');
         item.append(make('dt', '', entry.label), badge);
