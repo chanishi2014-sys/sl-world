@@ -2,7 +2,7 @@
 (() => {
  "use strict";
  const copy=value=>JSON.parse(JSON.stringify(value));
- const names={ball:'ボール',calledStrike:'見逃しストライク',swingingStrike:'空振り',foul:'ファウル',strikeout:'三振',walk:'四球',single:'単打',double:'二塁打',triple:'三塁打',homeRun:'本塁打',groundout:'ゴロアウト',flyout:'フライアウト',lineout:'ライナーアウト'};
+ const names={error:'失策',fieldersChoice:'野選',doublePlay:'併殺',sacrificeFly:'犠牲フライ',stolenBase:'盗塁成功',caughtStealing:'盗塁死',ball:'ボール',calledStrike:'見逃しストライク',swingingStrike:'空振り',foul:'ファウル',strikeout:'三振',walk:'四球',single:'単打',double:'二塁打',triple:'三塁打',homeRun:'本塁打',groundout:'ゴロアウト',flyout:'フライアウト',lineout:'ライナーアウト'};
  const bases=[[400,430],[540,315],[400,225],[260,315],[400,430]];
  const positions=[[400,332],[400,462],[553,302],[473,253],[249,302],[325,250],[200,155],[400,104],[600,155]];
  function toReplayEvent(event){
@@ -14,7 +14,7 @@
   if(e.infieldHit)destinations.single=[315,281];
   return {...e,outsBefore:e.outs,pitchResult:e.outcome,battingResult:e.battedResult,
    contactType:e.battedResult||e.outcome,fieldDirection:e.fieldDirection??null,
-   presentation:{directionSource:'illustrative-only',target:destinations[e.result]||[400,448]},
+   presentation:{directionSource:e.landingPoint?'engine':'legacy',target:e.landingPoint||destinations[e.result]||[400,448]},
    runsScored:e.scoreAfter.reduce((n,v,i)=>n+v-e.scoreBefore[i],0)};
  }
  // Animation choreography is not a baseball simulation. Coordinates and timing
@@ -24,24 +24,26 @@
  const point=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t)];
  function animationPlan(e){
   const pitchEnd=620+Math.max(260,650-((Number(e.pitchSpeed)||140)-80)*4.4);
-  const kind=e.result==='groundout'||e.infieldHit?'ground':e.result==='lineout'||e.result==='single'?'line':e.result==='homeRun'?'homer':e.result==='foul'?'foul':'fly';
-  const inPlay=e.outcome==='inPlay',foul=e.outcome==='foul';
-  const target=e.presentation.target;
+  const kind=e.battedResult==='groundout'||e.infieldHit?'ground':e.result==='lineout'||e.result==='single'?'line':e.result==='homeRun'?'homer':e.result==='foul'?'foul':'fly';
+  const inPlay=e.outcome==='inPlay'||e.eventType==='baserunning',foul=e.outcome==='foul';
+  const target=e.eventType==='baserunning'?positions[1]:e.presentation.target;
   const candidates=e.result==='groundout'?[2,3,4,5]:[6,7,8];
   if(e.result==='lineout')candidates.splice(0,candidates.length,2,3,4,5);
   let fielder=candidates[0];for(const i of candidates)if(Math.hypot(...pointDifference(positions[i],target))<Math.hypot(...pointDifference(positions[fielder],target)))fielder=i;
+  if(Number.isInteger(e.fielderIndex))fielder=e.fielderIndex;
   const flight=kind==='ground'?1050:kind==='line'?620:kind==='homer'?1900:kind==='foul'?650:1450;
   const caught=pitchEnd+flight;
   const throwStart=caught+(e.result==='triple'?850:220),throwEnd=throwStart+480;
-  const hasThrow=(e.result==='groundout'&&fielder!==2)||e.result==='triple';
+  const hasThrow=!!e.throw||(e.result==='groundout'&&fielder!==2)||e.result==='triple';
   const resultAt=e.result==='groundout'?(hasThrow?throwEnd+140:caught+700):e.result==='homeRun'?pitchEnd+3900:e.result==='triple'?pitchEnd+3500:e.result==='double'?pitchEnd+2400:e.result==='single'?pitchEnd+1850:inPlay?caught+220:e.result==='walk'?pitchEnd+1800:pitchEnd+650;
   return {pitchEnd,release:620,kind,inPlay,foul,target,fielder,flight,caught,hasThrow,throwStart,throwEnd,
-   throwTarget:e.result==='groundout'?bases[1]:positions[5],resultAt,end:resultAt+700,runStart:pitchEnd+120,runEnd:resultAt-80};
+   throwTarget:e.throw?bases[e.throw.toBase]:e.result==='groundout'?bases[1]:positions[5],resultAt,end:resultAt+700,runStart:e.tagUp?caught+120:pitchEnd+120,runEnd:resultAt-80};
  }
  function pointDifference(a,b){return [a[0]-b[0],a[1]-b[1]]}
  function ballAnimation(e,p,time){
   if(time<p.release)return {phase:'windup',ground:[409,313],height:0,visible:false};
   if(time<p.pitchEnd)return {phase:'pitch',ground:point([409,313],bases[0],clamp01((time-p.release)/(p.pitchEnd-p.release))),height:4,visible:true};
+  if(e.eventType==='baserunning'&&time>=p.pitchEnd){const t=clamp01((time-p.pitchEnd)/650);return {phase:'throw',ground:point(positions[1],bases[e.toBase],t),height:13,visible:t<1};}
   if(!p.inPlay&&!p.foul)return {phase:'catcher',ground:point(bases[0],[398,449],clamp01((time-p.pitchEnd)/180)),height:8,visible:time<p.pitchEnd+230};
   const t=clamp01((time-p.pitchEnd)/p.flight);
   let height=p.kind==='ground'?Math.abs(Math.sin(t*Math.PI*6))*3*(1-t):p.kind==='line'?Math.sin(t*Math.PI)*11:p.kind==='homer'?Math.sin(t*Math.PI)*118+26*t:Math.sin(t*Math.PI)*100;
@@ -49,26 +51,23 @@
   if(p.kind==='homer')return {phase:'homerExit',ground:p.target,height:0,visible:false};
   if(p.kind==='foul')return {phase:'foulDone',ground:p.target,height:0,visible:false};
   if(['single','double','triple'].includes(e.result)&&time<p.caught+650)return {phase:'chase',ground:p.target,height:0,visible:true};
+  if(e.doublePlay&&time>=p.throwStart&&time<p.throwEnd){const t=clamp01((time-p.throwStart)/(p.throwEnd-p.throwStart));return {phase:'throw',ground:t<.5?point(p.target,bases[2],t*2):point(bases[2],bases[1],(t-.5)*2),height:13,visible:true};}
   if(p.hasThrow&&time>=p.throwStart&&time<p.throwEnd)return {phase:'throw',ground:point(p.target,p.throwTarget,clamp01((time-p.throwStart)/(p.throwEnd-p.throwStart))),height:13,visible:true};
   return {phase:time<p.throwStart?'fieldCatch':p.hasThrow?'received':e.result==='groundout'?'baseTouch':['flyout','lineout'].includes(e.result)?'fieldCatch':'landed',ground:p.hasThrow&&time>=p.throwEnd?p.throwTarget:p.target,height:0,visible:false};
  }
  function runnerAnimation(e,p,time){
-  const hit=['single','double','triple','homeRun','walk'].includes(e.result),run=clamp01((time-p.runStart)/(p.runEnd-p.runStart));
-  const people=e.runnersBefore.map((who,i)=>who?{who,start:i+1}:null).filter(Boolean);
-  if((hit||e.result==='groundout')&&time>=p.runStart)people.push({who:e.batter,start:0});
-  return people.map(({who,start})=>{
-   const index=e.runnersAfter.findIndex(r=>r&&r.key===who.key);
-   const outBatter=e.result==='groundout'&&start===0;
-   const finish=outBatter ? .9 :index>=0?index+1:hit?4:start;
-   const delay=e.result==='homeRun'?(3-start)*.025:0;
-   const t=clamp01((run-delay)/(1-delay)),progress=lerp(start,finish,t),segment=Math.min(3,Math.floor(progress));
-   return {who,start,finish,position:point(bases[segment],bases[segment+1],progress-segment),running:t>0&&t<1&&finish!==start,
-    visible:!(finish===4&&t===1)&&!(outBatter&&time>=p.resultAt)};
+  const progress=clamp01((time-p.runStart)/Math.max(1,p.runEnd-p.runStart));
+  const people=e.runnersBefore.flatMap((who,i)=>who?[{who,start:i+1}]:[]);
+  if(e.actions?.some(a=>a.runner.key===e.batter.key&&a.fromBase===0))people.push({who:e.batter,start:0});
+  return people.map(({who,start})=>{const actions=(e.actions||[]).filter(a=>a.runner.key===who.key),action=actions.find(a=>a.result==='out')||actions.find(a=>a.toBase===4)||actions.at(-1),finish=action? action.toBase:start;
+   const distance=lerp(start,finish,progress),segment=Math.min(3,Math.floor(distance));
+   return {who,start,finish,position:point(bases[segment],bases[segment+1],distance-segment),running:progress>0&&progress<1&&start!==finish,visible:!(progress===1&&(finish===4||action?.result==='out'))};
   });
  }
 
  // Extend this list when new engine events (steals, abilities, fielding plays) exist.
  const HIGHLIGHT_RULES=[
+  {reason:'守備・走塁',weight:4,test:e=>e.error||e.doublePlay||e.tagUp||e.stolenBase||e.caughtStealing},
   {reason:'得点',weight:6,test:e=>e.scoreAfter.some((n,i)=>n>e.scoreBefore[i])},
   {reason:'本塁打',weight:7,test:e=>e.result==='homeRun'},
   {reason:'長打',weight:4,test:e=>['double','triple'].includes(e.result)},
@@ -81,7 +80,7 @@
  function highlightImportance(e){const rules=HIGHLIGHT_RULES.filter(r=>r.test(e));return {score:rules.reduce((n,r)=>n+r.weight,0),reasons:rules.map(r=>r.reason)}}
  // Read-only scoreboard projection. Engine events supply every run and count.
  function scoreboardSnapshot(g,event=null,after=false){
-  const state=event?(after?event.nextState:{inning:event.inning,half:event.half,outs:event.outs,balls:event.balls,strikes:event.strikes,score:event.scoreBefore,runners:event.runnersBefore,finished:false}):{...g.state,runners:g.state.bases};
+  const state=event?(after?event.nextState:{inning:event.inning,half:event.half,outs:event.outs,balls:event.balls,strikes:event.strikes,score:event.scoreBefore,hits:event.hitsBefore,errors:event.errorsBefore,runners:event.runnersBefore,finished:false}):{...g.state,runners:g.state.bases};
   const innings=Math.max(9,g.config.innings,state.inning,...g.state.lines.map(row=>row.length));
   let lines;
   if(!event)lines=g.state.lines.map(row=>Array.from({length:innings},(_,i)=>row[i]??null));
@@ -96,7 +95,8 @@
    if(!state.finished)lines[state.half==='top'?0:1][state.inning-1]??=0;
   }
   const {inning,half,outs,balls,strikes,score,runners,finished,finishReason}=state;
-  return {...copy({inning,half,outs,balls,strikes,score,runners,finished,finishReason}),lines,innings,teams:g.teams.map(t=>({name:t.name,shortName:t.shortName||t.displayName||t.name}))};
+  const hits=state.hits||[0,0],errors=state.errors||[0,0];
+  return {...copy({inning,half,outs,balls,strikes,score,runners,finished,finishReason,hits,errors}),lines,innings,teams:g.teams.map(t=>({name:t.name,shortName:t.shortName||t.displayName||t.name}))};
  }
  function mountScoreboard(root){
   root.innerHTML=`<div class="sb-brand"><span>SL WORLD</span><span>LIVE SCOREBOARD</span></div><div class="sb-table-wrap"><table class="sb-table" aria-label="イニング別スコア"><colgroup></colgroup><thead></thead><tbody></tbody></table></div>
@@ -112,9 +112,9 @@
   function update(s){
    if(columnCount!==s.innings){columnCount=s.innings;cols.replaceChildren();head.replaceChildren();body.replaceChildren();
     const nameCol=make('col');nameCol.className='sb-name-col';cols.append(nameCol);
-    for(let i=0;i<s.innings;i++)cols.append(make('col'));const totalCol=make('col');totalCol.className='sb-total-col';cols.append(totalCol);
-    const headings=make('tr');for(const title of ['チーム',...Array.from({length:s.innings},(_,i)=>i+1),'R']){const th=make('th',title);th.scope='col';headings.append(th)}head.append(headings);
-    for(let side=0;side<2;side++){const row=make('tr'),name=make('th');name.scope='row';row.append(name);for(let i=0;i<s.innings+1;i++)row.append(make('td'));body.append(row)}
+    for(let i=0;i<s.innings;i++)cols.append(make('col'));const totalCol=make('col');totalCol.className='sb-total-col';cols.append(totalCol);cols.append(make('col'));cols.append(make('col'));
+    const headings=make('tr');for(const title of ['チーム',...Array.from({length:s.innings},(_,i)=>i+1),'R','H','E']){const th=make('th',title);th.scope='col';headings.append(th)}head.append(headings);
+    for(let side=0;side<2;side++){const row=make('tr'),name=make('th');name.scope='row';row.append(name);for(let i=0;i<s.innings+3;i++)row.append(make('td'));body.append(row)}
    }
    const activeSide=s.half==='top'?0:1;
    [...head.rows[0].cells].forEach((cell,i)=>cell.classList.toggle('sb-current-col',!s.finished&&i===s.inning));
@@ -129,6 +129,7 @@
      cell.dataset.runs=String(value??0);cell.classList.toggle('sb-current-col',!s.finished&&i===s.inning-1);cell.classList.toggle('sb-active-cell',current);
      cell.setAttribute('aria-label',`${i+1}回${side===0?'表':'裏'}：${omitted?'実施不要':value===null?'未実施':`${value}点${current?'、進行中':''}`}`);
     }
+    row.cells[s.innings+2].textContent=String(s.hits[side]);row.cells[s.innings+3].textContent=String(s.errors[side]);
     const total=row.cells[s.innings+1];total.className='sb-total';total.textContent=String(s.score[side]);total.setAttribute('aria-label',`合計${s.score[side]}点`);
    });
    const reasons={walkoff:'サヨナラ',draw:'引き分け',homeLeadAfterTop9:'最終回裏は実施不要',nineInnings:'試合終了'};
@@ -154,7 +155,7 @@
    <canvas width="800" height="500" role="img" aria-label="簡易球場。プレー内容は下のテキストでも表示します"></canvas>
    <p data-detail></p><p data-result role="status" aria-live="polite">待機中</p>
    <div class="toolbar"><button data-action="advance">1球進める</button><button data-action="auto">自動再生</button><button data-action="pause">一時停止</button><label>再生速度<select data-speed><option value="1">NORMAL</option><option value="2">FAST</option></select></label></div>
-   <p class="note">結果は既存エンジンで確定済み。打球方向・守備配置は仮の映像表現です。通常の試合操作で進めた分は現在状態へ同期します。</p></div>`;
+   <p class="note">結果は既存エンジンで確定済み。打球方向・走者経路はENGINEのeventを再生します。守備モーションは簡易表現です。通常の試合操作で進めた分は現在状態へ同期します。</p></div>`;
   const el=s=>root.querySelector(s),panel=el('[data-panel]'),canvas=el('canvas');let ctx=canvas.getContext('2d');
   const board=mountScoreboard(el('.stadium-board'));
   let scoreboardAfter=false;
@@ -299,9 +300,10 @@
     event=null;scoreboardAfter=false;
     // Bounded batches keep pause/mode switching responsive during omitted plays.
     for(let n=0;n<12&&!getGame().state.finished;n++){
-     const events=step(selectedMode==='FULL'?'pitch':'atbat');
+     const events=step('pitch');
      const candidate=events.at(-1);
      if(!candidate)break;
+     if(selectedMode!=='FULL'&&!candidate.plateAppearanceEnded&&candidate.eventType!=='baserunning')continue;
      const importance=highlightImportance(candidate);
      if(selectedMode!=='HIGHLIGHT'||importance.score>=3){event=toReplayEvent(candidate);event.highlightImportance=importance;break;}
     }
@@ -318,7 +320,7 @@
    last=now;if(paused){frameId=requestAnimationFrame(tick);return}
    if(!event){next();return}
    const plan=animationPlan(event),end=plan.end;
-   paint(event,elapsed);if(elapsed>=plan.resultAt)el('[data-result]').textContent=(names[event.result]||event.result)+(event.runsScored?` ／ ${event.runsScored}得点`:'');
+   paint(event,elapsed);if(elapsed>=plan.resultAt)el('[data-result]').textContent=(event.log||names[event.result]||event.result)+(event.runsScored?` ／ ${event.runsScored}得点`:'');
    if(elapsed>=plan.resultAt&&!scoreboardAfter){scoreboard(event,true);scoreboardAfter=true;}
    if(elapsed>=end){paint(event,elapsed,true);scoreboard(event,true);const proceed=mode==='auto'||selectedMode==='HIGHLIGHT';
     if(proceed&&!getGame().state.finished){next();return}busy=false;paused=false;mode=null;controls();return}
