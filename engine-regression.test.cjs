@@ -1,14 +1,14 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');const context=vm.createContext({console});
-for(const path of ['engine-fielding.js','match-replay.js','match-viewer.js'])vm.runInContext(fs.readFileSync(path,'utf8'),context);
+for(const path of ['engine-fielding.js','engine-tactics.js','match-replay.js','match-viewer.js'])vm.runInContext(fs.readFileSync(path,'utf8'),context);
 vm.runInContext(fs.readFileSync('engine-test.html','utf8').match(/<script>\s*([\s\S]*?)<\/script>/)[1],context);
 const E=context.SL_ENGINE,V=context.SL_MATCH_VIEWER,F=context.SL_FIELDING;
-const teams=[E.makeTeam('A','away',[],E.CONFIG),E.makeTeam('B','home',[],E.CONFIG)];const game=seed=>E.newGame(teams,seed);
+const teams=[E.makeTeam('A','away',[],E.CONFIG),E.makeTeam('B','home',[],E.CONFIG)];const legacyConfig=JSON.parse(JSON.stringify(E.CONFIG));legacyConfig.tactics.enabled=false;const game=seed=>E.newGame(teams,seed,legacyConfig);
 const crypto=require('crypto'),baseline=JSON.parse(fs.readFileSync('engine-result-baseline.json','utf8'));
 let tally={},replayChecks=0;
 const separation=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 for(let seed=0;seed<150;seed++){
  const g=game(seed);E.advance(g,'game');assert(g.state.finished);
- if(baseline[seed]){const data={score:g.state.score,hits:g.state.hits,errors:g.state.errors,batting:g.state.batting,pitching:g.state.pitching,events:g.state.events.map(e=>[e.result,e.outsAfter,e.runnersAfter,e.scoreAfter])};assert.equal(crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex'),baseline[seed],'pre-fix baseball results seed '+seed);}
+ if(baseline[seed]){const data={score:g.state.score,hits:g.state.hits,errors:g.state.errors,batting:Object.fromEntries(Object.entries(g.state.batting).map(([k,{SH,...stats}])=>[k,stats])),pitching:g.state.pitching,events:g.state.events.map(e=>[e.result,e.outsAfter,e.runnersAfter,e.scoreAfter])};assert.equal(crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex'),baseline[seed],'pre-fix baseball results seed '+seed);}
  const hits=[0,0],errors=[0,0],runs=[0,0],sb={};
  for(const e of g.state.events){const side=e.half==='top'?0:1;tally[e.result]=(tally[e.result]||0)+1;assert(e.outsAfter<=3);assert(e.outsAfter>=e.outsBefore);const keys=e.runnersAfter.filter(Boolean).map(p=>p.key);assert.equal(new Set(keys).size,keys.length);
  if(e.hit)hits[side]++;if(e.error){errors[1-side]++;assert(!e.hit);}runs[side]+=e.runsScored;

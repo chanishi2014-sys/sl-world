@@ -2,12 +2,13 @@
 (() => {
  "use strict";
  const copy=value=>JSON.parse(JSON.stringify(value));
- const {names,toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,bannerLabel,safeText}=SL_MATCH_REPLAY;
+ const {names,toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,decisionDebug,bannerLabel,safeText}=SL_MATCH_REPLAY;
  const {bases,positions}=SL_FIELDING.layout;
  const clamp01=n=>Math.max(0,Math.min(1,n)),lerp=(a,b,t)=>a+(b-a)*t;
  const point=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t)];
  // Extend this list when new engine events (steals, abilities, fielding plays) exist.
  const HIGHLIGHT_RULES=[
+  {reason:'送りバント',weight:4,test:e=>e.buntAttempt},
   {reason:'守備・走塁',weight:4,test:e=>e.error||e.doublePlay||e.tagUp||e.stolenBase||e.caughtStealing},
   {reason:'得点',weight:6,test:e=>e.scoreAfter.some((n,i)=>n>e.scoreBefore[i])},
   {reason:'本塁打',weight:7,test:e=>e.result==='homeRun'},
@@ -94,13 +95,13 @@
    <section class="stadium-board" aria-label="SL WORLD 電光スコアボード"></section>
    <div data-panel hidden><h2>SL WORLD / 2D MATCH VIEWER α0.2</h2>
    <canvas width="800" height="500" role="img" aria-label="簡易球場。プレー内容は下のテキストでも表示します"></canvas>
-   <button data-action="debug" aria-pressed="true">DEBUG ON</button><p data-debug class="note" style="padding:6px 10px;background:#071422cc;border-radius:6px;min-height:2em" aria-label="再生デバッグ"></p>
+   <button data-action="debug" aria-pressed="false">DEBUG OFF</button><p data-debug hidden class="note" style="white-space:pre-wrap;padding:6px 10px;background:#071422cc;border-radius:6px;min-height:2em" aria-label="再生デバッグ"></p>
    <p data-detail></p><p data-result role="status" aria-live="polite">待機中</p>
    <div class="toolbar"><button data-action="advance">1球進める</button><button data-action="auto">自動再生</button><button data-action="pause">一時停止</button><label>再生速度<select data-speed><option value="1">NORMAL</option><option value="2">FAST</option></select></label></div>
    <p class="note">結果は既存エンジンで確定済み。打球方向・走者経路はENGINEのeventを再生します。守備モーションは簡易表現です。通常の試合操作で進めた分は現在状態へ同期します。</p></div>`;
   const el=s=>root.querySelector(s),panel=el('[data-panel]'),canvas=el('canvas');let ctx=canvas.getContext('2d');
   const board=mountScoreboard(el('.stadium-board'));
-  let scoreboardAfter=false,debugEnabled=true;
+  let scoreboardAfter=false,debugEnabled=false,lastPaint=null;
   let selectedMode='FULL';
   const modeNames={FULL:'フル観戦',MINI:'ミニ観戦',HIGHLIGHT:'ハイライト',SKIP:'スキップ'};
   const palette=['#459de7','#d75c65']; // Team slot colours only, unrelated to strength.
@@ -126,7 +127,7 @@
    limb([[2,-38],[13,-37]],color,4);ellipse(4,-35,1.2,1.5,'#263245');
    ctx.fillStyle='#fff';ctx.font='bold 7px system-ui';ctx.textAlign='center';ctx.fillText('SL',0,-42);
    let hand=pose.hand||[13,-17],glove=pose.glove||[-12,-19];
-   if(pose.role==='batter'){hand=[8,-23];glove=[4,-22]}
+   if(pose.role==='batter'){hand=pose.bunt?[12,-23]:[8,-23];glove=pose.bunt?[26,-24]:[4,-22]}
    if(pose.running){hand=[13,-18-gait];glove=[-13,-18+gait]}
    limb([[8,-26],[14,-23],hand],color,7);ellipse(...hand,3,3,'#edbd91');
    limb([[-8,-26],[-13,-23],glove],color,7);
@@ -174,6 +175,7 @@
    const t=clamp((time-p.release)/240);return {twist:1-t*.7,hand:[lerp(18,-5,t),lerp(-14,-9,t)],glove:[-14,-18]};
   }
   function battingAnimation(e,p,time){
+   if(e?.bunt)return {role:'batter',bunt:true,batAngle:-.1,twist:.15,swing:0};
    const swings=['swingingStrike','inPlay','foul'].includes(e?.outcome);
    const progress=swings?clamp((time-p.pitchEnd+190)/420):0;
    return {role:'batter',batAngle:lerp(-1.9,e?.outcome==='swingingStrike'?2.1:1.6,progress),swing:progress,twist:progress*.9,lift:progress>0&&progress<.4?.2:0};
@@ -193,6 +195,7 @@
    ctx.textAlign='center';ctx.font='900 28px system-ui';ctx.fillText(label,400,94);ctx.font='13px system-ui';ctx.fillText(resultLabel(e)+(e.runsScored?`  +${e.runsScored}得点`:''),400,116);
   }
   function paint(e,time=0,settled=false){
+   lastPaint={e,time,settled};
    const g=getGame(),p=e?animationPlan(e):null,change=e&&!settled?transition(e,p,time):null;
    const oldSide=(e?e.half:g.state.half)==='top'?0:1,side=settled&&e?(e.nextState.half==='top'?0:1):change?.entering?1-oldSide:oldSide;
    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -218,6 +221,7 @@
    const phase=e&&!settled?ballAnimation(e,p,time).phase:'';
    const captions={windup:'構え → リリース',pitch:'投球',catcher:'捕手が捕球',ground:'ゴロ',line:'ライナー',fly:'フライ',homer:'フェンスへ伸びる打球',foul:'ファウル',fieldCatch:'捕球',homerExit:'本塁打',foulDone:'ファウル',rolling:'バウンド → 減速 → 打球処理',carry:'捕球した野手がベースへ',baseTouch:'捕球 → ベースを踏む',throw:'送球 → ベースカバー',received:'カバー野手が捕球',tag:'捕球 → 走者へタッチ'};
    el('[data-debug]').textContent=debugEnabled?(change?(change.entering?'攻守交代：次の守備が定位置へ':'攻守交代：ベンチへ戻る'):[safeText(e?.playDescription,''),captions[phase]||'待機中'].filter(Boolean).join(' ／ ')):'';
+   if(debugEnabled&&e?.tactics)el('[data-debug]').textContent+='\n\n'+decisionDebug(e);
    if(e&&!settled&&!change)resultBanner(e,p,time);
   }
   function scoreboard(e,after=false){board.update(scoreboardSnapshot(getGame(),e,after));}
@@ -228,7 +232,7 @@
    ['pitch','atbat','inning','game'].forEach(id=>document.getElementById(id).disabled=busy||getGame().state.finished);
    document.querySelectorAll('[data-watch-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.watchMode===selectedMode)));
   }
-  function stop(){cancelAnimationFrame(frameId);busy=false;paused=false;mode=null;event=null;elapsed=0;last=0;scoreboardAfter=false;el('[data-debug]').textContent='';controls();}
+  function stop(){cancelAnimationFrame(frameId);busy=false;paused=false;mode=null;event=null;elapsed=0;last=0;scoreboardAfter=false;lastPaint=null;el('[data-debug]').textContent='';controls();}
   function sync(){if(!busy&&getGame()){scoreboard(null);paint(null);controls();el('[data-detail]').textContent=modeNames[selectedMode]+' ／ '+(getGame().state.finished?'試合終了':'次のプレーを待っています');el('[data-result]').textContent=getGame().state.finished?'最終結果':'待機中';}}
   function next(){
    if(getGame().state.finished){stop();sync();return}
@@ -270,7 +274,7 @@
    }else if(selectedMode==='HIGHLIGHT'&&!getGame().state.finished){busy=true;mode='auto';next();}
   }));
   root.addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(!action)return;
-   if(action==='debug'){debugEnabled=!debugEnabled;el('[data-debug]').hidden=!debugEnabled;el('[data-action="debug"]').textContent=debugEnabled?'DEBUG ON':'DEBUG OFF';el('[data-action="debug"]').setAttribute('aria-pressed',String(debugEnabled));return;}
+   if(action==='debug'){debugEnabled=!debugEnabled;el('[data-debug]').hidden=!debugEnabled;el('[data-action="debug"]').textContent=debugEnabled?'DEBUG ON':'DEBUG OFF';el('[data-action="debug"]').setAttribute('aria-pressed',String(debugEnabled));if(lastPaint)paint(lastPaint.e,lastPaint.time,lastPaint.settled);return;}
    if(action==='log'||action==='view'){stop();showView(action==='view');sync();return}
    if(action==='pause'){paused=!paused;controls();return}
    if(busy||getGame().state.finished||selectedMode==='SKIP')return;busy=true;mode=action;next();

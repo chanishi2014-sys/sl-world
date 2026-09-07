@@ -121,9 +121,10 @@
 <div id="teamBalanceResults"></div>
 <p class="note">打率＝安打÷打数、出塁率＝（安打＋四球）÷打席、長打率＝塁打÷打数、OPS＝出塁率＋長打率。凡打率は三振を除く打球アウト÷打席。本塁打率・三振率・四球率の分母も打席数です。5打数0安打は四球を除いた連続5打数ごとの実測です。</p>
 </details>
-<section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の個別効果は未実装です。守備・失策・フォースプレー・併殺・タッチアップ・二盗／三盗に対応。犠打・死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。守備位置の不足は出場選手で補完します。</section>
+<section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の打撃／投球への個別効果は未実装です。登録済みの盗塁・走塁・クイック関連特性は戦術判断のみで参照します。守備・失策・フォースプレー・併殺・タッチアップ・二盗／三盗に対応。送りバントと説明可能な基本戦術判断に対応。死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。守備位置の不足は出場選手で補完します。</section>
 </main>
 <script src="./engine-fielding.js"></script>
+<script src="./engine-tactics.js"></script>
 <script src="./match-replay.js"></script>
 <script src="./match-viewer.js"></script>
 <script src="./lineup-display.js"></script>
@@ -131,7 +132,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-004-replay-consistency-alpha1", innings:9, maxPitchesPerAction:20000,
+ version:"test-match-005-tactics-alpha1", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -200,8 +201,8 @@ function weighted(rng,entries){const sum=entries.reduce((n,[,w])=>n+w,0);let n=r
 function newGame(teams,seed,cfg=CONFIG){
  const state={inning:1,half:"top",outs:0,balls:0,strikes:0,bases:[null,null,null],score:[0,0],hits:[0,0],errors:[0,0],virtualOuts:0,unearned:{},playActions:[],lines:[Array(9).fill(null),Array(9).fill(null)],order:[0,0],paCompleted:0,finished:false,finishReason:null,events:[],batting:{},pitching:{}};
  state.lines[0][0]=0;
- teams.forEach(t=>{t.lineup.forEach(p=>state.batting[p.key]={AB:0,H:0,doubles:0,triples:0,HR:0,RBI:0,BB:0,K:0,R:0,SB:0,CS:0,SF:0});state.pitching[t.pitcher.key]={outs:0,pitches:0,H:0,HR:0,R:0,ER:0,BB:0,K:0};});
- return {teams:clone(teams),seed:String(seed),config:clone(cfg),rng:createRNG(seed),state};
+ teams.forEach(t=>{t.lineup.forEach(p=>state.batting[p.key]={AB:0,H:0,doubles:0,triples:0,HR:0,RBI:0,BB:0,K:0,R:0,SB:0,CS:0,SF:0,SH:0});state.pitching[t.pitcher.key]={outs:0,pitches:0,H:0,HR:0,R:0,ER:0,BB:0,K:0};});
+ return {teams:clone(teams),seed:String(seed),config:clone(cfg),rng:createRNG(seed),tacticalRng:createRNG(String(seed)+"|tactics-alpha1"),state};
 }
 const offense=g=>g.state.half==="top"?0:1;
 const currentBatter=g=>g.teams[offense(g)].lineup[g.state.order[offense(g)]];
@@ -329,13 +330,13 @@ function resolvePitch(g,pitcher,batter){
 }
 // ==================== plate appearance / outs ====================
 function recordOut(g,pitcher){if(g.state.outs>=3)return;g.state.outs++;g.state.virtualOuts++;g.state.pitching[pitcher.key].outs++;}
-function completePA(g){const s=g.state,side=offense(g);s.order[side]=(s.order[side]+1)%9;s.paCompleted++;s.balls=0;s.strikes=0;}
+function completePA(g){const s=g.state,side=offense(g);s.order[side]=(s.order[side]+1)%9;s.paCompleted++;s.buntPlan=false;s.balls=0;s.strikes=0;}
 function applyPitch(g,pitch,batter,pitcher){const s=g.state,bs=s.batting[batter.key],ps=s.pitching[pitcher.key];let result=pitch.outcome,ended=false;
  if(pitch.outcome==="ball"){s.balls++;if(s.balls===4){result="walk";bs.BB++;ps.BB++;advanceWalk(g,batter,pitcher);ended=true;}}
- else if(pitch.outcome==="foul"){if(s.strikes<2)s.strikes++;}
+ else if(pitch.outcome==="foul"){if(s.strikes<2)s.strikes++;else if(pitch.buntAttempt){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;pitch.log="スリーバント失敗、三振";}}
  else if(pitch.outcome==="calledStrike"||pitch.outcome==="swingingStrike"){s.strikes++;if(s.strikes===3){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;}}
  else if(pitch.outcome==="inPlay"){
-  result=pitch.battedResult;bs.AB++;ended=true;SL_FIELDING.geometry(g,pitch);
+  result=pitch.battedResult;bs.AB++;ended=true;if(pitch.bunt)SL_TACTICS.buntGeometry(g,pitch);else SL_FIELDING.geometry(g,pitch);
   const distances={single:1,double:2,triple:3,homeRun:4};
   if(Object.hasOwn(distances,result)){bs.H++;ps.H++;s.hits[offense(g)]++;if(result==="double")bs.doubles++;if(result==="triple")bs.triples++;if(result==="homeRun"){bs.HR++;ps.HR++;}advanceHit(g,batter,pitcher,distances[result],pitch);}
   else {s.suppressRBI=false;result=SL_FIELDING.field(g,pitch,batter,pitcher);s.suppressRBI=false;}
@@ -345,14 +346,15 @@ function applyPitch(g,pitch,batter,pitcher){const s=g.state,bs=s.batting[batter.
 function switchHalf(g){const s=g.state;if(s.outs<3||s.finished)return;
  if(s.inning===g.config.innings){if(s.half==="top"&&s.score[1]>s.score[0]){finish(g,"homeLeadAfterTop9");return;}if(s.half==="bottom"){finish(g,s.score[0]===s.score[1]?"draw":"nineInnings");return;}}
  if(s.half==="top")s.half="bottom";else{s.half="top";s.inning++;}
- s.outs=0;s.virtualOuts=0;s.unearned={};s.balls=0;s.strikes=0;s.bases=[null,null,null];s.lines[offense(g)][s.inning-1]=0;
+ s.outs=0;s.buntPlan=false;s.lastStealPitch=null;s.virtualOuts=0;s.unearned={};s.balls=0;s.strikes=0;s.bases=[null,null,null];s.lines[offense(g)][s.inning-1]=0;
 }
 // ==================== event log (one immutable record per pitch) ====================
 function onePitch(g){if(g.state.finished)return null;const s=g.state,pitcher=currentPitcher(g),batter=currentBatter(g);
  s.playActions=[];s.playBefore=runners(s);
  const event={outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:s.events.length+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
- const steal=SL_FIELDING.steal(g,pitcher);
- const pitch=steal||resolvePitch(g,pitcher,batter);if(!steal)s.pitching[pitcher.key].pitches++;
+ const tactical=SL_TACTICS.enabled(g),decision=tactical?SL_TACTICS.offenseDecision(g,batter,pitcher):null;
+ const steal=tactical?(decision.decision.startsWith("STEAL_")?SL_FIELDING.steal(g,pitcher,decision):null):SL_FIELDING.steal(g,pitcher);
+ const pitch=steal||(decision?.decision==="SAC_BUNT"?SL_TACTICS.resolveBunt(g,pitcher,batter):resolvePitch(g,pitcher,batter));if(!steal)s.pitching[pitcher.key].pitches++;
  const applied=steal?{result:steal.result,ended:false}:applyPitch(g,pitch,batter,pitcher);
  Object.assign(event,pitch,{result:applied.result,plateAppearanceEnded:applied.ended,outsAfter:s.outs,ballsAfter:s.balls,strikesAfter:s.strikes,runnersAfter:runners(s),scoreAfter:[...s.score],pitchCount:s.pitching[pitcher.key].pitches});
  event.eventType=steal?'baserunning':'pitch';event.hit=['single','double','triple','homeRun'].includes(event.result);
@@ -361,6 +363,7 @@ function onePitch(g){if(g.state.finished)return null;const s=g.state,pitcher=cur
  for(const {runner,from} of people){if(!runner||s.playActions.some(a=>a.runner.key===runner.key))continue;const to=s.bases.findIndex(r=>r?.key===runner.key)+1;if(to&&to!==from)SL_FIELDING.move(g,runner,from,to);}
  event.actions=clone(s.playActions);event.runnerAdvance=event.actions.filter(a=>a.result==='safe');event.earnedRunContext??={virtualOuts:s.virtualOuts,unearnedRunnerKeys:Object.keys(s.unearned),provisional:true};
  SL_FIELDING.annotate(g,event);
+ if(decision)event.tactics=SL_TACTICS.eventTrace(event,decision);
  if(applied.ended)completePA(g);switchHalf(g);
  event.nextState={inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,runners:runners(s),score:[...s.score],hits:[...s.hits],errors:[...s.errors],finished:s.finished,finishReason:s.finishReason};
  s.events.push(event);return event;

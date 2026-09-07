@@ -1,0 +1,33 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');const c=vm.createContext({console});
+for(const f of ['engine-fielding.js','engine-tactics.js','match-replay.js','match-viewer.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);
+vm.runInContext(fs.readFileSync('engine-test.html','utf8').match(/<script>\s*([\s\S]*?)<\/script>/)[1],c);
+const E=c.SL_ENGINE,F=c.SL_FIELDING,T=c.SL_TACTICS,V=c.SL_MATCH_VIEWER;
+const db=['A','B'].flatMap(team=>Array.from({length:9},(_,i)=>({id:team+i,name:team+i,team,isPitcher:i===8,isFielder:true,batting:{meet:[3,8,4,9,5,7,4,6,2][i],power:[50,170,60,160,90,140,70,100,40][i],speed:[6,12,20,15,10,18,8,17,6][i],arm:12,fielding:12,catching:12},pitching:i===8?{velocity:140,control:100,stamina:100}:{},specials:i===2?['積極盗塁','盗塁○']:[]})));
+const teams=[E.makeTeam('A','away',db,E.CONFIG),E.makeTeam('B','home',db,E.CONFIG)],game=seed=>E.newGame(teams,seed);
+const originalDB=JSON.stringify(db),originalTeams=JSON.stringify(teams);
+function situation(seed=0){const g=game(seed);g.state.bases=[g.teams[0].lineup[2],null,null];return g;}
+const close=situation();close.state.inning=8;close.state.lines[0][7]=0;const batter=E.currentBatter(close),pitcher=E.currentPitcher(close);
+const late=T.buntOption(close,batter).weight;close.state.inning=2;assert(late>T.buntOption(close,batter).weight);close.state.inning=8;assert(late>T.buntOption(close,close.teams[0].lineup[1]).weight);close.state.outs=2;assert.equal(T.buntOption(close,batter).weight,0);close.state.outs=0;close.state.score=[0,6];assert.equal(T.buntOption(close,batter).weight,0);
+const run=situation();run.state.inning=8;const fast=T.stealOption(run,E.currentPitcher(run),1);run.state.bases[0]=run.teams[0].lineup[0];const slow=T.stealOption(run,E.currentPitcher(run),1);assert(fast.weight>slow.weight);assert.equal(slow.weight,0);assert(fast.successChance<1);run.state.bases[1]=run.teams[0].lineup[1];assert.equal(T.stealOption(run,E.currentPitcher(run),1).weight,0);
+const impossible=situation();const impossibleBall={fielderIndex:2,landingPoint:[710,60]};assert.equal(T.defenseDecision(impossible,impossibleBall,E.currentBatter(impossible)).decision,'HOLD_BALL');
+for(const count of [1,2,3]){const g=game(count);g.state.bases=Array.from({length:3},(_,i)=>i<count?g.teams[0].lineup[i+1]:null);const d=T.defenseDecision(g,{fielderIndex:5,landingPoint:[325,250]},E.currentBatter(g));for(const x of d.candidates){assert.equal(!!x.runnerKey,x.toBase<=count+1);assert(x.outChance<1);} }
+const repeat=situation();repeat.state.inning=8;repeat.state.lastStealPitch=repeat.state.pitching[E.currentPitcher(repeat).key].pitches;assert.equal(T.stealOption(repeat,E.currentPitcher(repeat),1).weight,0);
+const hold=situation();hold.state.bases=[hold.teams[0].lineup[0],null,hold.teams[0].lineup[2]];const hit={result:'single',battedResult:'single',outcome:'inPlay',infieldHit:true,fielderIndex:2,ballType:'ground',landingPoint:[553,302],sprayAngle:.5,battedQuality:.4,actions:[],eventType:'pitch'};F.annotate(hold,hit);assert.equal(hit.defenseDecision.decision,'HOLD_BALL');assert.equal(hit.transfers.length,0);assert(hit.defenseDecision.candidates.every(x=>x.outChance===0));
+for(const roll of [.5,.999]){const g=game('throw'),b=E.currentBatter(g),p=E.currentPitcher(g);g.rng=()=>roll;g.tacticalRng=()=>0;const ball={battedResult:'groundout',fielderIndex:2,landingPoint:[553,302],battedQuality:.5};const result=F.field(g,ball,b,p);assert.equal(ball.defenseDecision.decision,'THROW_1B');assert.equal(result,roll===.5?'groundout':'fieldersChoice');}
+const buntResults={},buntExecutions={};for(let seed=0;seed<240;seed++){const g=situation(seed);g.state.bases[0]=g.teams[0].lineup[seed%2?8:2];const b=E.currentBatter(g),p=E.currentPitcher(g);let done=false;for(let i=0;i<80&&!done;i++){const ball=T.resolveBunt(g,p,b);buntExecutions[ball.outcome]=(buntExecutions[ball.outcome]||0)+1;const a=E.applyPitch(g,ball,b,p);done=a.ended;if(done){buntResults[a.result]=(buntResults[a.result]||0)+1;if(a.result==='sacrificeBunt'){assert.equal(g.state.batting[b.key].AB,0);assert.equal(g.state.batting[b.key].SH,1);assert(g.state.bases[1]);}}}assert(done);}
+assert(buntResults.sacrificeBunt&&buntResults.fieldersChoice&&buntResults.lineout&&buntResults.doublePlay);assert(buntExecutions.foul&&buntExecutions.swingingStrike);
+const third=situation(),tb=E.currentBatter(third),tp=E.currentPitcher(third);third.state.strikes=2;assert.equal(E.applyPitch(third,{outcome:'foul',bunt:true,buntAttempt:true},tb,tp).result,'strikeout');assert.equal(third.state.outs,1);
+let zeroBunt=0,zeroSteal=0,sb=0,cs=0,events=0;
+for(let seed=0;seed<100;seed++){
+ const g=game(seed);E.advance(g,'game');assert(g.state.finished);let bunts=0,steals=0;const hits=[0,0],errors=[0,0],runs=[0,0];
+ for(const e of g.state.events){events++;const side=e.half==='top'?0:1;if(e.hit)hits[side]++;if(e.error)errors[1-side]++;runs[side]+=e.runsScored;if(e.buntAttempt)bunts++;if(e.stolenBase){steals++;sb++;}if(e.caughtStealing){steals++;cs++;}if(e.eventType==='baserunning')assert.equal(e.runnersBefore[e.toBase-1],null);
+  assert(e.tactics?.decision);assert(e.tactics.offense.reasons.length);assert(e.outsAfter<=3);const keys=e.runnersAfter.filter(Boolean).map(r=>r.key);assert.equal(new Set(keys).size,keys.length);
+  if(e.sacrificeBunt){assert(e.bunt&&e.outsBefore<2);assert.equal(e.outsAfter-e.outsBefore,1);}
+  if(e.defenseDecision?.decision==='HOLD_BALL')assert.equal(e.transfers.length,0);
+  const r=V.toReplayEvent(e),plan=V.animationPlan(r);for(const time of [0,plan.caught,plan.resultAt,plan.end]){assert(V.ballAnimation(r,plan,time).ground.every(Number.isFinite));const visible=V.runnerAnimation(r,plan,time).filter(x=>x.visible).map(x=>x.who.key);if(V.batterVisible(r,plan,time))visible.push(e.batter.key);assert.equal(new Set(visible).size,visible.length);}
+ }
+ if(!bunts)zeroBunt++;if(!steals)zeroSteal++;assert.deepEqual(Array.from(g.state.hits),hits);assert.deepEqual(Array.from(g.state.errors),errors);assert.deepEqual(Array.from(g.state.score),runs);for(let side=0;side<2;side++)assert.equal(g.state.lines[side].reduce((a,b)=>a+(b||0),0),runs[side]);
+ if(seed<10)for(const mode of ['FULL','MINI','HIGHLIGHT','SKIP']){const other=game(seed);while(!other.state.finished)E.advance(other,mode==='SKIP'?'game':'pitch');assert.equal(JSON.stringify(other.state),JSON.stringify(g.state));}
+}
+assert(zeroBunt>0&&zeroSteal>0&&sb>0&&cs>0);assert.equal(JSON.stringify(db),originalDB);assert.equal(JSON.stringify(teams),originalTeams);
+console.log('PASS: 100 tactical games + 40 mode replays, '+events+' events; zero-bunt games='+zeroBunt+', zero-steal games='+zeroSteal+', SB='+sb+', CS='+cs);console.log('PASS: 240 bunt PAs',buntResults,buntExecutions);

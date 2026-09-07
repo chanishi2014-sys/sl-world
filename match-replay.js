@@ -10,9 +10,14 @@
  const progress=(time,start,end)=>clamp01((time-start)/Math.max(1,end-start));
  const tagFacing=(e,leg)=>{const action=e.actions.find(a=>a.runner?.key===leg.runnerKey);const from=action?.fromBase??e.fromBase??1;return bases[from][0]<leg.toPoint[0]?-1:1;};
  const validPoint=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite);
- const names={error:'失策',fieldersChoice:'野選',doublePlay:'併殺',sacrificeFly:'犠牲フライ',stolenBase:'盗塁成功',caughtStealing:'盗塁死',ball:'ボール',calledStrike:'見逃しストライク',swingingStrike:'空振り',foul:'ファウル',strikeout:'三振',walk:'四球',single:'単打',double:'二塁打',triple:'三塁打',homeRun:'本塁打',groundout:'ゴロアウト',flyout:'フライアウト',lineout:'ライナーアウト'};
- const banners={error:'ERROR',fieldersChoice:'FC',doublePlay:'DOUBLE PLAY',sacrificeFly:'SAC FLY',stolenBase:'SAFE',caughtStealing:'OUT',groundout:'OUT',flyout:'OUT',lineout:'OUT',single:'SINGLE',double:'DOUBLE',triple:'TRIPLE',homeRun:'HOME RUN',strikeout:'STRIKE OUT',calledStrike:'STRIKE',swingingStrike:'STRIKE',foul:'FOUL',ball:'BALL',walk:'FOUR BALLS'};
+ const names={sacrificeBunt:'送りバント成功',error:'失策',fieldersChoice:'野選',doublePlay:'併殺',sacrificeFly:'犠牲フライ',stolenBase:'盗塁成功',caughtStealing:'盗塁死',ball:'ボール',calledStrike:'見逃しストライク',swingingStrike:'空振り',foul:'ファウル',strikeout:'三振',walk:'四球',single:'単打',double:'二塁打',triple:'三塁打',homeRun:'本塁打',groundout:'ゴロアウト',flyout:'フライアウト',lineout:'ライナーアウト'};
+ const banners={sacrificeBunt:'SAC BUNT',error:'ERROR',fieldersChoice:'FC',doublePlay:'DOUBLE PLAY',sacrificeFly:'SAC FLY',stolenBase:'SAFE',caughtStealing:'OUT',groundout:'OUT',flyout:'OUT',lineout:'OUT',single:'SINGLE',double:'DOUBLE',triple:'TRIPLE',homeRun:'HOME RUN',strikeout:'STRIKE OUT',calledStrike:'STRIKE',swingingStrike:'STRIKE',foul:'FOUL',ball:'BALL',walk:'FOUR BALLS'};
  const safeText=(value,fallback='—')=>typeof value==='string'&&value.trim()&&!/^(undefined|null)$/i.test(value)?value:fallback;
+ function decisionDebug(e){
+  if(!e.tactics)return '';
+  const sections=[e.tactics.offense,e.tactics.defense].filter(Boolean);
+  return sections.map(d=>{const options=d.candidates?.filter(c=>c.toBase).map(c=>'- '+c.toBase+'B out chance: '+c.outChance.toFixed(2)+' / risk: '+c.errorRisk.toFixed(3)).join('\n');return 'Decision: '+d.decision.replaceAll('_',' ')+'\nReason:\n'+d.reasons.map(r=>'- '+r).join('\n')+(options?'\n'+options:'');}).join('\n\n');
+ }
  function resultLabel(e){return safeText(e.log,names[e.result]||'プレー終了');}
  function toReplayEvent(event){
   const e=copy(event),steal=e.eventType==='baserunning'||['stolenBase','caughtStealing'].includes(e.result);
@@ -45,7 +50,7 @@
   const release=620,pitchEnd=release+Math.max(300,650-((Number(e.pitchSpeed)||140)-80)*4.4);
   const fielder=e.fielderIndex,target=e.presentation.target,fieldPoint=e.fieldingPoint;
   const loose=inPlay&&(['single','double','triple'].includes(e.result)||(e.error&&e.errorType!=='throwing'));
-  const flight=inPlay||foul?Math.max(kind==='line'?700:kind==='ground'?850:kind==='homer'?1900:1400,loose?0:distance(positions[fielder],target)/.18+180):0;
+  const flight=inPlay||foul?Math.max(e.bunt?1300:kind==='line'?700:kind==='ground'?850:kind==='homer'?1900:1400,loose?0:distance(positions[fielder],target)/.18+180):0;
   const landingAt=pitchEnd+flight,rollDuration=loose?Math.max(650,distance(positions[fielder],fieldPoint)/.18-flight+180):0;
   const caught=steal?pitchEnd:landingAt+rollDuration;
   let ready=caught+230,location=steal?positions[1]:loose?fieldPoint:target;
@@ -67,7 +72,7 @@
   if(time<p.release)return {phase:'windup',ground:positions[0],height:0,visible:false};
   if(time<p.pitchEnd)return {phase:'pitch',ground:point(positions[0],p.steal?positions[1]:bases[0],progress(time,p.release,p.pitchEnd)),height:4,visible:true};
   if(!p.inPlay&&!p.foul&&!p.steal)return {phase:'catcher',ground:positions[1],height:8,visible:time<p.pitchEnd+230};
-  if(!p.steal&&time<p.landingAt){const t=progress(time,p.pitchEnd,p.landingAt);return {phase:p.kind,ground:point(bases[0],p.target,t),height:p.kind==='ground'?Math.abs(Math.sin(t*Math.PI*5))*3:p.kind==='line'?Math.sin(t*Math.PI)*18:p.kind==='homer'?Math.sin(t*Math.PI)*115+25*t:Math.sin(t*Math.PI)*95,visible:true};}
+  if(!p.steal&&time<p.landingAt){const t=progress(time,p.pitchEnd,p.landingAt);return {phase:p.kind,ground:point(bases[0],p.target,t),height:p.kind==='ground'?Math.abs(Math.sin(t*Math.PI*5))*(e.bunt?1:3):p.kind==='line'?Math.sin(t*Math.PI)*18:p.kind==='homer'?Math.sin(t*Math.PI)*115+25*t:Math.sin(t*Math.PI)*95,visible:true};}
   if(p.kind==='homer'&&!p.steal)return {phase:'homerExit',ground:p.target,height:0,visible:false};
   if(p.foul)return {phase:'foulDone',ground:p.target,height:0,visible:false};
   if(p.loose&&time<p.caught){const t=progress(time,p.landingAt,p.caught),travel=1-(1-t)**2;return {phase:'rolling',ground:point(p.target,p.fieldPoint,travel),height:Math.abs(Math.sin(t*Math.PI*3))*(1-t)*(p.kind==='fly'?7:4),visible:true};}
@@ -119,5 +124,5 @@
   return {position,role,receiving:!!receiving,tagging:!!tagging,pose:{time,running:(time>start&&time<end)||(time>p.returnAt&&time<p.resetEnd&&!p.halfChanged),facing,catch:!!(receiving||tagging||catchBall),glove:tagging?[12,-6]:receiving||catchBall?[12,catchBall&&p.kind==='ground'?-6:-30]:undefined,hand:throwing?[17,-38]:undefined}};
  }
  function transition(e,p,time){if(!p.halfChanged||time<p.returnAt)return null;const t=progress(time,p.returnAt,p.end),entering=t>=.5;return {entering,progress:entering?(t-.5)*2:t*2};}
- globalThis.SL_MATCH_REPLAY={toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,bannerLabel:e=>banners[e.result]||'PLAY',safeText,names};
+ globalThis.SL_MATCH_REPLAY={toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,decisionDebug,bannerLabel:e=>banners[e.result]||'PLAY',safeText,names};
 })();
