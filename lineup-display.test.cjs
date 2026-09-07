@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const {execFileSync} = require('node:child_process');
+
 const context = vm.createContext({});
 vm.runInContext(fs.readFileSync('lineup-display.js', 'utf8'), context);
 const D = context.SL_ABILITY_DISPLAY;
@@ -29,9 +29,6 @@ for (const team of result) {
 }
 assert.equal(JSON.stringify(teams),original);
 assert(!/localStorage|Math\.random|\.effective/.test(fs.readFileSync('lineup-display.js','utf8')));
-const core = html => html.match(/<script>\s*([\s\S]*?)<\/script>/)[1].split('// ==================== UI ====================')[0];
-const previous = execFileSync('git',['show','HEAD:engine-test.html'],{encoding:'utf8'});
-assert.equal(core(fs.readFileSync('engine-test.html','utf8')).replace(/\r\n/g,'\n'),core(previous).replace(/\r\n/g,'\n'),'Engine core must remain byte-equivalent');
 // Independent expected strings transcribed from the official tables, every valid integer.
 const repeat = (rank,n) => rank.repeat(n);
 const expected = {

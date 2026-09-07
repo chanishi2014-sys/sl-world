@@ -124,13 +124,14 @@
 <section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の個別効果は未実装です。守備・失策・フォースプレー・併殺・タッチアップ・二盗／三盗に対応。犠打・死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。守備位置の不足は出場選手で補完します。</section>
 </main>
 <script src="./engine-fielding.js"></script>
+<script src="./match-replay.js"></script>
 <script src="./match-viewer.js"></script>
 <script src="./lineup-display.js"></script>
 <script>
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-003-fielding-running-alpha1", innings:9, maxPitchesPerAction:20000,
+ version:"test-match-004-replay-consistency-alpha1", innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -359,6 +360,7 @@ function onePitch(g){if(g.state.finished)return null;const s=g.state,pitcher=cur
  const people=[...event.runnersBefore.map((runner,i)=>({runner,from:i+1})),...(applied.ended?[{runner:event.batter,from:0}]:[])];
  for(const {runner,from} of people){if(!runner||s.playActions.some(a=>a.runner.key===runner.key))continue;const to=s.bases.findIndex(r=>r?.key===runner.key)+1;if(to&&to!==from)SL_FIELDING.move(g,runner,from,to);}
  event.actions=clone(s.playActions);event.runnerAdvance=event.actions.filter(a=>a.result==='safe');event.earnedRunContext??={virtualOuts:s.virtualOuts,unearnedRunnerKeys:Object.keys(s.unearned),provisional:true};
+ SL_FIELDING.annotate(g,event);
  if(applied.ended)completePA(g);switchHalf(g);
  event.nextState={inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,runners:runners(s),score:[...s.score],hits:[...s.hits],errors:[...s.errors],finished:s.finished,finishReason:s.finishReason};
  s.events.push(event);return event;
@@ -502,7 +504,7 @@ if(typeof document!=="undefined"){
   $("pitcher").textContent=`投手：${pitcher.name}`;$("batter").textContent=s.finished?"打者：—":`打者：${s.order[offense(game)]+1}番 ${batter.name}`;
   $("pitchCount").textContent=game.teams.map(t=>`${t.pitcher.name} ${s.pitching[t.pitcher.key].pitches}球`).join(" / ");
   const log=$("log"),previousTop=log.scrollTop,followLatest=log.scrollHeight-log.clientHeight-previousTop<=32;
-  log.textContent=s.events.map(e=>`#${e.sequence} ${e.inning}${e.half==="top"?"表":"裏"} ${e.pitcher.name} → ${e.batter.name} / ${e.pitchType} ${e.pitchSpeed}km/h / ${e.log||labels[e.result]||e.result} / ${e.scoreAfter.join("−")}`).join("\n")||"まだ投球していません。";
+  log.textContent=s.events.map(e=>`#${e.sequence} ${e.inning}${e.half==="top"?"表":"裏"} ${e.pitcher.name} → ${e.batter.name} / ${e.pitchType||"—"}${Number.isFinite(e.pitchSpeed)?` ${e.pitchSpeed}km/h`:""} / ${e.log||labels[e.result]||e.result} / ${e.scoreAfter.join("−")}`).join("\n")||"まだ投球していません。";
   log.scrollTop=s.events.length===0?0:followLatest?log.scrollHeight:previousTop;
   renderAppearanceOverview();
   $("statistics").replaceChildren();game.teams.forEach(t=>{

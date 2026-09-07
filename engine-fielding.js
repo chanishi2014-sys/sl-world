@@ -5,7 +5,41 @@
  function defense(g){const t=g.teams[1-offense(g)],pool=t.lineup.filter(p=>p.key!==t.pitcher.key),out=[t.pitcher];for(let j=1;j<9;j++){let i=pool.findIndex(p=>p.profile.mainPosition===positions[j]||p.profile.mainPosition===labels[j]||(j>=6&&p.profile.mainPosition==='OF'));out.push(pool.splice(i<0?0:i,1)[0]);}return out;}
  const ability=(p,k)=>clamp((Number(p.profile.batting?.[k]??10)-1)/19,0,1);
  function move(g,p,from,to,result='safe',type='runnerAdvance'){g.state.playActions.push({type,runner:identity(p),fromBase:from,toBase:to,result});}
- function geometry(g,p){const a=(g.rng()+g.rng()-1)*.78,ground=p.battedResult==='groundout'||p.infieldHit,d=ground?155+g.rng()*55:p.battedResult==='homeRun'?410:p.battedResult==='single'?265+g.rng()*35:300+g.rng()*65;p.fieldDirection=a<-.23?'left':a>.23?'right':'center';p.sprayAngle=a;p.depth=d;p.landingPoint=[400+Math.sin(a)*d,430-Math.cos(a)*d];p.fielderIndex=ground?(a<-.25?4:a<0?5:a<.3?3:2):p.battedResult==='lineout'?(a<0?5:3):a<-.23?6:a>.23?8:7;}
+ const layout=Object.freeze({coordinateSpace:'field-800x500-v1',bases:[[400,430],[540,315],[400,225],[260,315],[400,430]],positions:[[400,332],[400,462],[553,302],[473,253],[249,302],[325,250],[200,155],[400,104],[600,155]]});
+ function geometry(g,p){
+  // Keep exactly the original geometry RNG calls and original defensive assignment.
+  const a=(g.rng()+g.rng()-1)*.78,ground=p.battedResult==='groundout'||p.infieldHit;
+  const d=ground?155+g.rng()*55:p.battedResult==='homeRun'?410:p.battedResult==='single'?265+g.rng()*35:300+g.rng()*65;
+  p.sprayAngle=a;p.depth=d;
+  p.fielderIndex=ground?(a<-.25?4:a<0?5:a<.3?3:2):p.battedResult==='lineout'?(a<0?5:3):a<-.23?6:a>.23?8:7;
+  const origin=layout.positions[p.fielderIndex];
+  p.landingPoint=ground?[origin[0]+a*16,origin[1]+(d-155)/55*24-12]:p.battedResult==='lineout'?[origin[0]+a*16,origin[1]+(d-300)/65*28-14]:[400+Math.sin(a)*d,430-Math.cos(a)*d];
+  if(ground||p.battedResult==='lineout'){p.sprayAngle=Math.atan2(p.landingPoint[0]-400,430-p.landingPoint[1]);p.depth=Math.hypot(p.landingPoint[0]-400,p.landingPoint[1]-430);}
+  p.fieldDirection=p.landingPoint[0]<360?'left':p.landingPoint[0]>440?'right':'center';
+  p.ballType=ground?'ground':p.battedResult==='homeRun'?'homer':p.battedResult==='lineout'?'line':p.battedResult==='single'&&p.battedQuality>=.38?'line':'fly';
+ }
+ // Legal single-runner attempts only; no implicit double steals.
+ function canSteal(g,from){return !g.state.finished&&g.state.outs<3&&(from===1||from===2)&&!!g.state.bases[from-1]&&!g.state.bases[from];}
+ // Add replay facts without drawing RNG or modifying the game's result/state.
+ function annotate(g,e){
+  const fielders=defense(g).map((p,index)=>({...identity(p),index,position:positions[index]}));
+  e.eventVersion=2;e.coordinateSpace=layout.coordinateSpace;e.defense=fielders;
+  e.playType=e.eventType==='baserunning'?'steal':e.ballType||e.outcome;
+  e.primaryFielder=fielders[e.fielderIndex]||null;
+  e.playDescription=e.primaryFielder&&e.outcome==='inPlay'?labels[e.fielderIndex]+'の'+({ground:'ゴロ',line:'ライナー',fly:'フライ',homer:'本塁打の打球'}[e.ballType]||'打球'):'';
+  e.landingPosition=e.landingPoint?[...e.landingPoint]:null;
+  const hit=['single','double','triple'].includes(e.result);
+  const roll=hit&&!e.infieldHit?12+28*(e.battedQuality??.5):0;
+  e.fieldingPoint=e.landingPoint?[clamp(e.landingPoint[0]+Math.sin(e.sprayAngle||0)*roll,90,710),clamp(e.landingPoint[1]-Math.cos(e.sprayAngle||0)*roll,60,420)]:null;
+  const receiver=(base,from)=>base===1?2:base===2?(from===5?3:5):base===3?4:1;
+  let raw=e.tagUp?e.actions.filter(a=>a.type==='tagUp').map(a=>({fromIndex:e.fielderIndex,toBase:a.toBase,runnerKey:a.runner.key,result:a.result,kind:'tag'})):e.throws|| (e.throw?[e.throw]:[]);
+  if(hit&&!raw.length)raw=[{fromIndex:e.fielderIndex,toBase:2,kind:'return'}];
+  let from=e.fielderIndex;
+  e.transfers=raw.map(t=>{const fromIndex=t.fromIndex??from,toIndex=receiver(t.toBase,fromIndex);const action=e.actions.find(a=>a.toBase===t.toBase&&a.result==='out');const transfer={fromIndex,toIndex,toBase:t.toBase,from:fielders[fromIndex],receiver:fielders[toIndex],kind:t.kind||(e.eventType==='baserunning'?'tag':e.forceOut||e.battedResult==='groundout'||e.doublePlay?'force':'return'),runnerKey:t.runnerKey||action?.runner.key||e.runner?.key||null,result:t.result||action?.result||(e.caughtStealing?'out':'safe')};from=toIndex;return transfer;});
+  e.coverage=e.transfers.map(t=>({fielderIndex:t.toIndex,toBase:t.toBase,role:'baseCover'}));
+  if(e.eventType==='baserunning'){e.pitchType='盗塁';e.pitchSpeed=null;e.primaryFielder=fielders[1];e.receiver=e.transfers[0]?.receiver||null;e.tag={...e.tag,fielder:e.receiver};}
+ }
+
  function field(g,p,b,pitcher){const s=g.state,f=defense(g)[p.fielderIndex],before=s.outs,ground=p.battedResult==='groundout',skill=ability(f,'fielding'),catching=ability(f,'catching'),arm=ability(f,'arm');p.fielder={...identity(f),position:positions[p.fielderIndex]};
   if(g.rng()<.003+.045*(1-(skill+catching)/2)**2){p.error=true;p.errorType=ground?(g.rng()<.45?'throwing':'groundFielding'):'catching';s.errors[1-offense(g)]++;s.virtualOuts++;s.unearned[b.key]=true;p.earnedRunContext={reachedOnError:true,virtualOuts:s.virtualOuts,errorFielder:p.fielder};p.log=`${labels[p.fielderIndex]}${f.name}の${p.errorType==='throwing'?'悪送球':'捕球エラー'}`;s.suppressRBI=true;advanceWalk(g,b,pitcher);return 'error';}
   if(ground){let chain=0;while(chain<3&&s.bases[chain])chain++;// Prefer the shortest reliable throw when the lead runner is fast.
@@ -20,6 +54,6 @@
   recordOut(g,pitcher);if(p.battedResult==='flyout'&&p.fielderIndex>=6&&before<2){for(let i=2;i>=1;i--){const r=s.bases[i];if(!r||s.outs>=3||s.finished||(i===1&&s.bases[2]))continue;const chance=clamp(.65+.26*scaled(r,'speed',g.config)-.19*arm+(p.depth-300)/240-(i===1?.12:0),.15,.97);if(chance<(i===2?.60:.78)||g.rng()>.90)continue;const safe=g.rng()<chance;s.bases[i]=null;p.tagUp=true;move(g,r,i+1,i+2,safe?'safe':'out','tagUp');p.throw={from:p.fielder,toBase:i+2};p.tag={toBase:i+2,result:safe?'safe':'out'};p.log=`${i+1}塁走者${r.name}、タッチアップ${safe?'成功':'失敗'}`;if(!safe)recordOut(g,pitcher);else if(i===2){creditRun(g,r,b,pitcher);p.sacrificeFly=true;s.batting[b.key].AB--;s.batting[b.key].SF++;if(walkOff(g))finish(g,'walkoff');}else s.bases[2]=r;}}
   return p.sacrificeFly?'sacrificeFly':p.battedResult;
  }
- function steal(g,pitcher){const s=g.state,from=s.bases[1]&&!s.bases[2]?2:s.bases[0]&&!s.bases[1]?1:0;if(!from)return null;const r=s.bases[from-1],speed=scaled(r,'speed',g.config),close=Math.abs(s.score[0]-s.score[1])<=3,attempt=(.001+.028*speed**3)*(from===2?.4:1)*(s.outs===2?.8:1)*(close?1:.25)*(s.inning>=7&&close?1.2:1);if(g.rng()>=attempt)return null;const catcher=defense(g)[1],chance=clamp(.54+.35*speed-.18*ability(catcher,'arm')-.08*scaled(pitcher,'control',g.config)-.05*scaled(pitcher,'velocity',g.config)-(from===2?.06:0),.2,.94),safe=g.rng()<chance;s.bases[from-1]=null;if(safe){s.bases[from]=r;s.batting[r.key].SB++;}else{s.batting[r.key].CS++;recordOut(g,pitcher);}move(g,r,from,from+1,safe?'safe':'out',safe?'stolenBase':'caughtStealing');return {eventType:'baserunning',outcome:'steal',result:safe?'stolenBase':'caughtStealing',stolenBase:safe,caughtStealing:!safe,runner:identity(r),fromBase:from,toBase:from+1,fielder:identity(catcher),fielderIndex:1,throw:{from:identity(catcher),toBase:from+1},tag:{toBase:from+1,result:safe?'safe':'out'},log:`${from}塁走者${r.name}、${from+1}塁盗塁${safe?'成功':'失敗'}`,pitchType:'盗塁',pitchSpeed:'—'};}
- globalThis.SL_FIELDING={geometry,field,steal,move,defense,ability};
+ function steal(g,pitcher){const s=g.state,from=s.bases[1]&&!s.bases[2]?2:s.bases[0]&&!s.bases[1]?1:0;if(!canSteal(g,from))return null;const r=s.bases[from-1],speed=scaled(r,'speed',g.config),close=Math.abs(s.score[0]-s.score[1])<=3,attempt=(.001+.028*speed**3)*(from===2?.4:1)*(s.outs===2?.8:1)*(close?1:.25)*(s.inning>=7&&close?1.2:1);if(g.rng()>=attempt)return null;const catcher=defense(g)[1],chance=clamp(.54+.35*speed-.18*ability(catcher,'arm')-.08*scaled(pitcher,'control',g.config)-.05*scaled(pitcher,'velocity',g.config)-(from===2?.06:0),.2,.94),safe=g.rng()<chance;s.bases[from-1]=null;if(safe){s.bases[from]=r;s.batting[r.key].SB++;}else{s.batting[r.key].CS++;recordOut(g,pitcher);}move(g,r,from,from+1,safe?'safe':'out',safe?'stolenBase':'caughtStealing');return {eventType:'baserunning',outcome:'steal',result:safe?'stolenBase':'caughtStealing',stolenBase:safe,caughtStealing:!safe,runner:identity(r),fromBase:from,toBase:from+1,fielder:identity(catcher),fielderIndex:1,throw:{from:identity(catcher),toBase:from+1},tag:{toBase:from+1,result:safe?'safe':'out'},log:`${from}塁走者${r.name}、${from+1}塁盗塁${safe?'成功':'失敗'}`,pitchType:'盗塁',pitchSpeed:'—'};}
+ globalThis.SL_FIELDING={geometry,field,steal,move,defense,ability,layout,canSteal,annotate};
 })();
