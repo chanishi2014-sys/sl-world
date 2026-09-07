@@ -81,6 +81,7 @@
 <script src="./pwa-register.js" defer></script>
 <!-- /SL WORLD PWA -->
 <link rel="stylesheet" href="./sl-home.css">
+<link rel="stylesheet" href="./lineup-display.css">
 </head><body>
 <div class="sl-home-return"><a href="./index.html#home">← SL WORLD HOME</a></div>
 <header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #001</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p><p id="engineVersion" class="note engine-version"></p></header>
@@ -94,6 +95,7 @@
 <details><summary>開発用：文字ベース進行</summary><div class="toolbar"><button id="pitch">1球進行</button><button id="atbat">1打席進行</button><button id="inning">1イニング進行</button><button id="game">試合終了まで進行</button></div><p class="note">1イニングは現在の回の裏終了まで。延長なし／同点は引き分け。</p></details></section>
 <section class="card" id="matchViewer"></section>
 <section class="card"><h2>プレイログ</h2><div id="log" role="region" aria-label="全投球のプレイログ" tabindex="0"></div><p class="note">画面は1回表の初球から全投球を表示します。枠内を上にスクロールすると過去のログを確認できます（RESETで新しい試合に切り替わります）。JSONには全投球・投球品質・打球品質・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
+<section class="card" id="lineupOverview" aria-label="先発オーダーと基本能力"></section>
 <div id="appearanceOverview"></div>
 <section class="card"><h2>打撃・投手成績</h2><p class="note">自責点は失策出塁・仮想アウト数を利用した暫定集計です（完全なイニング再構成は未実装）。投球回の「1/3」「2/3」はアウト1個・2個を表します。</p><div id="statistics"></div></section>
 <details class="card" id="balancePanel">
@@ -123,6 +125,7 @@
 </main>
 <script src="./engine-fielding.js"></script>
 <script src="./match-viewer.js"></script>
+<script src="./lineup-display.js"></script>
 <script>
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
@@ -585,7 +588,7 @@ if(typeof document!=="undefined"){
  $("balanceCancel").onclick=()=>{if(balanceJob)balanceJob.cancelled=true;};
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
-  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());viewer?.reset();
+  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());SL_ABILITY_DISPLAY.render($("lineupOverview"),game.teams);viewer?.reset();
   $("source").textContent=db.message+" / "+teams.map(t=>`${t.name}：実選手${9-t.testCount}人、TEST PLAYER ${t.testCount}人、未設定能力補完 ${t.lineup.reduce((n,p)=>n+p.fallbacks.length,0)}項目`).join(" / ");$("status").textContent="";render();
  }
  ["pitch","atbat","inning","game"].forEach(id=>$(id).onclick=()=>{try{advance(game,id);$("status").textContent="";}catch(e){$("status").textContent=e.message;}render();});$("reset").onclick=reset;
