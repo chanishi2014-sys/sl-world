@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SL WORLD — TEST MATCH #006 / ENGINE LAB</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#101d2e;--line:#29415d;--text:#f4f7fb;--sub:#a4b7cc;--accent:#5bc0ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#153154,#07111f 50%);color:var(--text);font:15px system-ui,"Yu Gothic",sans-serif}header,main{max-width:1180px;margin:auto;padding:20px}header{padding-bottom:0}.logo{font-size:12px;letter-spacing:.15em;color:var(--accent)}h1{font-size:25px;margin:8px 0}h2{font-size:17px;margin:0 0 12px}h3{font-size:15px}p{line-height:1.7}.note{font-size:12px;color:var(--sub)}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.setup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}label{display:block;font-size:12px;color:var(--sub);margin-bottom:5px}input,select,button{font:inherit;border-radius:8px;padding:10px;border:1px solid #395675;background:#091726;color:white}input,select{width:100%}button{cursor:pointer}button:hover{border-color:var(--accent)}button:disabled{opacity:.4;cursor:default}.primary{background:#1687bc}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}td,th{padding:8px;text-align:center;border-bottom:1px solid var(--line)}th{color:var(--sub)}td:first-child,th:first-child{text-align:left}.metric{font-size:22px;font-weight:bold;color:var(--accent)}.bases{display:grid;gap:8px}.base{padding:9px;background:#081522;border:1px solid var(--line);border-radius:8px}#log{max-height:330px;overflow:auto;font:12px ui-monospace,monospace;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}#status{min-height:1.6em;color:#ffd477}.pill{padding:3px 7px;background:#20384f;border-radius:9px}.stats{margin-top:14px}@media(max-width:650px){.grid,.setup{grid-template-columns:1fr}header,main{padding:12px}h1{font-size:21px}button{font-size:12px}.card{padding:12px}}
+
+#matchTitle,#pitcher,#batter,#pitchCount{overflow-wrap:anywhere}
+.team-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.player-stat,.team-result{background:#081522;border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0;margin-bottom:8px}
+.player-stat h5,.team-result h3{margin:0 0 10px;font-size:15px;overflow-wrap:anywhere}
+.stat-list{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px;margin:0}
+.stat-list.pitching{grid-template-columns:repeat(8,minmax(0,1fr))}
+.stat-list div{min-width:0;text-align:center}.stat-list dt{font-size:13px;color:var(--sub)}
+.stat-list dd{margin:4px 0 0;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.team-result .stat-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+#statistics h4{font-size:15px;margin:16px 0 10px}
+#statistics>section+section{border-top:1px solid var(--line);margin-top:24px;padding-top:8px}
+#scoreboard td:first-child,#scoreboard th:first-child{position:sticky;left:0;background:var(--panel);white-space:normal;min-width:100px;max-width:180px;overflow-wrap:anywhere}
+@media(max-width:650px){.team-summary{grid-template-columns:1fr}.stat-list,.stat-list.pitching{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}.stat-list dt{font-size:14px}.stat-list dd{font-size:18px}.player-stat h5{font-size:16px}.metric{font-size:20px}}
+
+/* Compact overview only; detailed player cards keep their existing layout. */
+.appearance-table{table-layout:fixed;white-space:normal;font-size:15px;font-variant-numeric:tabular-nums}
+.appearance-table th,.appearance-table td{padding:8px 4px}
+.appearance-table th:first-child{width:34%;overflow-wrap:anywhere}
+.appearance-table tbody th{color:var(--text);font-weight:400}
+.appearance-table thead th{font-size:14px;word-break:normal;overflow-wrap:anywhere}
+.appearance-heading{overflow-wrap:anywhere}
+.appearance-label{display:none}
+@media(max-width:650px){
+ .appearance-table,.appearance-table tbody{display:block;width:100%}
+ .appearance-table thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .appearance-table tbody tr{display:grid;grid-template-columns:minmax(0,1.8fr) repeat(5,minmax(0,1fr));border-bottom:1px solid var(--line);padding:6px 0;gap:6px 2px}
+ .appearance-table tbody th,.appearance-table tbody td{padding:2px 0;border:0;min-width:0}
+ .appearance-table tbody th:first-child{grid-row:span 2;width:auto;align-self:center;padding-right:4px;font-size:14px}
+ .appearance-table tbody td{display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:15px}
+ .appearance-label{display:block;font-size:14px;color:var(--sub);line-height:1.3;overflow-wrap:anywhere;text-align:center}
+}
+
+#balancePanel>summary{cursor:pointer;font-size:17px;font-weight:700;min-height:44px;line-height:1.5;padding:8px 0}
+.balance-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.balance-controls label{font-size:14px}.balance-controls select,.balance-controls input{font-size:16px;min-width:0}
+.balance-result{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:#081522;overflow-wrap:anywhere}
+.balance-result h3{margin:0 0 8px}.balance-result h4{margin:16px 0 10px;font-size:14px}
+.balance-result .stat-list{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px 8px}
+.balance-result .stat-list dt{font-size:14px}.balance-result .stat-list dd{font-size:18px}
+#balanceStatus{color:#ffd477;min-height:1.6em;overflow-wrap:anywhere}
+#balancePanel button{font-size:14px;min-height:44px}
+@media(max-width:650px){.balance-controls{grid-template-columns:1fr}.balance-result{padding:10px}}
+.engine-version{margin:8px 0 0;text-align:right;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+
+#matchViewer canvas{display:block;width:100%;max-height:65vh;aspect-ratio:8/5;object-fit:contain;background:#071a27;border-radius:10px}#matchViewer [data-score],#matchViewer [data-detail]{overflow-wrap:anywhere;font-size:14px}#matchViewer [data-result]{font-weight:bold;color:#ffd477;min-height:1.7em}#matchViewer button{min-height:44px;font-size:14px}#matchViewer [hidden]{display:none}#matchViewer .toolbar label{margin:0;min-width:110px}
+[data-watch-mode][aria-pressed="true"]{background:#1687bc;border-color:#8bd7ff;box-shadow:0 0 0 2px #8bd7ff55}[data-watch-mode]{font-size:14px;min-height:44px}
+
+/* One shared scoreboard for every viewing mode, including final SKIP results. */
+.stadium-board{margin:12px 0 18px;padding:14px;border:1px solid #344c59;border-radius:10px;background:radial-gradient(#41607818 .6px,transparent .8px) 0 0/5px 5px,#030b12;box-shadow:inset 0 0 24px #0008,0 4px 12px #0003;color:#dcebe6;font-variant-numeric:tabular-nums}
+.sb-brand{display:flex;justify-content:space-between;gap:8px;color:#94acae;font-size:11px;letter-spacing:.14em;margin-bottom:9px}.sb-brand span:first-child{font-weight:800;color:#d3dec8}
+.sb-table{width:100%;table-layout:fixed;border-collapse:collapse;white-space:normal;font:18px ui-monospace,SFMono-Regular,Consolas,monospace}
+.sb-name-col{width:22%}.sb-total-col{width:9%}
+.sb-table th,.sb-table td{border-bottom:1px solid #243a40;border-right:1px solid #1d3035;padding:8px 2px;text-align:center}
+.sb-table thead th{font:12px system-ui;color:#809f9f}.sb-table tbody th{text-align:left;padding-left:7px;color:#dcebe6;font:600 14px system-ui;overflow-wrap:anywhere}
+.sb-table td{color:#e6f6d4;text-shadow:0 0 7px #9eb96b35}.sb-table .sb-total{color:#f8d982;font-size:25px;font-weight:800;background:#dec26509;border-right:0}
+.sb-table .sb-current-col{background:#539b9b12;color:#b0ebdf}.sb-table .sb-active-cell{box-shadow:inset 0 0 0 1px #83cdbb; background:#559f8128}
+.sb-table .sb-batting th{border-left:3px solid #83cdbb;padding-left:4px}
+.sb-status{display:grid;grid-template-columns:100px minmax(0,1fr) 100px;gap:14px;align-items:center;padding-top:12px}
+.sb-lamp-row{display:flex;gap:7px;align-items:center;height:21px}.sb-lamp-row b{width:14px;color:#a2b7bd;font:600 13px system-ui}.sb-lamp{width:12px;height:12px;border-radius:50%;background:#18252a;border:1px solid #36454b}
+.sb-s .is-on{background:#f2cb62;box-shadow:0 0 7px #f2cb6255}.sb-b .is-on{background:#79cda0;box-shadow:0 0 7px #79cda055}.sb-o .is-on{background:#ed8277;box-shadow:0 0 7px #ed827755}
+.sb-phase{text-align:center;min-width:0}.sb-phase strong{display:block;font-size:20px;color:#ccece1}.sb-phase span{display:block;margin-top:5px;color:#97afb1;font-size:12px;overflow-wrap:anywhere}
+.sb-runners{display:flex;align-items:center;flex-direction:column;gap:4px}.sb-base-map{width:48px;height:40px;position:relative}.sb-base-map i{width:16px;height:16px;transform:rotate(45deg);position:absolute;border:1px solid #496466;background:#142329}.sb-base-map [data-base="2"]{left:16px;top:3px}.sb-base-map [data-base="3"]{left:2px;top:17px}.sb-base-map [data-base="1"]{right:2px;top:17px}.sb-base-map .is-on{background:#f2cf76;border-color:#f9e1a7}.sb-runner-text{font-size:12px;color:#b4c6c4;text-align:center;line-height:1.35}.sb-runner-text span{display:inline-block}
+.sb-note{font-size:11px!important;color:#839b9d;margin:9px 0 0;line-height:1.4}
+.sb-extra-innings .sb-table-wrap{overflow-x:auto}.sb-extra-innings .sb-table{min-width:580px}
+@media(max-width:650px){.stadium-board{padding:9px 6px}.sb-name-col{width:22%}.sb-total-col{width:9%}.sb-table{font-size:14px}.sb-table th,.sb-table td{padding:7px 1px}.sb-table tbody th{font-size:12px;padding-left:3px}.sb-table .sb-total{font-size:20px}.sb-table thead th{font-size:11px}.sb-status{grid-template-columns:70px minmax(0,1fr) 60px;gap:5px;padding-top:9px}.sb-phase strong{font-size:17px}.sb-phase span{font-size:11px}.sb-lamp-row{gap:4px;height:19px}.sb-lamp{width:11px;height:11px}.sb-brand{font-size:10px;letter-spacing:.09em}.sb-note{font-size:10px!important}}
+</style>
+<!-- SL WORLD PWA -->
+<meta name="theme-color" content="#07111f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="SL WORLD">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<script src="./pwa-register.js" defer></script>
+<!-- /SL WORLD PWA -->
+<link rel="stylesheet" href="./sl-home.css">
+<link rel="stylesheet" href="./lineup-display.css">
+</head><body>
+<div class="sl-home-return"><a href="./index.html#home">← SL WORLD HOME</a></div>
+<header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #006 / ENGINE LAB</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p><p id="engineVersion" class="note engine-version"></p></header>
+<main><p><a href="engine-lab.html">SL WORLD ENGINE LAB</a> / <a href="engine-test.html">005 baseline</a></p>
+<section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
+<div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
+<p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
+<section class="card"><p id="matchTitle" class="note"></p><details><summary>投打者・投球数</summary><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></details>
+<div class="toolbar" aria-label="観戦モード"><button data-watch-mode="FULL" aria-pressed="true">フル観戦</button><button data-watch-mode="MINI" aria-pressed="false">ミニ観戦</button><button data-watch-mode="HIGHLIGHT" aria-pressed="false">ハイライト</button><button data-watch-mode="SKIP" aria-pressed="false">スキップ</button></div>
+<p class="note">フル：1球ずつ ／ ミニ：打席結果を短く再生 ／ ハイライト：重要場面を自動抽出 ／ スキップ：即時終了。切替時は確定済みのプレー後から継続します。</p>
+<details><summary>開発用：文字ベース進行</summary><div class="toolbar"><button id="pitch">1球進行</button><button id="atbat">1打席進行</button><button id="inning">1イニング進行</button><button id="game">試合終了まで進行</button></div><p class="note">1イニングは現在の回の裏終了まで。延長なし／同点は引き分け。</p></details></section>
+<section class="card" id="matchViewer"></section>
+<section class="card"><h2>プレイログ</h2><div id="log" role="region" aria-label="全投球のプレイログ" tabindex="0"></div><p class="note">画面は1回表の初球から全投球を表示します。枠内を上にスクロールすると過去のログを確認できます（RESETで新しい試合に切り替わります）。JSONには全投球・投球品質・打球品質・走者・スコア・成績・適用CONFIG・ロスターを収録します。</p></section>
+<section class="card" id="lineupOverview" aria-label="先発オーダーと基本能力"></section>
+<div id="appearanceOverview"></div>
+<section class="card"><h2>打撃・投手成績</h2><p class="note">自責点は失策出塁・仮想アウト数を利用した暫定集計です（完全なイニング再構成は未実装）。投球回の「1/3」「2/3」はアウト1個・2個を表します。</p><div id="statistics"></div></section>
+<details class="card" id="balancePanel">
+<summary>能力差テスト / BALANCE TEST（開発用）</summary>
+<p class="note">通常試合と同じ5段階の判定を、仮想選手で比較します。通常試合・選手DBには影響しません。数値は初期調整用で、リーグやチーム名による補正はありません。</p>
+<div class="balance-controls">
+ <div><label for="balanceSeed">テスト用seed</label><input id="balanceSeed" value="BALANCE-001"></div>
+ <div><label for="balancePreset">打者 vs 投手</label><select id="balancePreset"></select></div>
+ <div><label for="balanceCount">各条件の打席数</label><select id="balanceCount"><option value="1000">1,000打席</option><option value="10000">10,000打席</option></select></div>
+ <div><label for="balancePitchCount">各打席の開始時投球済み数（疲労比較）</label><input id="balancePitchCount" type="number" min="0" max="500" step="1" value="0"></div>
+</div>
+<p class="note">打席比較は毎打席、走者なし・0ボール0ストライク・指定投球数から開始します。その打席内では投球数と疲労が進みます。未設定能力は従来の仮値で補完されるため、「最底辺」は能力を明示的に80 / 1 / 1にした条件です。</p>
+<div class="toolbar"><button id="balanceRun" class="primary">打席テストを実行</button><button id="balanceCancel" disabled>テストを中止</button></div>
+<div id="balanceStatus" role="status" aria-live="polite"></div>
+<div id="balanceResults"></div>
+<h3>仮想チーム比較</h3>
+<p class="note">先発を含む9人全員に同じ打撃能力を設定し、通常の9回制で対戦します。先攻・後攻は交互。投球数と疲労は試合中に蓄積し、次の試合ではリセットします。HIGH・MID・LOWは能力プリセットの表示名です。</p>
+<div class="balance-controls">
+ <div><label for="teamBalancePreset">チーム比較条件</label><select id="teamBalancePreset"></select></div>
+ <div><label for="teamBalanceCount">各条件の試合数</label><select id="teamBalanceCount"><option value="50">50試合</option><option value="100">100試合</option></select></div>
+</div>
+<div class="toolbar"><button id="teamBalanceRun">チームテストを実行</button></div>
+<div id="teamBalanceResults"></div>
+<p class="note">打率＝安打÷打数、出塁率＝（安打＋四球）÷打席、長打率＝塁打÷打数、OPS＝出塁率＋長打率。凡打率は三振を除く打球アウト÷打席。本塁打率・三振率・四球率の分母も打席数です。5打数0安打は四球を除いた連続5打数ごとの実測です。</p>
+</details>
+<section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の打撃／投球への個別効果は未実装です。登録済みの盗塁・走塁・クイック関連特性は戦術判断のみで参照します。守備・失策・フォースプレー・併殺・タッチアップ・二盗／三盗に対応。送りバントと説明可能な基本戦術判断に対応。死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。守備位置の不足は出場選手で補完します。</section>
+</main>
+<script src="./engine006-fielding.js"></script>
+<script src="./engine006-tactics.js"></script>
+<script src="./engine006-replay.js"></script>
+<script src="./engine006-viewer.js"></script>
+<script src="./lineup-display.js"></script>
+<script src="./engine006.js"></script><script src="./engine006-match-ui.js"></script></body></html>
+
