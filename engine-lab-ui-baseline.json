@@ -1,0 +1,31 @@
+{
+  "revision": "c9c625c",
+  "files": {
+    "engine006.js": "c1c39008a62337ea94cf2d05bcb39b9a0eadca35a5eec296dc3062731a543ff2",
+    "engine006-tactics.js": "de6b540beb22b1b599029901235acd9457365821e48829ee25d23819aeedbea0",
+    "engine006-fielding.js": "d9df85e0dcc295a76f565685babd6b7e6d9f3f1f1a6ec965b65efdebdb704a68",
+    "engine006-replay.js": "9b32f50235eda9585dda72005f5485d84ad3fb231e7ad54fbfcc13e61dc330c6",
+    "engine006-viewer.js": "daf1a9adec4644684883734a0be0e3703cd56429f99014f2c8ed97870fa226ff",
+    "engine-lab-core.js": "b1f5a42fa220b991d1de490accebeee7622bd9c3959d47e74ae099c66c310637",
+    "engine-lab-worker.js": "bbc39279825be729f5a643ba1a1b43bfb1fc6799f86808b4483cb0db64609919",
+    "engine-test.html": "0989eb2e931740f49258e71284a3b985f9dff014477951c6b0254f195cc5f358",
+    "engine-tactics.js": "6be5a68c1f65f04c38277a38c2335254824909043ae5afd261cc41ed81b7b5fa",
+    "engine-fielding.js": "495ffe772915a4925f1ba219c409276348f2e561633ed3ec297270f9a2e32fe6",
+    "match-replay.js": "24f7b6c37bc39a6b12bcd31c30bbfdfbfca1eea086ed91ac3e972bb75ce3dbda",
+    "match-viewer.js": "f651f2e015d5c303e02b4c7514376484c0ca7f1995c03f71240114c8cbf6a583",
+    "player-editor.html": "abbd8d0a965edf044f1be3177fdce9bf3090635a00f79760e208af29e4b22362",
+    "service-worker.js": "97c9108038893adc05496f274101b7d573cdcb240fd65d4e9504c66676db34c7",
+    "manifest.webmanifest": "a3c1e3b04154d292454a1acfad06f4cd857197bb0100f559b5e08e3ce1a4bec3"
+  },
+  "scenarios": {
+    "steal": "3d253eae9a4dfbb83e8a701c69cc8cd6afb1a898a4bb7ccd1759f7960c19c192",
+    "bunt": "bf542f1a9bd690814cb1ec6b52d88e8726d955fe6a42f323ddd6d8bb271a8123",
+    "squeeze": "6de909e5e94e6369923076e06b394183595aa5ce6a541a0d7a4d8228cb85e751",
+    "hitRun": "93f669449959c2d0c491f9dfd6ce7b1fee8cb263f137af79a93f8f3f0a297d2c",
+    "walk": "d3e194d28a2309fd71ea78953831aa6b7557897299683c35d10c15beb189cbe2",
+    "pinchHit": "464a87ed1b0e00ed7b7044519fe379e63dbda757bb1ba850f853d3714f8bfa2f",
+    "pinchRun": "127595cee64bf4a310ff92d7a4dbc8d08356f12194a66a38b931952c88e9d12c",
+    "relief": "55d044a8a73b393fbbcb49e5fa0afbec628fed27635af3d6fd5cef79d786a8ac",
+    "alignment": "39cf697741d5792a654d2dc04d03e89c1fdc0baf781113afb8b7cbabaea8df9f"
+  }
+}
