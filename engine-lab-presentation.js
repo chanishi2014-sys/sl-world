@@ -9,7 +9,9 @@ const title=s=>(L.scenarios[s.id]?.label||s.label||'CUSTOM')+'テスト';
 const situation=s=>`${s.inning}回${s.half==='top'?'表':'裏'} ｜ ${s.score.join('–')} ｜ ${s.outs}死 ｜ ${s.bases.some(Boolean)?['一','二','三'].filter((_,i)=>s.bases[i]).join('・')+'塁':'走者なし'}`;
 const condition=(g,i)=>({id:'ABC'[i]||String(i+1),label:g.changed?.value!=null?String(g.changed.value)==='none'?'なし':String(g.changed.value):g.label||'単一条件'});
 function metric(r,id){let [kind,key]=id.split(':'),name,basis;
- if(kind==='initial'){name=label(key)+'選択率';basis='各試行の最初の判断 / 全試行';}
+ if(kind==='initial'){name='初手'+label(key)+'選択率';basis='initialDecision（各試行の最初の判断）/ 全試行';}
+ if(kind==='observed'){name=label(key)+'発生率（観測全体）';basis='初期判断を含む観測全体で1回以上発生した試行 / 全試行';}
+ if(kind==='later'){name=label(key)+'発生率（初期判断後）';basis='最初の判断を除く観測期間で1回以上発生した試行 / 全試行';}
  if(kind==='operation'){name=label(key)+'選択率';basis='観測範囲内で1回以上 / 全試行（重複あり）';}
  if(kind==='matchup'){name=label(key);basis='各試行の最初の投手対打者判断 / 全試行';}
  if(kind==='alignment'){name=label(key);basis='各試行の最初の守備位置 / 全試行';}
@@ -17,19 +19,20 @@ function metric(r,id){let [kind,key]=id.split(':'),name,basis;
  if(kind==='outcome'){name={scored:'得点率',noScore:'無得点率',tookLead:'勝ち越し率',tiedAtEnd:'終了時同点率',draw:'試合引き分け率',outEnded:'アウト終了率',gameFinished:'試合終了率'}[key]||key;basis='該当試行 / 全試行';}
  const values=r.groups.map((g,i)=>{let n=0,d=g.trials.length;const s=g.summary;
   if(kind==='initial')n=key==='STEAL'?(s.initialDecision.STEAL_2B||0)+(s.initialDecision.STEAL_3B||0):s.initialDecision[key]||0;
+  if(kind==='observed'||kind==='later')n=g.trials.filter(t=>(t.decision[key]||0)-(kind==='later'&&t.initialDecision===key?1:0)>0).length;
   if(kind==='operation')n=g.trials.filter(t=>t.decision[id.slice('operation:'.length)]).length;
   if(kind==='matchup')n=g.trials.filter(t=>t.traces?.[0]?.matchup?.decision===key).length;
   if(kind==='alignment')n=g.trials.filter(t=>t.traces?.[0]?.alignment===key).length;
   if(kind==='outcome')n=s.outcome[key]||0;
   if(kind==='success'){const x=s.execution;n=x[key==='STEAL'?'stolenBase':key+':success']||0;d=n+(x[key==='STEAL'?'caughtStealing':key+':failure']||0);}
-  return {conditionId:condition(g,i).id,numerator:n,denominator:d,rate:d?n/d:null};});
+  return {conditionId:condition(g,i).id,numerator:n,denominator:d,rate:d?n/d:null,...(['observed','later'].includes(kind)?{occurrences:g.trials.reduce((n,t)=>n+Math.max(0,(t.decision[key]||0)-(kind==='later'&&t.initialDecision===key?1:0)),0)}:{})};});
  if(kind==='operation'&&key==='MATCHUP')name=label(id.split(':').at(-1))+'（trial内）';
  if(kind==='operation'&&key==='ALIGNMENT')name=label(id.split(':').at(-1))+'（trial内）';
  if(kind==='operation'&&key==='DEFENSE')name=label(id.split(':').at(-1))+'（trial内）';
  return {id,label:name||label(key),basis,values};
 }
-function metrics(r){const common=['initial:SWING_AWAY'];const ids={steal:['initial:STEAL','success:STEAL','initial:HIT_AND_RUN',...common],bunt:['initial:SAC_BUNT','success:SAC_BUNT',...common],squeeze:['initial:SQUEEZE','success:SQUEEZE',...common],hitRun:['initial:HIT_AND_RUN','success:HIT_AND_RUN',...common],walk:['matchup:CHALLENGE','matchup:CAUTIOUS','matchup:INTENTIONAL_WALK'],pinchHit:['operation:PINCH_HIT'],pinchRun:['operation:PINCH_RUN'],relief:['operation:CONTINUE','operation:RELIEF','operation:CLOSER'],alignment:['alignment:NORMAL','alignment:IN','alignment:DEEP']}[r.groups[0].bundle.scenario.id]||common;
- const all=[...new Set([...r.groups.flatMap(g=>Object.keys(g.summary.initialDecision).map(k=>'initial:'+k)),...['PINCH_HIT','PINCH_RUN','DEFENSIVE_SUB','CONTINUE','RELIEF','CLOSER','MATCHUP:CHALLENGE','MATCHUP:CAUTIOUS','MATCHUP:INTENTIONAL_WALK','ALIGNMENT:NORMAL','ALIGNMENT:IN','ALIGNMENT:DEEP','DEFENSE:SECURE_RETURN','DEFENSE:HOLD_BALL'].map(k=>'operation:'+k),...['scored','noScore','tookLead','tiedAtEnd','draw','outEnded','gameFinished'].map(k=>'outcome:'+k),...['STEAL','SAC_BUNT','SAFETY_BUNT','SQUEEZE','HIT_AND_RUN'].map(k=>'success:'+k)])];
+function metrics(r){const common=['initial:SWING_AWAY'];const ids={steal:['initial:STEAL','success:STEAL','initial:HIT_AND_RUN',...common],bunt:['initial:SAC_BUNT','success:SAC_BUNT',...common],squeeze:['initial:SQUEEZE','success:SQUEEZE',...common],hitRun:['initial:HIT_AND_RUN','observed:HIT_AND_RUN','later:HIT_AND_RUN','success:HIT_AND_RUN',...common],walk:['matchup:CHALLENGE','matchup:CAUTIOUS','matchup:INTENTIONAL_WALK'],pinchHit:['operation:PINCH_HIT'],pinchRun:['operation:PINCH_RUN'],relief:['operation:CONTINUE','operation:RELIEF','operation:CLOSER'],alignment:['alignment:NORMAL','alignment:IN','alignment:DEEP']}[r.groups[0].bundle.scenario.id]||common;
+ const all=[...new Set(['observed:HIT_AND_RUN','later:HIT_AND_RUN',...r.groups.flatMap(g=>Object.keys(g.summary.initialDecision).map(k=>'initial:'+k)),...['PINCH_HIT','PINCH_RUN','DEFENSIVE_SUB','CONTINUE','RELIEF','CLOSER','MATCHUP:CHALLENGE','MATCHUP:CAUTIOUS','MATCHUP:INTENTIONAL_WALK','ALIGNMENT:NORMAL','ALIGNMENT:IN','ALIGNMENT:DEEP','DEFENSE:SECURE_RETURN','DEFENSE:HOLD_BALL'].map(k=>'operation:'+k),...['scored','noScore','tookLead','tiedAtEnd','draw','outEnded','gameFinished'].map(k=>'outcome:'+k),...['STEAL','SAC_BUNT','SAFETY_BUNT','SQUEEZE','HIT_AND_RUN'].map(k=>'success:'+k)])];
  return {primary:ids.map(id=>metric(r,id)),all:all.map(id=>metric(r,id))};
 }
 const explanations={STATE_LEGALITY:['走者またはアウト数に不整合','重複走者や成立しないアウト数を検出しました。'],TWO_OUT_SACRIFICE:['2死から送りバントを選択','送りバントの前提条件との矛盾が検出されました。'],OCCUPIED_STEAL:['走者のいる塁への盗塁','盗塁先が空いていない可能性があります。'],ILLEGAL_OPTION:['前提条件を満たさない選択','ENGINEが不成立と記録した選択肢が選ばれています。'],ILLEGAL_SQUEEZE:['スクイズの前提条件に不整合','三塁走者・アウト数を確認してください。'],ILLEGAL_HIT_RUN:['H&Rの前提条件に不整合','一塁走者・二塁の空き・アウト数を確認してください。'],MISSING_STEAL_EXECUTION:['盗塁判断と実行が不一致','盗塁を選んだ記録に対応する実行がありません。'],DEEP_HOLD:['外野で返球せず保持','意味のある保持か、返球が欠けたかを確認してください。'],MISSING_RETURN:['返球判断に送球記録がない','SECURE RETURNと実行記録が一致していません。'],REASON_CONTRADICTION:['理由と条件の不整合','能力条件と高成功見込みという理由が矛盾する可能性があります。'],EXECUTION_MISMATCH:['判断と実行が不一致','敬遠の判断と実行を確認してください。'],LOW_SENSITIVITY:['比較条件を変えても初回選択率がほぼ同じ','入力感度・成立する機会・標本数の切り分けを推奨します。'],REPLAY_RESULT_MISMATCH:['保存結果とseed再実行が不一致','保存された終了スコア等と今回のENGINE再生結果が一致しません。']};

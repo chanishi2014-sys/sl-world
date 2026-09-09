@@ -441,6 +441,11 @@ td:last-child{
   font-weight:850
 }
 
+.clubOpen,.clubBack{border:1px solid #345070;background:#13243b;color:#e0ebfa;border-radius:11px;padding:11px;min-height:44px;white-space:normal;overflow-wrap:anywhere}
+.clubOpen{width:100%;text-align:left;font-weight:700}
+.clubBack{margin-bottom:12px}
+.clubOpen:focus-visible,.clubBack:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+
 .archiveSection{
   display:none
 }
@@ -1129,10 +1134,10 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; overscrol
 <section id="history" class="view">
 
   <div class="hero">
-    <div class="label">SL ARCHIVES</div>
-    <h1>SL全史</h1>
+    <div class="label">SL WORLD HISTORY</div>
+    <h1>SL WORLD History</h1>
     <p>
-      最高優勝、CC、JC、国王杯、年表、伝説・記録を保存します。
+      SL・TLの現行所属チームと、SLの大会記録・年表・伝説を閲覧できます。
     </p>
   </div>
 
@@ -1143,8 +1148,11 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; overscrol
       data-archive="sl"
       onclick="showArchive('sl',this)"
     >
-      SL
+      SLの歴史
     </button>
+
+    <button class="archiveTab" data-archive="sl-clubs" onclick="showArchive('sl-clubs',this)">SL 所属チーム</button>
+    <button class="archiveTab" data-archive="tl-clubs" onclick="showArchive('tl-clubs',this)">TL 所属チーム</button>
 
     <button
       class="archiveTab"
@@ -1186,6 +1194,16 @@ html.sl-opening-active, html.sl-opening-active body { overflow:hidden; overscrol
       伝説
     </button>
 
+  </div>
+
+  <p class="notice">所属チームは現行名称で表示します。大会別記録・年表・記事は当時の名称を残しています。</p>
+  <div id="archive-sl-clubs" class="archiveSection" aria-label="SL 所属チーム">
+    <div class="card"><h2>SL（スーパーリーグ）所属チーム</h2><p>現行所属：12チーム</p></div>
+    <div id="slClubList"></div><div id="slClubDetail" hidden></div>
+  </div>
+  <div id="archive-tl-clubs" class="archiveSection" aria-label="TL 所属チーム">
+    <div class="card"><h2>TL 所属チーム</h2><p>現行所属：10チーム</p></div>
+    <div id="tlClubList"></div><div id="tlClubDetail" hidden></div>
   </div>
 
   <div id="archive-sl" class="archiveSection active">
@@ -1448,6 +1466,43 @@ const $ = id => document.getElementById(id);
    SL WORLD CORE DATA
 ========================================================= */
 
+/* CURRENT TEAM REGISTRY: identities are independent of names and league membership.
+   Former names are reference aliases, never additional teams or storage migrations. */
+const SL_TEAM_REGISTRY = (() => {
+  const rows = [
+    ['club-001','デビルスターズ','SL','東東京',null,[]],
+    ['club-002','アステリア','SL','徳島','納東一',[]],
+    ['club-003','東京アスレチックス','SL','東東京','日体荏原',['日本体育大荏原']],
+    ['club-004','桐蔭フロンティア','SL','大阪','大阪桐蔭',[]],
+    ['club-005','ブルーマリナーズ','SL','静岡','壮青学院',[]],
+    ['club-006','東海ユナイテッド','SL','神奈川','東海大相模',[]],
+    ['club-007','明道仁球会','SL','福井','威伏',[]],
+    ['club-008','明訓ベースボールクラブ','SL','神奈川','明訓',[]],
+    ['club-009','武勇館','SL','石川',null,[]],
+    ['club-010','キューバ・リベルタード','SL','福岡','西東国',[]],
+    ['club-011','知略野球研究所','SL','兵庫','知位学園',[]],
+    ['club-012','鳥取野球倶楽部','SL','鳥取','頭取商',[]],
+    ['club-013','霞ヶ浦セイラーズ','TL','茨城','霜華',[]],
+    ['club-014','邦成重工','TL','大分','邦成',[]],
+    ['club-015','福島レガリア','TL','福島','黄静学院',[]],
+    ['club-016','火乃国球道会','TL','熊本','能体工',[]],
+    ['club-017','倉敷鋼業','TL','岡山','剛田理大附',[]],
+    ['club-018','西東京オリオンズ','TL','西東京','将駄',[]],
+    ['club-019','紀州パイレーツ','TL','和歌山','市若大商',[]],
+    ['club-020','関西電機','TL','大阪','HG学院',[]],
+    ['club-021','幕張アストロズ','TL','千葉','千羽経附',[]],
+    ['club-022','飛騨製作所','TL','岐阜','県岐阜商',[]]
+  ];
+  const clubs = Object.freeze(rows.map(([id,currentName,league,region,formerName,aliases]) =>
+    Object.freeze({id,currentName,league,region,formerName,aliases:Object.freeze(aliases)})));
+  const byId = id => clubs.find(team => team.id === id) || null;
+  const resolve = (name,league) => typeof name === 'string' && name.length ? clubs.find(team => (!league || team.league === league) &&
+    (team.currentName === name || team.formerName === name || team.aliases.includes(name))) || null : null;
+  return Object.freeze({clubs,byId,resolve,forLeague:league=>clubs.filter(team=>team.league===league)});
+})();
+/* END CURRENT TEAM REGISTRY */
+
+// Legacy competition keys: keep saved editions, points and manager references intact.
 const teams = [
   "デビルスターズ",
   "大阪桐蔭",
@@ -3339,6 +3394,39 @@ function renderEventHistory(){
    TEAM CARDS
 ========================================================= */
 
+// Resolve current display labels only. Historical text and stored keys stay intact.
+function currentClubName(name){return SL_TEAM_REGISTRY.resolve(name)?.currentName || name;}
+function renderLeagueClubs(){
+  for(const league of ['SL','TL']){
+    const root=$(league.toLowerCase()+'ClubList');
+    root.replaceChildren();
+    for(const team of SL_TEAM_REGISTRY.forLeague(league)){
+      const card=document.createElement('div');card.className='card';
+      const button=document.createElement('button');button.type='button';button.className='clubOpen';
+      button.dataset.clubId=team.id;button.textContent=team.currentName;
+      button.onclick=()=>openLeagueClub(team.id);
+      const info=document.createElement('p');info.className='notice';info.textContent=team.league+' ｜ '+team.region;
+      card.append(button,info);root.append(card);
+    }
+  }
+}
+function openLeagueClub(id){
+  const team=SL_TEAM_REGISTRY.byId(id);if(!team)return;
+  const prefix=team.league.toLowerCase(),detail=$(prefix+'ClubDetail'),list=$(prefix+'ClubList');
+  showArchive(prefix+'-clubs',document.querySelector('[data-archive="'+prefix+'-clubs"]'));
+  detail.replaceChildren();
+  const back=document.createElement('button');back.type='button';back.className='clubBack';back.textContent=team.league+' 所属チーム一覧へ戻る';
+  back.onclick=()=>{detail.hidden=true;list.hidden=false;list.querySelector('[data-club-id="'+id+'"]').focus();};
+  const card=document.createElement('div');card.className='card';
+  const title=document.createElement('h3');title.textContent=team.currentName;title.tabIndex=-1;
+  const league=document.createElement('p');league.textContent='所属リーグ：'+(team.league==='SL'?'SL（スーパーリーグ）':'TL');
+  const region=document.createElement('p');region.textContent='地域：'+team.region;
+  card.append(title,league,region);
+  if(team.formerName){const former=document.createElement('p');former.className='notice';former.textContent='旧名称（資料表記）：'+team.formerName;card.append(former);}
+  if(team.aliases.length){const aliases=document.createElement('p');aliases.className='notice';aliases.textContent='既存記録の別表記：'+team.aliases.join('・');card.append(aliases);}
+  detail.append(back,card);list.hidden=true;detail.hidden=false;title.focus();detail.scrollIntoView({block:'start'});
+}
+
 function renderTeams(){
 
   const area =
@@ -3376,8 +3464,10 @@ function renderTeams(){
               <div>
 
                 <h2>
-                  ${escapeHTML(team)}
+                  ${escapeHTML(currentClubName(team))}
                 </h2>
+
+                <p class="notice">SL ｜ ${escapeHTML(SL_TEAM_REGISTRY.resolve(team,'SL')?.region || '')}</p>
 
                 ${
                   big6
@@ -3460,13 +3550,13 @@ function renderRelationships(){
 
             <div>
               <strong>
-                ${escapeHTML(rel.a)}
+                ${escapeHTML(currentClubName(rel.a))}
               </strong>
 
               <small> × </small>
 
               <strong>
-                ${escapeHTML(rel.b)}
+                ${escapeHTML(currentClubName(rel.b))}
               </strong>
             </div>
 
@@ -3904,7 +3994,7 @@ function renderSLArchive(){
             `<div class="rule">
               <span>
                 ${index + 1}.
-                ${escapeHTML(team)}
+                ${escapeHTML(currentClubName(team))}
               </span>
 
               <strong>
@@ -4245,7 +4335,7 @@ function renderJCArchive(){
             `<div class="rule">
               <span>
                 ${index + 1}.
-                ${escapeHTML(team)}
+                ${escapeHTML(currentClubName(team))}
               </span>
 
               <strong>
@@ -5186,6 +5276,8 @@ function renderAll(){
   renderEventHistory();
 
   renderTeams();
+
+  renderLeagueClubs();
 
   renderRelationships();
 

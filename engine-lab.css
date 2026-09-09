@@ -6,3 +6,4 @@
 #resultContext{white-space:pre-line}#shareStatus:empty,#importStatus:empty,#saveStatus:empty{display:none}#saveStatus{font-size:14px;color:var(--accent)}
 
 #solMeta{white-space:pre-line;font-size:16px;line-height:1.65}
+.metrics-table tbody td small{display:block;white-space:normal;font-size:10px;font-weight:400;color:var(--muted);overflow-wrap:anywhere}

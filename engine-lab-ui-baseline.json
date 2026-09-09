@@ -3,7 +3,7 @@
   "files": {
     "engine006.js": "c1c39008a62337ea94cf2d05bcb39b9a0eadca35a5eec296dc3062731a543ff2",
     "engine006-tactics.js": "de6b540beb22b1b599029901235acd9457365821e48829ee25d23819aeedbea0",
-    "engine006-fielding.js": "d9df85e0dcc295a76f565685babd6b7e6d9f3f1f1a6ec965b65efdebdb704a68",
+    "engine006-fielding.js": "fad42c7455af93e662ab2de0f30f23cb9dfab36c04c0fe460ae61927f539bcd4",
     "engine006-replay.js": "9b32f50235eda9585dda72005f5485d84ad3fb231e7ad54fbfcc13e61dc330c6",
     "engine006-viewer.js": "daf1a9adec4644684883734a0be0e3703cd56429f99014f2c8ed97870fa226ff",
     "engine-lab-core.js": "b1f5a42fa220b991d1de490accebeee7622bd9c3959d47e74ae099c66c310637",
@@ -18,14 +18,15 @@
     "manifest.webmanifest": "a3c1e3b04154d292454a1acfad06f4cd857197bb0100f559b5e08e3ce1a4bec3"
   },
   "scenarios": {
-    "steal": "3d253eae9a4dfbb83e8a701c69cc8cd6afb1a898a4bb7ccd1759f7960c19c192",
-    "bunt": "bf542f1a9bd690814cb1ec6b52d88e8726d955fe6a42f323ddd6d8bb271a8123",
+    "steal": "625f481778cf2d1b092eab07c7f0539e58a5138d3573a9a2c97f806c617eeeee",
+    "bunt": "9711223eece32ae090b20d60dc90c91ae70219b27e8fb606aa2f5056bedca883",
     "squeeze": "6de909e5e94e6369923076e06b394183595aa5ce6a541a0d7a4d8228cb85e751",
-    "hitRun": "93f669449959c2d0c491f9dfd6ce7b1fee8cb263f137af79a93f8f3f0a297d2c",
-    "walk": "d3e194d28a2309fd71ea78953831aa6b7557897299683c35d10c15beb189cbe2",
-    "pinchHit": "464a87ed1b0e00ed7b7044519fe379e63dbda757bb1ba850f853d3714f8bfa2f",
-    "pinchRun": "127595cee64bf4a310ff92d7a4dbc8d08356f12194a66a38b931952c88e9d12c",
-    "relief": "55d044a8a73b393fbbcb49e5fa0afbec628fed27635af3d6fd5cef79d786a8ac",
-    "alignment": "39cf697741d5792a654d2dc04d03e89c1fdc0baf781113afb8b7cbabaea8df9f"
-  }
+    "hitRun": "34f7cc0ddf8c25caca6711ee1a159b5a78e0a7dc8e59ad148aedfb83aaa32aeb",
+    "walk": "1514848f35c887c86a7c6e48d6361d72312b27a7f8984d900474456d2ab08057",
+    "pinchHit": "204c938a61161b94abc88283f65ba6557df5532edfcda247c04d4d962971fd0a",
+    "pinchRun": "b3803d541f5fa307cb088f4dcaac32eb97b23c4426ef617276a2dd8084c7789f",
+    "relief": "d83595a3250c694c4af5b6b439728560cb9f3919ca39ad3cbc2ebe94555b67d1",
+    "alignment": "04bac06325aeb96898fbf58bc2d62271a3d2cca069d8c85c24a18882ee0b77a3"
+  },
+  "correctionNote": "2026-09-09: outfield secure-return event coverage only; daily-corrections.test.cjs independently verifies old/new simulation invariance across 900 trials."
 }

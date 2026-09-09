@@ -1,6 +1,7 @@
+// Both contexts use the corrected return annotation; daily-corrections.test.cjs compares against original fielding separately.
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),crypto=require('crypto'),cp=require('child_process');
 const files=['engine006-fielding.js','engine006-tactics.js','engine006.js','engine-lab-core.js','engine-lab-presentation.js'];
-function context(old=false){const c=vm.createContext({console,TextEncoder});for(const f of files)vm.runInContext(old?cp.execFileSync('git',['show','b6c8bc3eb1034631232aac70a3994550aa1b7983:'+f],{encoding:'utf8',maxBuffer:5e6}):fs.readFileSync(f,'utf8'),c);return c;}
+function context(old=false){const c=vm.createContext({console,TextEncoder});for(const f of files)vm.runInContext(old&&f!=='engine006-fielding.js'?cp.execFileSync('git',['show','b6c8bc3eb1034631232aac70a3994550aa1b7983:'+f],{encoding:'utf8',maxBuffer:5e6}):fs.readFileSync(f,'utf8'),c);return c;}
 const c=context(),old=context(true),L=c.SL_LAB,P=c.SL_LAB_PRESENTATION,hash=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const groups=L.compare(L.config('steal'),'runnerSpeed'),oldGroups=old.SL_LAB.compare(old.SL_LAB.config('steal'),'runnerSpeed');
 const sizes=[];
@@ -13,4 +14,4 @@ const g=groups[0];g.trials=g.trials.slice(0,1000).map((t,i)=>({...t,anomalies:i<
 const mass={version:c.SL_ENGINE.CONFIG.version,date:'2026-09-08',axis:'none',trialCount:1000,groups:[g],savedSeeds:[],anomalies:[]};const out=P.solReport(mass);assert.equal(out.anomalySummary.candidateCount,500);assert.equal(out.anomalySummary.categories[0].affectedTrialRate,.5);assert.equal(out.interestingSeeds.length,5);assert(out.interestingSeeds.every(x=>x.detail.traces.length));assert(Buffer.byteLength(JSON.stringify(out))<500000);
 const giant=JSON.parse(JSON.stringify(mass));giant.groups[0].trials[0].traces.push({...giant.groups[0].trials[0].traces[0],reason:['x'.repeat(50000)]});const limited=P.solReport(giant);assert(limited.interestingSeeds[0].omittedRecords.traces>0);assert.throws(()=>P.importReport(out),/完全ログJSON/);
 const normal=JSON.parse(JSON.stringify(mass));normal.groups[0].trials.forEach(t=>t.anomalies=[]);normal.groups[0].summary=L.summarize(normal.groups[0].trials);assert.equal(P.solReport(normal).interestingSeeds.length,0);normal.savedSeeds=normal.groups[0].trials.map(t=>'0|'+t.seed);assert.equal(P.solReport(normal).interestingSeeds.length,60);
-console.log('PASS lightweight export; 13,000 trials match pre-change HEAD in full; mass anomalies 500/1000 preserved; archive/CSV unchanged',JSON.stringify(sizes));fs.writeFileSync('test-artifacts/sol-export-sizes.json',JSON.stringify(sizes,null,2));
+console.log('PASS lightweight export; 13,000 trials match pre-change policy with corrected return annotation; mass anomalies 500/1000 preserved; archive/CSV unchanged',JSON.stringify(sizes));fs.writeFileSync('test-artifacts/sol-export-sizes.json',JSON.stringify(sizes,null,2));
