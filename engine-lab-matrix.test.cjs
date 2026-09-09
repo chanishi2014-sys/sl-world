@@ -1,0 +1,18 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),crypto=require('crypto'),cp=require('child_process');
+const copy=x=>JSON.parse(JSON.stringify(x));
+function context(old=false){const c=vm.createContext({console});for(const f of ['engine006-fielding.js','engine006-tactics.js','engine006.js','engine-lab-core.js','engine-lab-presentation.js'])vm.runInContext(old&&f==='engine-lab-core.js'?cp.execFileSync('git',['show','HEAD:'+f],{encoding:'utf8'}):fs.readFileSync(f,'utf8'),c);return c;}
+const c=context(),L=c.SL_LAB,P=c.SL_LAB_PRESENTATION,old=context(true).SL_LAB;
+for(const [f,h]of Object.entries(JSON.parse(fs.readFileSync('test-artifacts/lab-matrix-protected.json'))))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex'),h,f);
+for(const id of Object.keys(L.scenarios))for(const axis of ['none',...Object.keys(L.axes)]){let a,b;try{a=old.compare(old.config(id),axis);}catch{continue;}b=L.compare(L.config(id),axis);assert.equal(JSON.stringify(b),JSON.stringify(a),id+'/'+axis);}
+const s=L.config('walk');s.players.batter=L.preset('BATTER','C');s.players.next=L.preset('BATTER','C');
+for(const [axis,fixed]of [['batterMeet','nextMeet'],['nextMeet','batterMeet']]){const groups=L.compare(s,axis);assert.deepEqual(groups.map(g=>L.effectiveInputs(g.bundle)[fixed]).join(','),'7,7,7');assert.equal(groups.map(g=>L.effectiveInputs(g.bundle)[axis]).join(','),'10,7,1');}
+const groups=L.compare(s,'batterMeet','nextMeet');assert.equal(groups.length,9);assert.equal(groups.map(g=>{const x=L.effectiveInputs(g.bundle);return x.batterMeet+':'+x.nextMeet;}).join(','),'10:10,10:7,10:1,7:10,7:7,7:1,1:10,1:7,1:1');
+for(const g of groups){const game=L.create(g.bundle,1),b=c.SL_ENGINE.currentBatter(game);assert.equal(b.profile.batting.meet,L.effectiveInputs(g.bundle).batterMeet);g.trials=[L.trial(g.bundle,'matrix:0')];g.summary=L.summarize(g.trials);}
+const r={format:'SL_WORLD_ENGINE_LAB',schemaVersion:1,version:c.SL_ENGINE.CONFIG.version,date:new Date().toISOString(),axis:'batterMeet',axisB:'nextMeet',trialCount:1,seedPrefix:'matrix',elapsedMs:1,groups,anomalies:[],savedSeeds:[]},ex=P.exportReport(r),cmp=ex.comparison;
+assert.equal(cmp.conditions.length,9);assert.equal(ex.totalTrialCount,9);assert.equal(JSON.stringify(P.importReport(copy(ex)).groups),JSON.stringify(groups));assert.equal(ex.recommendedNextTest.axisB,'nextMeet');assert.equal(cmp.fixedConditions.values.batterMeet,undefined);assert.equal(cmp.fixedConditions.values.nextMeet,undefined);
+assert(cmp.fixedConditions.changedPaths.length>0);for(const p of cmp.fixedConditions.changedPaths)assert(/meet$/.test(p),'unintended path '+p);
+for(let i=0;i<9;i++){assert.equal(JSON.stringify(cmp.conditions[i].scenario),JSON.stringify(groups[i].bundle.scenario));assert.equal(JSON.stringify(cmp.conditions[i].effectiveInputs),JSON.stringify(L.effectiveInputs(groups[i].bundle)));}
+assert.equal(L.compare(s,'batterMeet','batterPower').length,9);assert.throws(()=>L.compare(s,'batterMeet','batterMeet'));assert.equal(L.executionSize('batterMeet','nextMeet',1000).totalTrials,9000);
+for(const n of [0,80,85,90,95,100,105,140]){const a=L.config('relief');a.fatigue=n;const g=L.create(L.compare(a,'none')[0].bundle,1);assert.equal(g.state.pitching[c.SL_ENGINE.currentPitcher(g).key].pitches,n);L.trial(L.setup(a),'pitch:'+n);}
+for(const v of ['',-1,1.5,Infinity,NaN,'abc'])assert.throws(()=>L.numericValue(v,L.numericInputs.fatigue));
+console.log('PASS A-G model: fixed C both directions, nine matrix cells, engine inputs/JSON/paths, custom pitches, same-player distinct axes, legacy bundles identical, protected non-LAB files unchanged');

@@ -1,0 +1,59 @@
+:root{--trait-blue:#248cff;--trait-red:#ff4d5e;--trait-green:#2fc77a;--trait-gold:#ffc83d;--trait-rainbow-gradient:linear-gradient(110deg,#d72f55,#dc7c24,#b39b1c,#278a50,#287fb5,#7350bb,#c23d9d)}
+.sp{
+  border:1px solid #314760;
+  background:#07121e;
+  color:#697b8e;
+  border-radius:10px;
+  padding:9px 11px;
+  cursor:pointer;
+  font-weight:800;
+  transition:.15s;
+}
+
+.sp:hover{
+  transform:translateY(-1px);
+}
+
+.sp.blue.on{
+  background:#123f73;
+  color:#dff1ff;
+  border-color:var(--trait-blue);
+  box-shadow:0 0 12px rgba(36,140,255,.5);
+}
+
+.sp.red.on{
+  background:#5a1822;
+  color:#ffe2e5;
+  border-color:var(--trait-red);
+  box-shadow:0 0 12px rgba(255,77,94,.45);
+}
+
+.sp.green.on{
+  background:#123f2b;
+  color:#dcffed;
+  border-color:var(--trait-green);
+  box-shadow:0 0 12px rgba(47,199,122,.45);
+}
+
+.sp.gold.on{
+  background:#55420c;
+  color:#fff4bd;
+  border-color:var(--trait-gold);
+  box-shadow:0 0 14px rgba(255,200,61,.5);
+}
+
+.sp.rainbow.on{
+  color:#fff;
+  border-color:#fff;
+  background:var(--trait-rainbow-gradient);
+  box-shadow:0 0 15px rgba(255,255,255,.35);
+}
+
+
+/* Read-only badges reuse the category palette with quiet backgrounds. */
+.trait-badge.sp{display:inline-flex;flex-direction:column;gap:5px;cursor:default;white-space:normal;overflow-wrap:anywhere}
+.trait-badge.sp.on{background:#101d2e;box-shadow:none;border-width:2px}
+.trait-badge.sp:hover{transform:none}
+.trait-badge.sp.rainbow.on{border:2px solid transparent;background:linear-gradient(#101d2e,#101d2e) padding-box,var(--trait-rainbow-gradient) border-box}
+.trait-badge small{font-size:11px;color:#c3d0e2;font-weight:400}
+.trait-badge.sp.unknown{color:#c3d0e2}
