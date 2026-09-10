@@ -1,0 +1,1287 @@
+{
+  "format": "SL_WORLD_PLAYER_DB",
+  "version": "0.2",
+  "exportedAt": "2026-09-10T11:24:44.240Z",
+  "players": [
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "神主打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788668406009_8hjr3",
+      "team": "デビルスターズ",
+      "name": "桧山",
+      "reading": "ひやま",
+      "number": "4",
+      "throwHand": "右",
+      "batHand": "左",
+      "mainPosition": "二塁手",
+      "subPositions": [
+        "遊撃手",
+        "OF"
+      ],
+      "batting": {
+        "meet": 10,
+        "power": 186,
+        "speed": 20,
+        "arm": 18,
+        "fielding": 19,
+        "catching": 19
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "安打製造機",
+        "パワーヒッター",
+        "広角打法",
+        "粘り打ち",
+        "バント職人",
+        "内野安打○",
+        "チャンスメーカー",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "連打○",
+        "固め打ち",
+        "打者威圧感",
+        "チャンス◎",
+        "ローボールヒッター",
+        "ハイボールヒッター",
+        "いぶし銀",
+        "韋駄天",
+        "守備職人",
+        "広域守備",
+        "送球○",
+        "好捕球",
+        "影走",
+        "ゲッツー職人",
+        "安定感",
+        "大舞台○",
+        "スーパースター",
+        "ムード○",
+        "チームプレー○",
+        "ムードメーカー",
+        "積極盗塁",
+        "電光石火",
+        "打撃の極致"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T04:27:26.393Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "神主打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788668823977_1r8c6",
+      "team": "デビルスターズ",
+      "name": "明日川",
+      "reading": "あすかわ",
+      "number": "6",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "遊撃手",
+      "subPositions": [
+        "二塁手",
+        "OF"
+      ],
+      "batting": {
+        "meet": 9,
+        "power": 178,
+        "speed": 20,
+        "arm": 18,
+        "fielding": 19,
+        "catching": 20
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "安打製造機",
+        "広角打法",
+        "ラインドライブ",
+        "選球眼",
+        "粘り打ち",
+        "バント職人",
+        "内野安打○",
+        "逆境",
+        "固め打ち",
+        "連打○",
+        "チャンスメーカー",
+        "チャンス◎",
+        "ローボールヒッター",
+        "ハイボールヒッター",
+        "韋駄天",
+        "影走",
+        "好捕球",
+        "広域守備",
+        "ゲッツー職人",
+        "送球○",
+        "安定感",
+        "大舞台○",
+        "人気者",
+        "ケガ○",
+        "ムード○",
+        "ムードメーカー",
+        "チームプレー○",
+        "電光石火"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T04:39:12.366Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": null,
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788669476314_533o1",
+      "team": "デビルスターズ",
+      "name": "御子柴",
+      "reading": "みこしば",
+      "number": "8",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "OF",
+      "subPositions": [
+        "捕手",
+        "遊撃手",
+        "二塁手"
+      ],
+      "batting": {
+        "meet": 10,
+        "power": 189,
+        "speed": 19,
+        "arm": 20,
+        "fielding": 20,
+        "catching": 20
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "安打製造機",
+        "長距離砲",
+        "広角打法",
+        "アーチスト",
+        "選球眼",
+        "粘り打ち",
+        "バント○",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "内野安打○",
+        "固め打ち",
+        "連打○",
+        "チャンスメーカー",
+        "代打○",
+        "ローボールヒッター",
+        "ハイボールヒッター",
+        "チャンス◎",
+        "いぶし銀",
+        "打者威圧感",
+        "韋駄天",
+        "影走",
+        "守備職人",
+        "広域守備",
+        "好捕球",
+        "レーザービーム",
+        "名捕手",
+        "盗塁阻止○",
+        "ブロック○",
+        "安定感",
+        "大舞台○",
+        "スーパースター",
+        "ケガ○",
+        "ムード○",
+        "ムードメーカー",
+        "積極盗塁",
+        "チームプレー○",
+        "打撃の極致",
+        "外野の覇者",
+        "光速返球"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T04:37:56.314Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "オープン打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788670002356_sitd1",
+      "team": "デビルスターズ",
+      "name": "クラウド",
+      "reading": "くらうど",
+      "number": "5",
+      "throwHand": "右",
+      "batHand": "左",
+      "mainPosition": "OF",
+      "subPositions": [
+        "三塁手",
+        "一塁手"
+      ],
+      "batting": {
+        "meet": 10,
+        "power": 200,
+        "speed": 17,
+        "arm": 19,
+        "fielding": 17,
+        "catching": 18
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "安打製造機",
+        "長距離砲",
+        "広角打法",
+        "アーチスト",
+        "選球眼",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "固め打ち",
+        "連打○",
+        "チャンス◎",
+        "ハイボールヒッター",
+        "ローボールヒッター",
+        "打者威圧感",
+        "いぶし銀",
+        "レーザービーム",
+        "ムラっ気",
+        "大舞台○",
+        "スーパースター",
+        "ムード○",
+        "ムードメーカー",
+        "勝負師",
+        "本塁打王",
+        "打撃の極致",
+        "全方位打法"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T04:46:42.356Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": true,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": "オーバースロー",
+      "pitcherRoles": [
+        "先発",
+        "中継ぎ"
+      ],
+      "pitchRepertoire": {
+        "straight": [
+          {
+            "name": "ツーシーム"
+          }
+        ],
+        "slider": [
+          {
+            "name": "Hスライダー",
+            "breakAmount": 7
+          },
+          {
+            "name": "カットボール",
+            "breakAmount": 5
+          }
+        ],
+        "curve": [
+          {
+            "name": "スローカーブ",
+            "breakAmount": 6
+          },
+          {
+            "name": "ナックルカーブ",
+            "breakAmount": 6
+          }
+        ],
+        "fork": [
+          {
+            "name": "SFF",
+            "breakAmount": 5
+          },
+          {
+            "name": "チェンジアップ",
+            "breakAmount": 6
+          }
+        ],
+        "sinker": [],
+        "shoot": [
+          {
+            "name": "シンキングファスト",
+            "breakAmount": 4
+          }
+        ]
+      },
+      "id": "SLP_1788671210659_h31q9",
+      "team": "デビルスターズ",
+      "name": "大谷",
+      "reading": "おおたに",
+      "number": "1",
+      "throwHand": "右",
+      "batHand": "左",
+      "mainPosition": "投手",
+      "subPositions": [
+        "OF"
+      ],
+      "batting": {
+        "meet": 9,
+        "power": 195,
+        "speed": 18,
+        "arm": 20,
+        "fielding": 19,
+        "catching": 20
+      },
+      "pitching": {
+        "velocity": 163,
+        "control": 200,
+        "stamina": 195,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "安打製造機",
+        "長距離砲",
+        "広角打法",
+        "アーチスト",
+        "選球眼",
+        "粘り打ち",
+        "バント○",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "代打○",
+        "固め打ち",
+        "連打○",
+        "チャンスメーカー",
+        "チャンス◎",
+        "ローボールヒッター",
+        "ハイボールヒッター",
+        "いぶし銀",
+        "打者威圧感",
+        "走塁○",
+        "影走",
+        "好捕球",
+        "守備職人",
+        "レーザービーム",
+        "怪童",
+        "キレ味抜群",
+        "重い球",
+        "奪三振",
+        "低め○",
+        "緩急○",
+        "リリース○",
+        "投手威圧感",
+        "対左打者○",
+        "不屈",
+        "立ち上がり○",
+        "尻上がり",
+        "クイック○",
+        "牽制○",
+        "回復○",
+        "力配分",
+        "クロスファイヤー",
+        "安定感",
+        "スーパースター",
+        "大舞台○",
+        "ケガ○",
+        "ムード○",
+        "ムードメーカー",
+        "チームプレー○",
+        "絶対的エース",
+        "怪物球威",
+        "ミスターK",
+        "精密機械"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T05:06:50.660Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "神主打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788672444024_3vx4h",
+      "team": "デビルスターズ",
+      "name": "柳田",
+      "reading": "やなぎだ",
+      "number": "7",
+      "throwHand": "右",
+      "batHand": "左",
+      "mainPosition": "OF",
+      "subPositions": [
+        "一塁手",
+        "三塁手"
+      ],
+      "batting": {
+        "meet": 10,
+        "power": 196,
+        "speed": 19,
+        "arm": 19,
+        "fielding": 19,
+        "catching": 20
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "安打製造機",
+        "長距離砲",
+        "アーチスト",
+        "広角打法",
+        "選球眼",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "固め打ち",
+        "連打○",
+        "チャンス◎",
+        "ローボールヒッター",
+        "ハイボールヒッター",
+        "いぶし銀",
+        "打者威圧感",
+        "走塁○",
+        "盗塁○",
+        "好捕球",
+        "レーザービーム",
+        "大舞台○",
+        "人気者",
+        "ケガ○",
+        "ムード○",
+        "ムードメーカー",
+        "積極打法",
+        "チームプレー○",
+        "安定感",
+        "本塁打王",
+        "全方位打法",
+        "打撃の極致"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T05:27:24.025Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "オープン打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788673892232_xk6x1",
+      "team": "デビルスターズ",
+      "name": "高橋",
+      "reading": "たかはし",
+      "number": "3",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "一塁手",
+      "subPositions": [
+        "OF"
+      ],
+      "batting": {
+        "meet": 9,
+        "power": 193,
+        "speed": 18,
+        "arm": 17,
+        "fielding": 19,
+        "catching": 19
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "アベレージヒッター",
+        "長距離砲",
+        "引っ張り屋",
+        "アーチスト",
+        "粘り打ち",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "固め打ち",
+        "連打○",
+        "チャンス◎",
+        "ハイボールヒッター",
+        "いぶし銀",
+        "打者威圧感",
+        "好捕球",
+        "守備職人",
+        "人気者",
+        "ケガ○",
+        "ムード○",
+        "慎重打法",
+        "チームプレー○",
+        "本塁打王"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T05:51:32.232Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "神主打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788674294522_m6kw0",
+      "team": "デビルスターズ",
+      "name": "新垣",
+      "reading": "あらがき",
+      "number": "9",
+      "throwHand": "右",
+      "batHand": "左",
+      "mainPosition": "OF",
+      "subPositions": [
+        "二塁手",
+        "遊撃手"
+      ],
+      "batting": {
+        "meet": 10,
+        "power": 178,
+        "speed": 20,
+        "arm": 19,
+        "fielding": 20,
+        "catching": 20
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "パワーヒッター",
+        "安打製造機",
+        "ラインドライブ",
+        "選球眼",
+        "粘り打ち",
+        "バント職人",
+        "内野安打○",
+        "固め打ち",
+        "ローボールヒッター",
+        "連打○",
+        "チャンスメーカー",
+        "チャンス◎",
+        "いぶし銀",
+        "打者威圧感",
+        "逆境",
+        "韋駄天",
+        "影走",
+        "守備職人",
+        "広域守備",
+        "好捕球",
+        "レーザービーム",
+        "ゲッツー職人",
+        "安定感",
+        "大舞台○",
+        "人気者",
+        "ケガ○",
+        "ムード○",
+        "ムードメーカー",
+        "積極盗塁",
+        "チームプレー○",
+        "電光石火",
+        "外野の覇者",
+        "光速返球"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T05:58:14.523Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788674468081_quryf",
+      "team": "デビルスターズ",
+      "name": "白鳥",
+      "reading": "しらとり",
+      "number": "2",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "捕手",
+      "subPositions": [
+        "一塁手"
+      ],
+      "batting": {
+        "meet": 9,
+        "power": 187,
+        "speed": 17,
+        "arm": 19,
+        "fielding": 20,
+        "catching": 20
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "アベレージヒッター",
+        "長距離砲",
+        "引っ張り屋",
+        "アーチスト",
+        "選球眼",
+        "粘り打ち",
+        "バント○",
+        "満塁男",
+        "サヨナラ男",
+        "逆境",
+        "固め打ち",
+        "連打○",
+        "チャンスメーカー",
+        "チャンス◎",
+        "ローボールヒッター",
+        "いぶし銀",
+        "打者威圧感",
+        "守備職人",
+        "広域守備",
+        "好捕球",
+        "名捕手",
+        "盗塁阻止○",
+        "ブロック○",
+        "安定感",
+        "人気者",
+        "大舞台○",
+        "ケガ○",
+        "ムード○",
+        "チームプレー○",
+        "球界の頭脳"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T06:01:08.081Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788680034964_ztl97",
+      "team": "明道仁球会",
+      "name": "神馬",
+      "reading": "じんば",
+      "number": "4",
+      "throwHand": "左",
+      "batHand": "左",
+      "mainPosition": "二塁手",
+      "subPositions": [
+        "遊撃手",
+        "OF"
+      ],
+      "batting": {
+        "meet": 8,
+        "power": 100,
+        "speed": 19,
+        "arm": 14,
+        "fielding": 15,
+        "catching": 13
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "流し打ち",
+        "アベレージヒッター",
+        "バント○",
+        "内野安打○",
+        "チャンスメーカー",
+        "ローボールヒッター",
+        "固め打ち",
+        "韋駄天",
+        "影走",
+        "ゲッツー職人",
+        "積極盗塁",
+        "ムードメーカー"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:33:54.967Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788680280068_srd0g",
+      "team": "明道仁球会",
+      "name": "近江谷",
+      "reading": "おうみたに",
+      "number": "8",
+      "throwHand": "左",
+      "batHand": "左",
+      "mainPosition": "OF",
+      "subPositions": [
+        "遊撃手"
+      ],
+      "batting": {
+        "meet": 7,
+        "power": 135,
+        "speed": 15,
+        "arm": 15,
+        "fielding": 12,
+        "catching": 12
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "チームプレー○",
+        "バント○",
+        "粘り打ち",
+        "代打○",
+        "連打○",
+        "チャンス◎",
+        "ローボールヒッター",
+        "走塁○",
+        "積極打法"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:38:00.069Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788680513232_upsor",
+      "team": "明道仁球会",
+      "name": "比留間",
+      "reading": "ひるま",
+      "number": "5",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "三塁手",
+      "subPositions": [
+        "一塁手",
+        "OF"
+      ],
+      "batting": {
+        "meet": 7,
+        "power": 155,
+        "speed": 11,
+        "arm": 17,
+        "fielding": 13,
+        "catching": 10
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "パワーヒッター",
+        "引っ張り屋",
+        "粘り打ち",
+        "満塁男",
+        "逆境",
+        "チャンス○",
+        "ハイボールヒッター",
+        "送球○",
+        "安定感",
+        "チームプレー○",
+        "ムード○"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:41:53.232Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788680888186_sxx92",
+      "team": "明道仁球会",
+      "name": "天田",
+      "reading": "あまだ",
+      "number": "3",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "二塁手",
+      "subPositions": [
+        "一塁手",
+        "三塁手"
+      ],
+      "batting": {
+        "meet": 4,
+        "power": 175,
+        "speed": 17,
+        "arm": 10,
+        "fielding": 12,
+        "catching": 10
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "パワーヒッター",
+        "アーチスト",
+        "満塁男",
+        "逆境",
+        "ハイボールヒッター",
+        "打者威圧感",
+        "アベレージヒッター",
+        "走塁×",
+        "三振癖",
+        "バント×",
+        "チャンス◎",
+        "引っ張り屋",
+        "積極打法",
+        "ムード○",
+        "ムラっ気"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:48:08.188Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "振り子打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788681077295_jeq5x",
+      "team": "明道仁球会",
+      "name": "知念",
+      "reading": "ちねん",
+      "number": "9",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "OF",
+      "subPositions": [
+        "一塁手",
+        "三塁手"
+      ],
+      "batting": {
+        "meet": 7,
+        "power": 165,
+        "speed": 13,
+        "arm": 13,
+        "fielding": 13,
+        "catching": 13
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "ケガ×",
+        "パワーヒッター",
+        "ムラっ気",
+        "粘り打ち",
+        "ローボールヒッター",
+        "慎重打法",
+        "満塁男",
+        "チャンスメーカー",
+        "チャンス○",
+        "送球○",
+        "ムード○"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:51:17.295Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "オープン打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788681314570_hqb3k",
+      "team": "明道仁球会",
+      "name": "有栖川",
+      "reading": "ありすがわ",
+      "number": "2",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "捕手",
+      "subPositions": [
+        "三塁手",
+        "OF"
+      ],
+      "batting": {
+        "meet": 7,
+        "power": 160,
+        "speed": 9,
+        "arm": 17,
+        "fielding": 16,
+        "catching": 17
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "人気者",
+        "アベレージヒッター",
+        "パワーヒッター",
+        "広角打法",
+        "選球眼",
+        "粘り打ち",
+        "バント職人",
+        "代打○",
+        "固め打ち",
+        "サヨナラ男",
+        "チャンス○",
+        "打者威圧感",
+        "満塁男",
+        "いぶし銀",
+        "送球○",
+        "好捕球",
+        "名捕手",
+        "ブロック○",
+        "盗塁×",
+        "ムードメーカー",
+        "ケガ○",
+        "大舞台○",
+        "安定感",
+        "ローボールヒッター",
+        "チームプレー○"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:55:14.570Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "オープン打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788681518349_39lrq",
+      "team": "明道仁球会",
+      "name": "塩野",
+      "reading": "しおの",
+      "number": "7",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "OF",
+      "subPositions": [
+        "一塁手"
+      ],
+      "batting": {
+        "meet": 6,
+        "power": 150,
+        "speed": 15,
+        "arm": 14,
+        "fielding": 14,
+        "catching": 14
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "流し打ち",
+        "粘り打ち",
+        "逆境",
+        "バント職人",
+        "満塁男",
+        "ハイボールヒッター",
+        "チャンス○",
+        "チャンスメーカー",
+        "走塁○",
+        "内野安打○",
+        "チームプレー○",
+        "ケガ○"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T07:58:38.349Z"
+    },
+    {
+      "isFielder": true,
+      "isPitcher": false,
+      "battingStyle": "神主打法",
+      "pitchingStyle": null,
+      "pitcherRoles": [],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [],
+        "fork": [],
+        "sinker": [],
+        "shoot": []
+      },
+      "id": "SLP_1788681680373_oyxna",
+      "team": "明道仁球会",
+      "name": "佐久間",
+      "reading": "さくま",
+      "number": "6",
+      "throwHand": "左",
+      "batHand": "左",
+      "mainPosition": "遊撃手",
+      "subPositions": [
+        "二塁手",
+        "OF"
+      ],
+      "batting": {
+        "meet": 7,
+        "power": 140,
+        "speed": 18,
+        "arm": 13,
+        "fielding": 13,
+        "catching": 10
+      },
+      "pitching": {
+        "velocity": null,
+        "control": null,
+        "stamina": null,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "アベレージヒッター",
+        "内野安打○",
+        "逆境",
+        "選球眼",
+        "ローボールヒッター",
+        "韋駄天",
+        "大舞台○",
+        "積極打法",
+        "積極盗塁",
+        "ケガ○"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T08:01:20.373Z"
+    },
+    {
+      "isFielder": false,
+      "isPitcher": true,
+      "battingStyle": "スタンダード打法",
+      "pitchingStyle": "スリークォーター",
+      "pitcherRoles": [
+        "先発"
+      ],
+      "pitchRepertoire": {
+        "straight": [],
+        "slider": [],
+        "curve": [
+          {
+            "name": "カーブ",
+            "breakAmount": 5
+          }
+        ],
+        "fork": [
+          {
+            "name": "Vスライダー",
+            "breakAmount": 5
+          }
+        ],
+        "sinker": [],
+        "shoot": [
+          {
+            "name": "シュート",
+            "breakAmount": 4
+          }
+        ]
+      },
+      "id": "SLP_1788682029032_mleks",
+      "team": "明道仁球会",
+      "name": "明神",
+      "reading": "みょうじん",
+      "number": "1",
+      "throwHand": "右",
+      "batHand": "右",
+      "mainPosition": "投手",
+      "subPositions": [],
+      "batting": {
+        "meet": 6,
+        "power": 125,
+        "speed": 16,
+        "arm": 16,
+        "fielding": 10,
+        "catching": 8
+      },
+      "pitching": {
+        "velocity": 149,
+        "control": 145,
+        "stamina": 200,
+        "pitchMemo": ""
+      },
+      "specials": [
+        "粘り打ち",
+        "逆境",
+        "サヨナラ男",
+        "満塁男",
+        "チャンス○",
+        "ハイボールヒッター",
+        "走塁○",
+        "盗塁○",
+        "送球○",
+        "低め○",
+        "逃げ球",
+        "立ち上がり○",
+        "尻上がり",
+        "力配分",
+        "回復○",
+        "ピンチ○",
+        "対左打者○",
+        "重い球",
+        "ケガ○",
+        "大舞台○",
+        "人気者",
+        "積極盗塁",
+        "タフネス"
+      ],
+      "notes": "",
+      "updatedAt": "2026-09-06T08:07:09.033Z"
+    }
+  ]
+}
