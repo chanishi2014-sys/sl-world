@@ -14,7 +14,7 @@
 .trait-list{display:flex;flex-wrap:wrap;gap:9px;padding-top:12px}
 #teamsBrowser h2,#teamsBrowser p{overflow-wrap:anywhere}
 
-.player-open{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,180px);gap:8px;align-items:center;padding:10px 8px}
+#teamsBrowser .player-open{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;align-items:center;padding:8px 10px}
 .roster-name{min-width:0;overflow-wrap:anywhere;text-align:left}
 .roster-abilities{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;min-width:0}
 .roster-ability{display:flex;flex-direction:column;align-items:center;min-width:0}
