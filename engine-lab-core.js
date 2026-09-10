@@ -25,7 +25,22 @@ function preset(role='BATTER',grade='C',trait='none'){
 }
 function config(id='steal'){return {id,...copy(scenarios[id]),score:[...(scenarios[id].score||[0,0])],order:1,fatigue:scenarios[id].fatigue||0,runnerGrade:scenarios[id].runnerGrade||'C',batterGrade:scenarios[id].batterGrade||'C',nextGrade:scenarios[id].nextGrade||'C',catcherGrade:'C',pitcherGrade:'C',benchGrade:scenarios[id].benchGrade||'C',runnerTrait:'none',buntTrait:'none',horizon:'half',players:{}};}
 function validate(s){if(!Number.isInteger(s.inning)||s.inning<1||s.inning>9)throw Error('inning must be 1..9');if(!['top','bottom'].includes(s.half))throw Error('invalid half');if(!Number.isInteger(s.outs)||s.outs<0||s.outs>2)throw Error('outs must be 0..2');if(!Array.isArray(s.bases)||s.bases.length!==3)throw Error('three base slots required');if(!Array.isArray(s.score)||s.score.length!==2||s.score.some(n=>!Number.isInteger(n)||n<0))throw Error('invalid score');if(!Number.isInteger(s.order)||s.order<1||s.order>9)throw Error('order must be 1..9');if(!Number.isFinite(s.fatigue)||s.fatigue<0)throw Error('invalid fatigue');if(!['half','game','pa'].includes(s.horizon))throw Error('invalid horizon');}
-function setup(s){validate(s);const teams=['AWAY','HOME'].map((name,i)=>E.makeTeam(name,i?'home':'away',[],E.CONFIG)),off=s.half==='top'?0:1,def=1-off;
+function normalizeScenario(input){
+ const s=copy(input);s.players??={};
+ // Materialize fixed inputs before deriving metadata; a changed runner must not alter other occupied bases.
+ s.players.batter??=preset('BATTER',s.batterGrade,s.buntTrait);s.players.next??=preset('BATTER',s.nextGrade);
+ s.players.catcher??=preset('CATCHER',s.catcherGrade);s.players.pitcher??=preset('PITCHER',s.pitcherGrade);
+ s.bases.forEach((yes,i)=>{if(yes)s.players['runner'+(i+1)]??=copy(s.players.runner||preset('RUNNER',s.runnerGrade,s.runnerTrait));});
+ if(s.id==='pinchHit'||s.id==='pinchRun')s.players.bench??=preset(s.id==='pinchRun'?'RUNNER':'BATTER',s.benchGrade);
+ const roles={batter:['batterGrade','meet'],next:['nextGrade','meet'],catcher:['catcherGrade','arm'],pitcher:['pitcherGrade','control'],bench:['benchGrade',s.id==='pinchRun'?'speed':'meet'],runner:['runnerGrade','speed']};
+ for(const [role,[key,stat]] of Object.entries(roles)){const p=s.players[role==='runner'?'runner'+(s.bases.findIndex(Boolean)+1):role]||s.players[role];if(!p)continue;const value=p[stat==='control'?'pitching':'batting']?.[stat],grade=Object.keys(gradeValues[stat]).find(g=>gradeValue(stat,g)===value)||'CUSTOM';s[key]=grade;}
+ const trait=(p,names)=>(p.specials||[]).find(x=>names.includes(x))||'none';
+ if(s.players.batter)s.buntTrait=trait(s.players.batter,['バント○','バント×']);
+ const runner=s.players['runner'+(s.bases.findIndex(Boolean)+1)]||s.players.runner;if(runner)s.runnerTrait=trait(runner,['盗塁○','盗塁×']);
+ for(const p of Object.values(s.players))if(p.isTest&&String(p.id).startsWith('LAB_'))p.name=String(p.id).slice(4)+' '+Object.entries({...p.batting,...p.pitching}).map(([k,v])=>k+'='+v).join(' / ');
+ return s;
+}
+function setup(s){s=normalizeScenario(s);validate(s);const teams=['AWAY','HOME'].map((name,i)=>E.makeTeam(name,i?'home':'away',[],E.CONFIG)),off=s.half==='top'?0:1,def=1-off;
  function put(side,index,raw){const p=E.adaptPlayer(raw,`${side?'home':'away'}_${index}`,E.CONFIG);teams[side].lineup[index]=p;if(index===8)teams[side].pitcher=p;return p;}
  // Give every fielder an explicit position so catcher and replacements are stable.
  const pos=['C','1B','2B','3B','SS','LF','CF','RF','P'];
@@ -89,29 +104,30 @@ const axes={runnerSpeed:{label:'走者 走力 S/C/G',role:'runner',stat:'speed',
 // Reusable numeric input rules; execution accepts finite, non-negative integer counts.
 const numericInputs={fatigue:{label:'投手疲労（投球数）',unit:'球',labels:{0:'0球 / fresh'},presets:[0,40,80,100,110,140,180],min:0,max:Number.MAX_SAFE_INTEGER}};
 function numericValue(value,spec){const n=typeof value==='string'&&value.trim()===''?NaN:Number(value);if(!Number.isSafeInteger(n)||n<spec.min||n>spec.max)throw Error(spec.label+'は'+spec.min+'以上の有効な整数で入力してください');return n;}
-function comparisonSpec(axis='none',axisB=null){
+function comparisonValues(s,axis){if(axis!=='fatigue'||s?.comparisonPitchCounts==null)return axes[axis].values;const raw=s.comparisonPitchCounts,values=Array.isArray(raw)?raw:String(raw).split(/[\s,、/]+/);if(values.length<2||values.length>20)throw Error('投球数比較は2〜20値を入力してください');const ns=values.map(v=>numericValue(v,numericInputs.fatigue));if(new Set(ns).size!==ns.length)throw Error('投球数比較に重複値があります');return ns;}
+function comparisonSpec(axis='none',axisB=null,s=null){
  const ids=axisB?[axis,axisB]:axis==='none'?[]:[axis];
  if(ids.some(id=>!axes[id]))throw Error('比較軸を選択してください');
  const targets=ids.map(id=>axes[id].role+':'+(axes[id].stat||id));
  if(new Set(targets).size!==targets.length)throw Error('同一対象・同一能力を2軸に指定できません');
- return {mode:ids.length===2?'matrix':ids.length?'axis':'single',axes:ids.map(id=>({id,...copy(axes[id])})),conditionCount:ids.reduce((n,id)=>n*axes[id].values.length,1)};
+ return {mode:ids.length===2?'matrix':ids.length?'axis':'single',axes:ids.map(id=>({id,...copy(axes[id]),values:comparisonValues(s,id)})),conditionCount:ids.reduce((n,id)=>n*comparisonValues(s,id).length,1)};
 }
-function executionSize(axis,axisB,count){const spec=comparisonSpec(axis,axisB);if(!Number.isInteger(count)||count<1||count>10000)throw Error('試行数は1〜10000 / 条件');return {...spec,trialCountPerCondition:count,totalTrials:count*spec.conditionCount};}
+function executionSize(axis,axisB,count,s=null){const spec=comparisonSpec(axis,axisB,s);if(!Number.isInteger(count)||count<1||count>10000)throw Error('試行数は1〜10000 / 条件');return {...spec,trialCountPerCondition:count,totalTrials:count*spec.conditionCount};}
 function effectiveInputs(bundle){const s=bundle.scenario,off=s.half==='top'?0:1,teams=bundle.teams,runner=bundle.runnerIndices[s.bases.findIndex(Boolean)];
  const players={batter:teams[off].lineup[s.order-1],next:teams[off].lineup[s.order%9],pitcher:teams[1-off].pitcher,catcher:teams[1-off].lineup[0],runner:teams[off].lineup[runner],bench:teams[off].bench?.find(p=>p.key==='lab_off_bench'),defensiveBench:teams[1-off].bench?.find(p=>p.key==='lab_def_bench')};
  return Object.fromEntries(Object.entries(axes).map(([id,a])=>{const p=players[a.role]?.profile;return [id,id==='fatigue'?s.fatigue:a.trait?(p?.specials||[]).filter(x=>(id==='runnerTrait'?['盗塁○','盗塁×']:['バント○','バント×']).includes(x)):p?.[['control','velocity','stamina'].includes(a.stat)?'pitching':'batting']?.[a.stat]??null];}));
 }
 function compare(s,axis,axisB=null){
- numericValue(s.fatigue,numericInputs.fatigue);comparisonSpec(axis,axisB);
+ s=normalizeScenario(s);numericValue(s.fatigue,numericInputs.fatigue);comparisonSpec(axis,axisB,s);
  if(axisB){let index=0;return compare(s,axis).flatMap(a=>compare(a.bundle.scenario,axisB).map(b=>({label:String.fromCharCode(65+index++)+' / '+a.changed.value+' × '+b.changed.value,changed:{axis,value:a.changed.value,axisB,valueB:b.changed.value},bundle:b.bundle})));}
- if(axis==='none')return [{label:'A',bundle:setup(s)}];const a=axes[axis];if(!a)throw Error('unknown comparison axis');if(a.role==='runner'&&!s.bases.some(Boolean))throw Error('走者比較には走者を配置してください');return a.values.map((value,i)=>{const c=copy(s);if(axis==='fatigue')c.fatigue=value;else{const role=a.role,targetRole=role==='runner'?'runner'+(c.bases.findIndex(Boolean)+1):role,raw=copy(c.players[targetRole]||c.players[role]||preset(role==='runner'?'RUNNER':role==='catcher'?'CATCHER':role==='pitcher'?'PITCHER':'BATTER',role==='runner'?c.runnerGrade:role==='batter'?c.batterGrade:role==='catcher'?c.catcherGrade:role==='pitcher'?c.pitcherGrade:role==='next'?c.nextGrade:c.benchGrade,role==='runner'?c.runnerTrait:role==='batter'?c.buntTrait:'none'));
+ if(axis==='none')return [{label:'A',bundle:setup(s)}];const a=axes[axis];if(!a)throw Error('unknown comparison axis');if(a.role==='runner'&&!s.bases.some(Boolean))throw Error('走者比較には走者を配置してください');return comparisonValues(s,axis).map((value,i)=>{const c=copy(s);if(axis==='fatigue')c.fatigue=value;else{const role=a.role,targetRole=role==='runner'?'runner'+(c.bases.findIndex(Boolean)+1):role,raw=copy(c.players[targetRole]||c.players[role]||preset(role==='runner'?'RUNNER':role==='catcher'?'CATCHER':role==='pitcher'?'PITCHER':'BATTER',role==='runner'?c.runnerGrade:role==='batter'?c.batterGrade:role==='catcher'?c.catcherGrade:role==='pitcher'?c.pitcherGrade:role==='next'?c.nextGrade:c.benchGrade,role==='runner'?c.runnerTrait:role==='batter'?c.buntTrait:'none'));
  if(a.trait){const names=axis==='runnerTrait'?['盗塁○','盗塁×']:['バント○','バント×'];raw.specials=(raw.specials||[]).filter(x=>!names.includes(x));if(value!=='none')raw.specials.push(value);}else{const range=E.CONFIG.ranges[a.stat]||[1,20];const group=['control','stamina','velocity'].includes(a.stat)?'pitching':'batting';raw[group]??={};raw[group][a.stat]=gradeValue(a.stat,value);}c.players[targetRole]=raw;}
- return {label:`${'ABC'[i]} / ${value}`,changed:{axis,value},bundle:setup(c)};});}
+ return {label:`${String.fromCharCode(65+i)} / ${value}`,changed:{axis,value},bundle:setup(c)};});}
 function sensitivity(groups,axis){if(groups.length<2||groups.some(g=>g.trials.length<100))return [];
  const keys={runnerSpeed:'STEAL_2B',runnerTrait:'STEAL_2B',catcherArm:'STEAL_2B',buntTrait:'SAC_BUNT',nextMeet:'INTENTIONAL_WALK'},key=keys[axis];if(!key)return [];const rates=groups.map(g=>(g.summary.initialDecision[key]||0)/g.trials.length),n=Math.min(...groups.map(g=>g.trials.length));
  return Math.max(...rates)-Math.min(...rates)<Math.max(.002,1/n)?[{severity:'REVIEW',rule:'LOW_SENSITIVITY',detail:`${key}: near-identical initial rates (${rates.join(', ')}). Check opportunity, sample size and policy; not a confirmed defect.`}]:[];
 }
 function csv(report){const quote=x=>'"'+String(x??'').replaceAll('"','""')+'"',rows=[['version','date','condition','seed','scenario','initialDecision','decision','reason','execution','outcome','anomalies']];for(const g of report.groups)for(const t of g.trials)rows.push([report.version,report.date,g.label,t.seed,JSON.stringify(g.bundle.scenario),t.initialDecision,JSON.stringify(t.decision),JSON.stringify(t.reason),JSON.stringify(t.execution),JSON.stringify(t.outcome),JSON.stringify(t.anomalies)]);return '\uFEFF'+rows.map(row=>row.map(quote).join(',')).join('\r\n');}
-globalThis.SL_LAB={numericInputs,numericValue,comparisonSpec,executionSize,effectiveInputs,anomalies,grades,gradeValue,gradeValues,scenarios,axes,preset,config,validate,setup,create,trial,summarize,compare,sensitivity,csv};
+globalThis.SL_LAB={normalizeScenario,comparisonValues,numericInputs,numericValue,comparisonSpec,executionSize,effectiveInputs,anomalies,grades,gradeValue,gradeValues,scenarios,axes,preset,config,validate,setup,create,trial,summarize,compare,sensitivity,csv};
 })();
 

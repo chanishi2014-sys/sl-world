@@ -1,0 +1,11 @@
+PASS: 100 tactical games + 40 mode replays, 25165 events; zero-bunt games=56, zero-steal games=88, SB=10, CS=3
+PASS: 240 bunt PAs {
+  sacrificeBunt: 136,
+  fieldersChoice: 18,
+  lineout: 27,
+  walk: 15,
+  strikeout: 15,
+  single: 18,
+  doublePlay: 8,
+  error: 3
+} { ball: 233, foul: 85, inPlay: 210, swingingStrike: 51 }

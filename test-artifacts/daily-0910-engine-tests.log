@@ -1,0 +1,23 @@
+PASS: 150 games, 40 mode comparisons, 2400 ground-ball situations {
+  foul: 3825,
+  ball: 11181,
+  calledStrike: 4236,
+  flyout: 1932,
+  double: 534,
+  groundout: 2021,
+  single: 1912,
+  strikeout: 1834,
+  lineout: 1048,
+  swingingStrike: 3647,
+  triple: 36,
+  error: 92,
+  fieldersChoice: 646,
+  walk: 813,
+  sacrificeFly: 70,
+  doublePlay: 208,
+  homeRun: 67,
+  caughtStealing: 12,
+  stolenBase: 29
+}
+PASS: directed SF/AB/RBI, all error categories, second/third SB/CS and third-out batting order
+PASS: 34143 event timelines; 30 pre-fix seed fingerprints unchanged; occupied bases, cover/catch/tag, unique batter, momentum, legacy events and labels.

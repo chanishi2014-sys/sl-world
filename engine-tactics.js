@@ -59,7 +59,8 @@
   });
   const viable=candidates.filter(c=>c.weight>0),hold={decision:'HOLD_BALL',weight:viable.length?.015:1,reasons:[viable.length?'avoid marginal throw risk':'no reachable out; unnecessary throw risk']};
   // Settled plays do not consume tactical RNG, and cannot invent a late putout.
-  const selected=settled||!viable.length?hold:choose(g,[...viable,hold]);
+  let selected=settled||!viable.length?hold:choose(g,[...viable,hold]);
+  if(selected.decision==='HOLD_BALL'&&p.fielderIndex>=6)selected={decision:'SECURE_RETURN',action:'SECURE_RETURN',toBase:2,receiverIndex:5,weight:1,reasons:['runners settled; return to infield']};
   return {...selected,intent:'prevent runs',context:c,candidates,advances:advances.map(a=>({...a,runner:identity(a.runner)}))};
  }
  function advanceGround(g,p,b,pitcher,decision,outKeys=[],error=false){
@@ -93,6 +94,7 @@
    if(p.bunt&&advanced){s.batting[b.key].AB--;s.batting[b.key].SH++;p.sacrificeBunt=true;p.log='送りバント成功、打者アウト・走者進塁';return 'sacrificeBunt';}
    p.log=p.bunt?'バント、打者アウト':'一塁で打者アウト';return 'groundout';
   }
+  if(!success&&(hold||d.toBase===1)){s.batting[b.key].H++;s.pitching[pitcher.key].H++;s.hits[offense(g)]++;p.infieldHit=true;p.log='一塁で打者セーフ、内野安打';return 'single';}
   p.fieldersChoice=true;p.log=hold?'送球を見送り、野選で出塁':success?'先行走者アウト、野選で打者出塁':'送球は間に合わず、野選で全員セーフ';return 'fieldersChoice';
  }
  function resolveBunt(g,pitcher,batter){

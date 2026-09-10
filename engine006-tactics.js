@@ -91,7 +91,7 @@
   for(let i=0;i<3;i++)if(outKeys.includes(s.bases[i]?.key))s.bases[i]=null;
   advanceGround(g,p,b,pitcher,d,outKeys,error);
   if(error)return 'error';
-  if(p.safetyBunt&&!success){s.batting[b.key].H++;s.pitching[pitcher.key].H++;s.hits[offense(g)]++;p.infieldHit=true;p.log='セーフティバント、内野安打';return 'single';}
+  if(!success&&(hold||d.toBase===1)){s.batting[b.key].H++;s.pitching[pitcher.key].H++;s.hits[offense(g)]++;p.infieldHit=true;p.log='一塁で打者セーフ、内野安打';return 'single';}
   if(p.doublePlay){p.log='先行走者を封殺、一塁転送で併殺';return 'doublePlay';}
   if(success&&d.toBase===1){
    const advanced=s.playActions.some(a=>a.runner.key!==b.key&&a.result==='safe'&&a.toBase>a.fromBase);
