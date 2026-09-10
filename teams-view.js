@@ -21,6 +21,9 @@ function readRoster(storage){
   return {byId,byTeam,ignored,error:null};
  }catch{return {byId,byTeam,ignored,error:'選手データを読み込めません。保存形式を確認してください。'};}
 }
+const traitPriority={rainbow:0,gold:1,blue:2,red:3,green:4};
+// Sort a copy for presentation; stable sort retains registration order within each category.
+function displaySpecials(specials){return (Array.isArray(specials)?specials:[]).slice().sort((a,b)=>(traitPriority[T.get(a)?.color]??5)-(traitPriority[T.get(b)?.color]??5));}
 const instances=new WeakMap();
 function render(root){
  if(instances.has(root)){instances.get(root).refresh();return;}
@@ -68,7 +71,7 @@ function render(root){
   }
   section.append(grid,node('p','notice','—：未設定 ／ 対象外：ランク判定の範囲外。'));
   root.append(section);
-  const details=node('details','card player-traits'),specials=Array.isArray(p.specials)?p.specials:[];details.append(node('summary','','特殊能力 · 一覧を見る（'+specials.length+'）'));
+  const details=node('details','card player-traits'),specials=displaySpecials(p.specials);details.append(node('summary','','特殊能力 · 一覧を見る（'+specials.length+'）'));
   const traits=node('div','trait-list');if(!specials.length)traits.append(node('p','notice','特殊能力未登録'));
   for(const name of specials){const def=typeof name==='string'?T.get(name):null,color=def?.color||'unknown';const badge=node('span','sp on trait-badge '+color);badge.dataset.traitCategory=color;badge.append(node('span','',typeof name==='string'?name:'未対応の特殊能力データ'),node('small','',categoryLabels[color]||'カテゴリ未登録'));traits.append(badge);}
   details.append(traits);root.append(details);
@@ -77,5 +80,5 @@ function render(root){
  window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY||e.key===null)refresh();});window.addEventListener('focus',refresh);window.addEventListener('sl-team-membership-change',refresh);
  draw();
 }
-globalThis.SL_TEAMS_VIEW=Object.freeze({readRoster,basicAbilities,render});
+globalThis.SL_TEAMS_VIEW=Object.freeze({readRoster,basicAbilities,displaySpecials,render});
 })();
