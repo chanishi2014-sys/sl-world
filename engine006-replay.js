@@ -44,6 +44,7 @@
   if(!e.actions){e.actions=[];e.runnersBefore.forEach((runner,i)=>{if(!runner)return;const to=e.runnersAfter.findIndex(p=>p?.key===runner.key)+1;if(to&&to!==i+1)e.actions.push({runner,fromBase:i+1,toBase:to,result:'safe',type:'runnerAdvance'});});const to=e.runnersAfter.findIndex(p=>p?.key===e.batter.key)+1;if(to)e.actions.push({runner:e.batter,fromBase:0,toBase:to,result:'safe',type:'runnerAdvance'});if(steal&&e.runner)e.actions.push({runner:e.runner,fromBase:e.fromBase,toBase:e.toBase,result:e.caughtStealing?'out':'safe',type:e.result});}
   e.runsScored=e.runsScored??e.scoreAfter.reduce((n,v,i)=>n+v-e.scoreBefore[i],0);
   e.nextState=e.nextState||{inning:e.inning,half:e.half,outs:e.outsAfter,balls:e.ballsAfter||0,strikes:e.strikesAfter||0,runners:e.runnersAfter,score:e.scoreAfter,hits:e.hitsAfter,errors:e.errorsAfter,finished:false};
+  e.play??=SL_FIELDING.buildPlay(e);
   return e;
  }
  function animationPlan(e){const positions=e.defensivePositions||layout.positions;
@@ -70,12 +71,18 @@
   if(['single','double','triple','walk'].includes(e.result))resultAt=Math.max(resultAt,pitchEnd+({single:2000,double:2800,triple:3500,walk:1600}[e.result]));
   const runEnd=resultAt-100,returnAt=resultAt+600,resetEnd=returnAt+850;
   const halfChanged=e.nextState&&!e.nextState.finished&&(e.nextState.inning!==e.inning||e.nextState.half!==e.half);
+  if(e.play){const q=e.play,ms=t=>pitchEnd+t*1000,legs=q.transfers.map(t=>({...t,start:ms(t.start),end:ms(t.end),tagAt:ms(t.tagAt)}));return {release,pitchEnd,kind,inPlay,foul,steal,target,fieldPoint:q.catchPoint,fielder:q.actualIndex,flight:q.flight*1000,landingAt:ms(q.landingAt),rollDuration:(q.caught-q.landingAt)*1000,loose:q.caught>q.landingAt,caught:ms(q.caught),transfers:legs,hasThrow:!!legs.length,throwStart:legs[0]?.start??ms(q.caught),throwEnd:legs.at(-1)?.end??ms(q.caught),throwTarget:legs.at(-1)?.toPoint||q.catchPoint,resultAt:ms(q.completeAt),runStart:ms(Math.min(.13,...q.runners.map(r=>r.start))),runEnd:ms(q.completeAt),returnAt:ms(q.resetAt),resetEnd:ms(q.resetEnd),halfChanged,end:halfChanged?ms(q.resetAt)+1600:ms(q.resetEnd),runningDebug:{...e.runningDebug,playPhase:'engine-timeline',ownership:q.timeline,runnerStates:q.runners,returnStart:legs[0]?.start??null}};}
   return {release,pitchEnd,kind,inPlay,foul,steal,target,fieldPoint,fielder,flight,landingAt,rollDuration,loose,caught,transfers,hasThrow:transfers.length>0,throwStart:transfers[0]?.start||caught,throwEnd:transfers.at(-1)?.end||caught,throwTarget:transfers.at(-1)?.toPoint||target,resultAt,runStart,runEnd,returnAt,resetEnd,runningDebug:{...e.runningDebug,returnStart:transfers[0]?.start??null,batterSecondArrival:e.actions.some(a=>a.runner?.key===e.batter.key&&a.toBase>=2)?runEnd:null},halfChanged,end:halfChanged?returnAt+1600:resetEnd};
  }
  function ballAnimation(e,p,time){const positions=e.defensivePositions||layout.positions;
   if(time<p.release)return {phase:'windup',ground:positions[0],height:0,visible:false};
   if(time<p.pitchEnd)return {phase:'pitch',ground:point(positions[0],p.steal?positions[1]:bases[0],progress(time,p.release,p.pitchEnd)),height:4,visible:true};
   if(!p.inPlay&&!p.foul&&!p.steal)return {phase:'catcher',ground:positions[1],height:8,visible:time<p.pitchEnd+230};
+  if(e.play&&time>=p.caught&&p.kind!=='homer'){
+   const state=SL_FIELDING.samplePlay(e.play,(time-p.pitchEnd)/1000),active=p.transfers.find(t=>time>=t.start&&time<t.end),last=p.transfers.filter(t=>time>=t.end).at(-1);
+   return {phase:active?(active.carried?'carry':'throw'):last?(last.kind==='tag'?(time>=last.tagAt?'tag':'received'):last.kind==='force'?'baseTouch':'received'):'fieldCatch',ground:state.ballPosition||p.fieldPoint,height:active?12:8,visible:time<p.returnAt,ballOwner:state.ballOwner,thrower:active?.throwerKey??null,playPhase:state.phase};
+  }
+  if(Number.isFinite(e.trajectory?.initialSpeed)&&p.kind==='ground'&&time>=p.pitchEnd&&time<p.landingAt){const seconds=(time-p.pitchEnd)/1000,d=Math.min(distance(bases[0],p.target),Math.max(0,e.trajectory.initialSpeed*seconds-e.trajectory.deceleration*seconds*seconds/2));return {phase:'ground',ground:[400+Math.sin(e.sprayAngle)*d,430-Math.cos(e.sprayAngle)*d],height:Math.abs(Math.sin(seconds*8))*3,visible:true};}
   if(!p.steal&&time<p.landingAt){const t=progress(time,p.pitchEnd,p.landingAt);return {phase:p.kind,ground:point(bases[0],p.target,t),height:p.kind==='ground'?Math.abs(Math.sin(t*Math.PI*5))*(e.bunt?1:3):p.kind==='line'?Math.sin(t*Math.PI)*18:p.kind==='homer'?Math.sin(t*Math.PI)*115+25*t:Math.sin(t*Math.PI)*95,visible:true};}
   if(p.kind==='homer'&&!p.steal)return {phase:'homerExit',ground:p.target,height:0,visible:false};
   if(p.foul)return {phase:'foulDone',ground:p.target,height:0,visible:false};
@@ -90,6 +97,7 @@
   return {phase,ground:[held[0]+12*facing,held[1]],height:phase==='tag'||(!receivedLeg&&p.kind==='ground')?6:30,visible:time<p.returnAt};
  }
  function runnerAnimation(e,p,time){
+  if(e.play)return e.play.runners.filter(r=>r.fromBase>0||time>=p.pitchEnd+r.start*1000).map(r=>{const seconds=(time-p.pitchEnd)/1000,elapsed=Math.max(0,Math.min(seconds,r.end)-r.start),duration=Math.max(.001,r.arrivalAt-r.start),fraction=clamp01(elapsed/duration),d=lerp(r.fromBase,r.toBase,fraction),segment=Math.min(3,Math.floor(d));return {who:r.runner,start:r.fromBase,finish:r.toBase,position:point(bases[segment],bases[segment+1],d-segment),running:seconds>=r.start&&seconds<r.end&&r.toBase!==r.fromBase,visible:!(r.outAt!=null&&seconds>=r.outAt+.4)&&!(r.toBase===4&&fraction===1),state:seconds>=r.end?r.state:'running'};});
   const people=e.runnersBefore.flatMap((who,i)=>who?[{who,start:i+1}]:[]);
   const batterAction=e.actions.find(a=>a.runner?.key===e.batter.key&&a.fromBase===0);
   if(batterAction&&time>=p.runStart&&!people.some(r=>r.who.key===e.batter.key))people.push({who:e.batter,start:0});
@@ -102,34 +110,13 @@
    return {who,start,finish,position:point(bases[segment],bases[segment+1],d-segment),running:t>0&&t<1&&start!==finish,visible:!(out&&time>=outAt+400)&&!(finish===4&&t===1)};
   });
  }
- function batterVisible(e,p,time){return !(time>=p.runStart&&e.actions.some(a=>a.runner?.key===e.batter.key&&a.fromBase===0))&&!(e.plateAppearanceEnded&&time>=p.resultAt);}
- function fieldingAnimation(e,p,time,i){const positions=e.defensivePositions||layout.positions;
-  const origin=positions[i];if(!p||(!p.inPlay&&!p.steal))return {position:origin,pose:{}};
-  let target=origin,start=p.pitchEnd+140,end=p.caught,role='hold';
-  if(i===p.fielder){target=p.steal?positions[1]:p.target;end=p.landingAt;role='primary';if(time>=p.landingAt){start=p.landingAt;target=p.fieldPoint;end=p.caught;}}
-  // No future throw receiver or outcome is consulted before fielding is resolved.
-  else if(i===e.defensiveRoles?.secondary){target=p.target;role='secondary';end=p.landingAt;}
-  else if(p.kind==='ground'&&i=== (p.fielder===2?0:2)){target=bases[1];role='baseCover';end=start+Math.max(280,distance(origin,target)/.18);}
-  if(time>=p.caught&&e.returnFormation&&i!==p.fielder){const f=e.returnFormation;if(i===f.relayIndex){target=f.relayPoint;role='relay';start=p.caught;end=start+distance(origin,target)/.18;}else if(i===f.coverIndex){target=bases[2];role='baseCover';start=p.caught;end=start+distance(origin,target)/.18;}}
-
-  const receiver=p.transfers.find(t=>t.toIndex===i);
-  if(receiver&&i!==p.fielder&&(p.steal||time>=p.caught)){target=receiver.toPoint;start=p.steal?p.release+70:p.kind==='ground'&&receiver.toBase===1&&i===(p.fielder===2?0:2)?p.pitchEnd+140:p.caught;end=Math.min(receiver.end-120,start+Math.max(280,distance(origin,target)/.18));role='cover';}
-  let position=point(i===p.fielder&&time>=p.landingAt?p.target:origin,target,progress(time,start,end));
-  // A primary fielder may become a later receiver (for example a 3-6-3 DP).
-  if(receiver&&i===p.fielder&&!receiver.carried){
-   const departure=(p.transfers.find(t=>t.fromIndex===i)?.start??p.caught)+100;
-   if(time>=departure){start=departure;target=receiver.toPoint;end=Math.min(receiver.end-100,start+Math.max(240,distance(p.loose?p.fieldPoint:p.target,target)/.18));position=point(p.loose?p.fieldPoint:p.target,target,progress(time,start,end));role='cover';}
-  }
-  const carry=p.transfers.find(t=>t.carried&&t.fromIndex===i);
-  if(carry&&time>=carry.start)position=point(carry.fromPoint,carry.toPoint,progress(time,carry.start,carry.end));
-  const receiving=p.transfers.find(t=>t.toIndex===i&&time>=t.end-80&&time<t.end+130);
-  const tagging=p.transfers.find(t=>t.toIndex===i&&t.kind==='tag'&&time>=t.end+80&&time<t.tagAt+250);
-  const throwing=p.transfers.find(t=>t.fromIndex===i&&!t.carried&&time>=t.start-100&&time<t.start+180);
-  const catchBall=p.kind!=='homer'&&i===p.fielder&&time>=p.caught-80&&time<p.caught+160;
-  const beforeReturn=position;
-  if(time>=p.returnAt&&!p.halfChanged)position=point(beforeReturn,origin,progress(time,p.returnAt,p.resetEnd));
-  const facing=tagging?tagFacing(e,tagging):receiving?(receiving.fromPoint[0]<position[0]?-1:1):target[0]<origin[0]?-1:1;
-  return {position,role,receiving:!!receiving,tagging:!!tagging,pose:{time,running:(time>start&&time<end)||(time>p.returnAt&&time<p.resetEnd&&!p.halfChanged),facing,catch:!!(receiving||tagging||catchBall),glove:tagging?[12,-6]:receiving||catchBall?[12,catchBall&&p.kind==='ground'?-6:-30]:undefined,hand:throwing?[17,-38]:undefined}};
+ function batterVisible(e,p,time){if(e.play){const r=e.play.runners.find(r=>r.fromBase===0&&r.runner.key===e.batter.key);return !r||time<p.pitchEnd+r.start*1000;}return !(time>=p.runStart&&e.actions.some(a=>a.runner?.key===e.batter.key&&a.fromBase===0))&&!(e.plateAppearanceEnded&&time>=p.resultAt);}
+ function fieldingAnimation(e,p,time,i){
+  if(!e.play)return {position:(e.defensivePositions||positions)[i],role:'hold',pose:{}};
+  const seconds=(time-p.pitchEnd)/1000,state=SL_FIELDING.samplePlay(e.play,seconds),track=e.play.tracks[i],leg=track.legs.filter(l=>l.start<=Math.min(seconds,e.play.completeAt)).at(-1),role=state.phase==='POSITION_RESET'?'reset':leg?.role||'hold';
+  const receiving=p.transfers.find(t=>t.toIndex===i&&time>=t.end-80&&time<t.end+130),throwing=p.transfers.find(t=>t.fromIndex===i&&!t.carried&&time>=t.start-100&&time<t.start+180),tagging=p.transfers.find(t=>t.toIndex===i&&t.kind==='tag'&&time>=t.end&&time<t.tagAt+250),catchBall=i===e.play.actualIndex&&time>=p.caught-80&&time<p.caught+160;
+  const target=leg?.to||track.origin,position=state.positions[i],running=state.phase==='POSITION_RESET'?seconds<e.play.resetEnd:!!leg&&seconds<leg.end&&seconds<e.play.completeAt;
+  return {position,role,fielderKey:track.key,ballOwner:state.ballOwner,playPhase:state.phase,receiving:!!receiving,tagging:!!tagging,pose:{time,running,facing:target[0]<position[0]?-1:1,catch:!!(receiving||tagging||catchBall),glove:receiving||tagging||catchBall?[12,-6]:undefined,hand:throwing?[17,-38]:undefined}};
  }
  function transition(e,p,time){if(!p.halfChanged||time<p.returnAt)return null;const t=progress(time,p.returnAt,p.end),entering=t>=.5;return {entering,progress:entering?(t-.5)*2:t*2};}
  globalThis.SL_MATCH_REPLAY={toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,decisionDebug,bannerLabel:e=>banners[e.result]||'PLAY',safeText,names};

@@ -9,6 +9,21 @@
  // Force follows the uninterrupted occupied chain behind a runner, never the result.
  function forcePlan(bases,batter){let forced=true;return [{runner:identity(batter),fromBase:0,toBase:1,force:true},...bases.flatMap((r,i)=>{forced=forced&&!!r;return r?[{runner:identity(r),fromBase:i+1,toBase:forced?i+2:i+1,force:forced}]:[];})];}
  function receiverIndex(base,from,point){return base===1?(from===2&&Math.hypot(point[0]-540,point[1]-315)>45?0:2):base===2?(from===5?3:5):base===3?4:1;}
+
+ const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+ function relayFormation(at,toBase=2){const base=layout.bases[toBase],home=layout.bases[0],dx=at[0]-base[0],dy=at[1]-base[1],x=base[0]-home[0],y=base[1]-home[1];
+  const radius=215+Math.min(15,distance(at,base)/20),a=dx*dx+dy*dy,b=2*(x*dx+y*dy),c=x*x+y*y-radius*radius;
+  const t=a?clamp((-b+Math.sqrt(Math.max(0,b*b-4*a*c)))/(2*a),.08,.85):0;
+  const relayIndex=at[0]>440?3:5;return {relayIndex,coverIndex:relayIndex===5?3:5,relayPoint:[base[0]+dx*t,base[1]+dy*t],targetBase:toBase,radius};
+ }
+ function groundTiming(g,p,b,target,receiverIndex){const fielders=defense(g),f=fielders[p.fielderIndex],receiver=fielders[receiverIndex],origins=globalThis.SL_TACTICS?.alignment?SL_TACTICS.alignment(g).positions:layout.positions,at=p.landingPoint||origins[p.fielderIndex];
+  const movement=distance(origins[p.fielderIndex],at),reaction=.25+.25*(1-ability(f,'fielding')),fieldArrival=reaction+movement/(65+30*ability(f,'speed'));
+  const ballArrival=p.trajectory?.fieldTime??distance(layout.bases[0],at)/(150+160*(p.battedQuality??.5));
+  const fieldTime=Math.max(ballArrival,fieldArrival),pickupTime=.18+.22*(1-ability(f,'catching'))+.12*Math.min(1,movement/80),throwTime=distance(at,layout.bases[target.toBase])/(receiverIndex===p.fielderIndex?65+30*ability(f,'speed'):150+80*ability(f,'arm'));
+  const coverETA=.25+distance(origins[receiverIndex],layout.bases[target.toBase])/(65+30*ability(receiver,'speed'));
+  const ballETA=Math.max(coverETA,fieldTime+pickupTime+throwTime)+(target.force?0:.15),runnerETA=.13+(target.fromBase===0?4.6:3.9)-1.25*scaled(target.runner,'speed',g.config);
+  return {fieldTime,ballArrival,fieldArrival,movement,reaction,pickupTime,throwTime,coverETA,ballETA,runnerETA,margin:runnerETA-ballETA,source:'arrival-race'};
+ }
  function geometry(g,p){
   // Keep the original geometry RNG call count; interception may change the fielder.
   const a=(g.rng()+g.rng()-1)*.78,ground=p.battedResult==='groundout'||p.infieldHit;
@@ -53,9 +68,78 @@
  }
  // Legal single-runner attempts only; no implicit double steals.
  function canSteal(g,from){return !g.state.finished&&g.state.outs<3&&(from===1||from===2)&&!!g.state.bases[from-1]&&!g.state.bases[from];}
+
+ // Engine-owned temporal contract. All times are seconds since contact/steal release.
+ // Tracks are append-only role transitions from the actual current position.
+ function trackPosition(track,t){let at=track.origin;for(const leg of track.legs){if(t<leg.start)break;const f=clamp((t-leg.start)/Math.max(.001,leg.end-leg.start),0,1);at=[leg.from[0]+(leg.to[0]-leg.from[0])*f,leg.from[1]+(leg.to[1]-leg.from[1])*f];}return [...at];}
+ function buildPlay(e){
+  const steal=e.eventType==='baserunning'||!!e.runningExecution,inPlay=e.outcome==='inPlay';if(!steal&&!inPlay)return null;
+  const origins=e.defensivePositions||layout.positions,fielders=e.defense||positions.map((position,index)=>({key:position,index,position,moveSpeed:85}));
+  const actual=e.actualFielder?.index??e.fielderIndex??1,at=steal?origins[1]:(e.fieldingPoint||e.landingPoint||origins[actual]),landing=e.landingPoint||at;
+  const reaction=fielders[actual]?.reaction??.35,speed=fielders[actual]?.moveSpeed??85;
+  const flight=steal?0:Math.max(e.defenseDecision?.fieldTime??e.trajectory?.fieldTime??(e.bunt?1.3:e.ballType==='line'?.7:1.4),reaction+distance(origins[actual],landing)/speed);
+  const roll=distance(landing,at),caught=steal?0:Math.max(flight+(roll?Math.max(.65,roll/speed):0),reaction+distance(origins[actual],at)/speed);
+  const tracks=origins.map((origin,index)=>({index,key:fielders[index]?.key,origin:[...origin],legs:[]}));
+  function move(index,to,start,role,end=null){const track=tracks[index],from=trackPosition(track,start);track.legs=track.legs.filter(l=>l.start<start);const last=track.legs.at(-1);if(last&&last.end>start){last.end=start;last.to=from;}
+   const arrival=end??start+distance(from,to)/(fielders[index]?.moveSpeed??85);track.legs.push({from,to:[...to],start,end:Math.max(start+.001,arrival),role});return arrival;
+  }
+  // Chase the observable landing/interception first; only pursue a loose ball after arrival.
+  move(actual,landing,steal?0:reaction,'primary',flight);
+  if(roll)move(actual,at,flight,'primary',caught);
+  const outfield=actual>=6&&distance(layout.bases[0],landing)>190;
+  const anticipatedTarget=(e.runnersBefore?.[1]||e.runnersBefore?.[2])?4:2;
+  const anticipation=outfield?{...relayFormation(landing,anticipatedTarget),recognizedAt:e.ballType==='ground'?Math.min(caught,flight*180/Math.max(180,distance(layout.bases[0],landing))):Math.min(caught,.35),source:'observed-trajectory-and-runners-before'}:null;
+  const secondary=e.defensiveRoles?.secondary??(e.trajectory?.candidates||e.catchCandidates||[]).find(c=>c.index!==actual&&c.time<=caught+.3)?.index;
+  if(secondary!=null&&secondary!==actual&&secondary!==anticipation?.relayIndex&&secondary!==anticipation?.coverIndex){const dx=at[0]-400,dy=at[1]-430,d=Math.max(1,Math.hypot(dx,dy));move(secondary,[at[0]+dx/d*24,at[1]+dy/d*24],.35,'secondary');}
+  if(e.ballType==='ground'){
+   const first=actual===2?(distance(at,layout.bases[1])>45?0:null):2;
+   if(first!=null)move(first,layout.bases[1],.25,'baseCover');
+   const middle=actual===5?3:5;if(middle!==actual)move(middle,layout.bases[2],.25,'baseCover');
+   if(actual!==4&&e.runnersBefore?.[1])move(4,layout.bases[3],.25,'baseCover');
+   if(actual!==1&&e.runnersBefore?.[2])move(1,layout.bases[4],.25,'baseCover');
+  }
+  if(anticipation){move(anticipation.relayIndex,anticipation.relayPoint,anticipation.recognizedAt,'relay');move(anticipation.coverIndex,layout.bases[2],anticipation.recognizedAt,'baseCover');}
+  const timeline=[{type:'PLAY_ACTIVE',at:0,ballOwner:null},{type:'FIELD',at:caught,actorIndex:actual,actorKey:fielders[actual]?.key,point:[...at],ballOwner:fielders[actual]?.key}];
+  const transfers=[];let owner=actual,location=[...at],ready=caught+(e.defenseDecision?.timing?.pickupTime??.23);
+  for(const raw of e.transfers||[]){
+   const fromIndex=owner,toIndex=raw.toIndex,to=raw.toPoint||layout.bases[raw.toBase],carried=fromIndex===toIndex;
+   const travel=distance(location,to)/(carried?(fielders[owner]?.moveSpeed??85):(fielders[owner]?.throwSpeed??205)),tagDelay=raw.kind==='tag'?.15:0;
+   let start=Math.max(ready,(raw.timing?.ballETA??0)-travel-tagDelay),receiverReady=start;
+   if(carried){receiverReady=move(owner,to,start,'carry');}
+   else {const current=trackPosition(tracks[toIndex],caught);const pending=tracks[toIndex].legs.at(-1);receiverReady=pending&&distance(pending.to,to)<.01?pending.end:move(toIndex,to,Math.max(caught,transfers.filter(t=>t.fromIndex===toIndex).at(-1)?.start??caught),'receive');}
+   start=Math.max(start,receiverReady-travel);const end=start+travel,tagAt=end+tagDelay;
+   const leg={...raw,fromIndex,toIndex,from:fielders[fromIndex],receiver:fielders[toIndex],fromPoint:[...location],toPoint:[...to],start,end,tagAt,carried,throwerKey:fielders[fromIndex]?.key,receiverKey:fielders[toIndex]?.key};transfers.push(leg);
+   timeline.push({type:carried?'CARRY_START':'THROW_START',at:start,actorIndex:fromIndex,actorKey:leg.throwerKey,thrower:leg.throwerKey,origin:[...location],ballOwner:carried?leg.throwerKey:null}, {type:'RECEIVE',at:end,actorIndex:toIndex,actorKey:leg.receiverKey,point:[...to],ballOwner:leg.receiverKey});
+   owner=toIndex;location=[...to];ready=tagAt+(e.doublePlay?.25:.21);
+  }
+  const outActions=(e.actions||[]).filter(a=>a.result==='out'),outs=[];
+  for(const action of outActions){const leg=transfers.find(t=>t.runnerKey===action.runner.key&&t.result==='out');outs.push({type:'OUT',at:leg?.tagAt??caught,runnerKey:action.runner.key,toBase:action.toBase});}
+  for(let n=outs.length;n<(e.outsAfter??0)-(e.outsBefore??e.outs??0);n++)outs.push({type:'OUT',at:caught,runnerKey:e.batter?.key,toBase:1});
+  outs.sort((a,b)=>a.at-b.at);outs.forEach((o,i)=>{o.outCount=Math.min(3,(e.outsBefore??e.outs??0)+i+1);});timeline.push(...outs);
+  const third=outs.find(o=>o.outCount===3)?.at;
+  const intents=e.runnerIntents||e.forceAtContact||[],people=new Map();(e.runnersBefore||[]).forEach((r,i)=>{if(r)people.set(r.key,{runner:r,fromBase:i+1,toBase:i+1});});
+  for(const i of intents)people.set(i.runner.key,i);if(inPlay&&e.batter&&!people.has(e.batter.key))people.set(e.batter.key,{runner:e.batter,fromBase:0,toBase:1});
+  for(const a of e.actions||[])if(!people.has(a.runner.key))people.set(a.runner.key,a);
+  const runners=[...people.values()].map(intent=>{const actions=(e.actions||[]).filter(a=>a.runner.key===intent.runner.key),action=actions.find(a=>a.result==='out')||actions.find(a=>a.toBase===4)||actions.at(-1),out=outs.find(o=>o.runnerKey===intent.runner.key);
+   const toBase=action?.toBase??intent.toBase,start=steal?-.3:e.tagUp&&intent.fromBase>0?caught+.1:.13,runTime=(intent.fromBase===0?4.6:3.9)-1.25*(e.runnerSpeedByKey?.[intent.runner.key]??.5);
+   const arrivalAt=start+runTime*Math.max(0,toBase-intent.fromBase),end=out?.at??Math.min(arrivalAt,third??Infinity);
+   return {...intent,toBase,start,arrivalAt,end,outAt:out?.at??null,state:out?'out':third!=null&&arrivalAt>third?'interrupted':'safe'};
+  });
+  const completeAt=Math.max(caught,transfers.at(-1)?.tagAt??0,...outs.map(o=>o.at),third??Math.max(0,...runners.map(r=>r.end)))+.001,resetAt=completeAt+.6,resetEnd=resetAt+.85;
+  timeline.push({type:'PLAY_COMPLETE',at:completeAt,ballOwner:fielders[owner]?.key,outCount:e.outsAfter??0},{type:'POSITION_RESET',at:resetAt,ballOwner:fielders[owner]?.key});timeline.sort((a,b)=>a.at-b.at);
+  return {schemaVersion:1,clock:'seconds-since-contact',outsBefore:e.outsBefore??e.outs??0,primaryFielder:e.primaryFielder?.key,actualFielder:fielders[actual]?.key,actualIndex:actual,catchPoint:[...at],flight,landingAt:flight,caught,anticipation,tracks,transfers,runners,outs,timeline,completeAt,resetAt,resetEnd};
+ }
+ function samplePlay(play,time){const phase=time>=play.resetAt?'POSITION_RESET':time>=play.completeAt?'PLAY_COMPLETE':'PLAY_ACTIVE';let ballOwner=null,ballPosition=null,inFlight=null;
+  for(const event of play.timeline){if(event.at>time)break;if(Object.hasOwn(event,'ballOwner'))ballOwner=event.ballOwner;if(event.point)ballPosition=event.point;}
+  const positions=play.tracks.map(track=>{const t=Math.min(time,play.completeAt),at=trackPosition(track,t);if(time<play.resetAt)return at;const f=clamp((time-play.resetAt)/(play.resetEnd-play.resetAt),0,1),from=trackPosition(track,play.completeAt);return [from[0]+(track.origin[0]-from[0])*f,from[1]+(track.origin[1]-from[1])*f];});
+  for(const leg of play.transfers)if(time>=leg.start&&time<leg.end){const f=(time-leg.start)/(leg.end-leg.start);ballPosition=[leg.fromPoint[0]+(leg.toPoint[0]-leg.fromPoint[0])*f,leg.fromPoint[1]+(leg.toPoint[1]-leg.fromPoint[1])*f];inFlight=leg.carried?null:leg;break;}
+  const ownerIndex=play.tracks.findIndex(t=>t.key===ballOwner);if(ownerIndex>=0)ballPosition=positions[ownerIndex];
+  return {phase,ballOwner,ownerIndex,ballPosition,inFlight,outCount:play.outs.filter(o=>o.at<=time).at(-1)?.outCount??play.outsBefore,positions};
+ }
+
  // Add replay facts without drawing RNG or modifying the game's result/state.
  function annotate(g,e){
-  const fielders=defense(g).map((p,index)=>({...identity(p),index,position:positions[index]}));
+  const fielders=defense(g).map((p,index)=>({...identity(p),index,position:positions[index],moveSpeed:65+30*ability(p,'speed'),throwSpeed:150+80*ability(p,'arm'),reaction:.25+.25*(1-ability(p,'fielding'))}));
   e.defensivePositions??=SL_TACTICS.alignment(g).positions;e.eventVersion=3;e.coordinateSpace=layout.coordinateSpace;e.defense=fielders;
   if(e.runningExecution){e.fielderIndex=1;e.log='ヒットエンドラン空振り / '+e.runningExecution.log;} e.playType=e.hitAndRun?'hitAndRun':e.bunt?'bunt':e.eventType==='baserunning'?'steal':e.ballType||e.outcome;
   e.primaryFielder=fielders[e.fielderIndex]||null;
@@ -70,25 +154,28 @@
   const outfieldReturn=e.fielderIndex>=6&&e.outcome==='inPlay'&&e.result!=='homeRun'&&e.outsAfter<3&&e.runnersAfter?.some(Boolean);
   if((hit||outfieldReturn)&&!raw.length){e.defenseDecision=SL_TACTICS.defenseDecision(g,e,currentBatter(g),{settled:true});raw=e.defenseDecision.decision==='SECURE_RETURN'?[{toBase:2,kind:'return',result:'secured'}]:[];}
   let from=e.fielderIndex;
-  e.transfers=raw.map(t=>{const fromIndex=t.fromIndex??from,toIndex=receiver(t.toBase,fromIndex);const action=e.actions.find(a=>a.toBase===t.toBase&&a.result==='out');const transfer={fromIndex,toIndex,toBase:t.toBase,from:fielders[fromIndex],receiver:fielders[toIndex],kind:t.kind||(e.eventType==='baserunning'?'tag':e.forceOut||e.battedResult==='groundout'||e.doublePlay?'force':'return'),runnerKey:t.runnerKey||action?.runner.key||e.runner?.key||null,result:t.result||action?.result||(e.caughtStealing?'out':'safe')};from=toIndex;return transfer;});
+  e.transfers=raw.map(t=>{const fromIndex=t.fromIndex??from,toIndex=receiver(t.toBase,fromIndex);const action=e.actions.find(a=>a.toBase===t.toBase&&a.result==='out');const transfer={timing:t.timing||null,fromIndex,toIndex,toBase:t.toBase,from:fielders[fromIndex],receiver:fielders[toIndex],kind:t.kind||(e.eventType==='baserunning'?'tag':e.forceOut||e.battedResult==='groundout'||e.doublePlay?'force':'return'),runnerKey:t.runnerKey||action?.runner.key||e.runner?.key||null,result:t.result||action?.result||(e.caughtStealing?'out':'safe')};from=toIndex;return transfer;});
   // Cutoff formation is independent of whether the throw uses it.
   if(e.fielderIndex>=6&&e.fieldingPoint){
    const target=e.transfers.at(-1)?.toBase||2,base=layout.bases[target],at=e.fieldingPoint;
    const relayIndex=at[0]>440?3:5,coverIndex=relayIndex===5?3:5;
-   const relayPoint=[base[0]+(at[0]-base[0])*.55,base[1]+(at[1]-base[1])*.55];
+   const relayPoint=relayFormation(at,target).relayPoint;
    e.returnFormation={relayIndex,coverIndex,relayPoint,targetBase:target};
    const first=e.transfers[0];if(first&&target===2){first.toIndex=coverIndex;first.receiver=fielders[coverIndex];}
    if(first){
     const arm=ability(defense(g)[e.fielderIndex],'arm'),directDistance=Math.hypot(at[0]-base[0],at[1]-base[1]);
     const directETA=directDistance/(150+80*arm),relayETA=Math.hypot(at[0]-relayPoint[0],at[1]-relayPoint[1])/(150+80*arm)+.2+Math.hypot(relayPoint[0]-base[0],relayPoint[1]-base[1])/(150+80*ability(defense(g)[relayIndex],'arm'));
-    const mode=first.kind==='return'||relayETA<directETA?'relay':'direct';
+    const mode=(first.kind==='return'&&directDistance>90)||relayETA<directETA?'relay':'direct';
     e.returnDecision={mode,directETA,relayETA,targetBase:target,catchPoint:at,arm};
     if(mode==='relay'){const leg={...first,toIndex:relayIndex,receiver:fielders[relayIndex],toPoint:relayPoint,kind:'return',result:'secured',runnerKey:null};e.transfers=[leg,{...first,fromIndex:relayIndex,from:fielders[relayIndex]},...e.transfers.slice(1)];}
    }
   }
-  e.runningDebug={ballType:e.ballType,catchPoint:e.fieldingPoint,batterSpeed:currentBatter(g)?.profile?.batting?.speed??null,outfielderArm:e.fielderIndex>=6?defense(g)[e.fielderIndex]?.profile?.batting?.arm:null,returnDecision:e.returnDecision||null,batterDestination:e.runnersAfter?.findIndex(r=>r?.key===e.batter?.key)+1,timingSource:'replay visualization; advancement timing is not yet engine-authoritative'};
+  e.runningDebug={ballType:e.ballType,catchPoint:e.fieldingPoint,batterSpeed:currentBatter(g)?.profile?.batting?.speed??null,outfielderArm:e.fielderIndex>=6?defense(g)[e.fielderIndex]?.profile?.batting?.arm:null,returnDecision:e.returnDecision||null,batterDestination:e.runnersAfter?.findIndex(r=>r?.key===e.batter?.key)+1,timingSource:e.defenseDecision?.timing?'engine arrival-race; play timeline in seconds':'recorded result; return timeline only (advance result retains existing model)'};
   e.coverage=e.transfers.map(t=>({fielderIndex:t.toIndex,toBase:t.toBase,role:'baseCover'}));
   if(e.eventType==='baserunning'){e.pitchType='盗塁';e.pitchSpeed=null;e.primaryFielder=fielders[1];e.receiver=e.transfers[0]?.receiver||null;e.tag={...e.tag,fielder:e.receiver};}
+  e.actualFielder=fielders[e.fieldingFielderIndex??e.fielderIndex]||null;
+  e.runnerSpeedByKey=Object.fromEntries(g.teams.flatMap(t=>t.lineup).map(p=>[p.key,scaled(p,'speed',g.config)]));
+  e.play=buildPlay(e);if(e.play){e.fieldEvent=e.play.timeline.find(x=>x.type==='FIELD');e.ballOwnerAtCatch=e.play.actualFielder;e.ballOwner=e.play.timeline.find(x=>x.type==='PLAY_COMPLETE').ballOwner;e.transfers=e.play.transfers;e.throwOrigin=e.play.catchPoint;}
  }
 
  function field(g,p,b,pitcher){const s=g.state,f=defense(g)[p.fielderIndex],before=s.outs,ground=p.battedResult==='groundout',skill=ability(f,'fielding'),catching=ability(f,'catching'),arm=ability(f,'arm');p.fielder={...identity(f),position:positions[p.fielderIndex]};
@@ -107,5 +194,5 @@
   return p.sacrificeFly?'sacrificeFly':p.battedResult;
  }
  function steal(g,pitcher,decision=null){const s=g.state,from=decision?.fromBase??(s.bases[1]&&!s.bases[2]?2:s.bases[0]&&!s.bases[1]?1:0);if(!canSteal(g,from))return null;const r=s.bases[from-1],speed=scaled(r,'speed',g.config),close=Math.abs(s.score[0]-s.score[1])<=3,attempt=(.001+.028*speed**3)*(from===2?.4:1)*(s.outs===2?.8:1)*(close?1:.25)*(s.inning>=7&&close?1.2:1);if(!decision&&g.rng()>=attempt)return null;const catcher=defense(g)[1],execution=stealExecution(g,r,pitcher,from),chance=execution.chance,safe=g.rng()<chance;if(decision)s.lastStealPitch=s.pitching[pitcher.key].pitches;s.bases[from-1]=null;if(safe){s.bases[from]=r;s.batting[r.key].SB++;}else{s.batting[r.key].CS++;recordOut(g,pitcher);}move(g,r,from,from+1,safe?'safe':'out',safe?'stolenBase':'caughtStealing');return {stealExecution:execution,eventType:'baserunning',outcome:'steal',result:safe?'stolenBase':'caughtStealing',stolenBase:safe,caughtStealing:!safe,runner:identity(r),fromBase:from,toBase:from+1,fielder:identity(catcher),fielderIndex:1,throw:{from:identity(catcher),toBase:from+1},tag:{toBase:from+1,result:safe?'safe':'out'},log:`${from}塁走者${r.name}、${from+1}塁盗塁${safe?'成功':'失敗'}`,pitchType:'盗塁',pitchSpeed:'—'};}
- globalThis.SL_FIELDING={stealExecution,forcePlan,receiverIndex,geometry,field,steal,move,defense,ability,layout,canSteal,annotate};
+ globalThis.SL_FIELDING={buildPlay,samplePlay,trackPosition,relayFormation,groundTiming,stealExecution,forcePlan,receiverIndex,geometry,field,steal,move,defense,ability,layout,canSteal,annotate};
 })();

@@ -24,20 +24,27 @@
   const value=estimate*gain-(1-estimate)*loss;
   const traits=(has(runner,'盗塁○')?1.15:has(runner,'盗塁×')?.7:1)*(has(runner,'積極盗塁')?1.25:has(runner,'慎重盗塁')?.55:1)*(has(runner,'走塁○')?1.05:has(runner,'走塁×')?.9:1);
   const repeated=s.lastStealPitch===s.pitching[pitcher.key].pitches;
-  const weight=!repeated&&value>0?.12*value*speed**2*traits*(Math.abs(c.scoreDifference)>=4?.1:1)*(from===2?.6:1):0;
+  const weight=!repeated&&value>0?value/(gain+loss)*traits*(Math.abs(c.scoreDifference)>=4?.1:1)*(from===2?.6:1):0;
   return {decision:`STEAL_${from+1}B`,fromBase:from,runner:identity(runner),legal:true,weight,successChance:success,estimatedValue:value,inputs:{execution,speed,catcherArm:arm,gain,loss,traits,quickHint:has(pitcher,'クイック○')},reasons:[`runner speed: ${speed.toFixed(2)}; catcher arm: ${arm.toFixed(2)}`,`estimated success: ${estimate.toFixed(2)}`,`gain: ${gain.toFixed(2)}; failure cost: ${loss.toFixed(2)}`,`outs: ${s.outs}; score difference: ${c.scoreDifference}; inning: ${c.inning}`,`stored traits: ${(runner.specials||[]).filter(x=>['盗塁○','盗塁×','積極盗塁','慎重盗塁','走塁○','走塁×'].includes(x)).join(', ')||'none'}`,caution?'quick/catcher trait: cautious estimate':'no quick numeric ability exists',repeated?'wait for next delivered pitch':value>0?'opportunity favorable':'failure cost exceeds gain']};
  }
- function choose(g,candidates){const positive=candidates.filter(c=>c.weight>0);return weighted(g.tacticalRng,positive.map(c=>[c,c.weight]));}
+
+ function hitRunOption(g,b){const s=g.state,runner=s.bases[0],meet=n(g,b,'meet'),power=n(g,b,'power'),legal=s.balls===0&&s.strikes===0&&s.outs<2&&!!runner&&!s.bases[1];
+  const speed=runner?n(g,runner,'speed'):0,steal=runner?F().stealExecution(g,runner,currentPitcher(g),1).chance:0,advanceValue=meet*(1-power)*(.5+speed),missCost=(1-meet)*(1-steal),value=advanceValue-missCost;
+  return {decision:'HIT_AND_RUN',legal,weight:legal?Math.max(0,value):0,estimatedValue:value,inputs:{meet,power,speed,advanceValue,missCost},reasons:[legal?'first occupied / second open / fresh count / fewer than two outs':'runner or count gate','contact advance value '+advanceValue.toFixed(3)+'; miss cost '+missCost.toFixed(3)]};
+ }
+ function candidateTrace(c,swing){return {decision:c.decision,weight:c.weight,legal:c.legal??true,estimatedValue:c.estimatedValue??null,inputs:c.inputs||{},reasons:c.reasons||[],trace:{generated:true,eligibility:c.legal===false?'blocked':'eligible',eliminatedAt:c.legal===false?'situation':c.weight<=0?'valuation-or-count':null,swingWeight:swing.weight,relativeWeight:c.weight/Math.max(.001,c.weight+swing.weight)}};}
+
+ function choose(g,candidates){const positive=candidates.filter(c=>c.weight>0);return positive.length?weighted(g.tacticalRng,positive.map(c=>[c,c.weight])):candidates.find(c=>c.decision==='SWING_AWAY')||candidates[0];}
  function offenseDecision(g,b,p){
   const bunt=buntOption(g,b),steals=[1,2].map(from=>stealOption(g,p,from));
-  const swing={decision:'SWING_AWAY',weight:1,intent:'score more runs',reasons:['retain chance for multiple runs',`batter offense: ${offenseStrength(g,b).toFixed(2)}`]};
+  const swing={decision:'SWING_AWAY',weight:offenseStrength(g,b),intent:'score more runs',reasons:['retain chance for multiple runs',`batter offense: ${offenseStrength(g,b).toFixed(2)}`]};
   const extra=extraOptions(g,b),candidates=[swing,bunt,...steals,...extra];
   const trait=has(b,'バント○')?1.4:has(b,'バント×')?.5:1;bunt.weight*=trait;
   let selected;
   const planned=candidates.find(x=>x.decision===g.state.buntPlan&&x.legal);if(planned)selected=planned;else if(g.state.buntPlan===true&&bunt.legal)selected=bunt;
   else {g.state.buntPlan=false;if(g.state.balls!==0||g.state.strikes!==0)bunt.weight=0;selected=choose(g,candidates);}
   if(['SAC_BUNT','SAFETY_BUNT','SQUEEZE'].includes(selected.decision))g.state.buntPlan=selected.decision;
-  const duel=matchup(g,b);if(duel.decision==='INTENTIONAL_WALK'){selected={...duel,candidates:duel.options};g.state.buntPlan=false;} return {...selected,matchup:duel,alignment:alignment(g),intent:selected.intent||(selected.decision==='SWING_AWAY'?'score more runs':'runner advance'),context:context(g),candidates:(selected.decision==='INTENTIONAL_WALK'?duel.options:candidates).map(c=>({decision:c.decision,weight:c.weight,legal:c.legal??true,estimatedValue:c.estimatedValue??null})),policy:'shared-006-alpha1'};
+  const duel=matchup(g,b);if(duel.decision==='INTENTIONAL_WALK'){selected={...duel,candidates:duel.options};g.state.buntPlan=false;} return {...selected,matchup:duel,alignment:alignment(g),intent:selected.intent||(selected.decision==='SWING_AWAY'?'score more runs':'runner advance'),context:context(g),candidates:(selected.decision==='INTENTIONAL_WALK'?duel.options:candidates).map(c=>candidateTrace(c,swing)),policy:'shared-006-alpha1'};
  }
  function defenseDecision(g,p,b,{settled=false}={}){
   const c=context(g),s=g.state,fielders=F().defense(g),f=fielders[p.fielderIndex],point=p.landingPoint||F().layout.positions[p.fielderIndex],arm=F().ability(f,'arm'),skill=F().ability(f,'fielding');
@@ -52,15 +59,16 @@
    const coverETA=Math.hypot(F().layout.positions[receiverIndex][0]-F().layout.bases[base][0],F().layout.positions[receiverIndex][1]-F().layout.bases[base][1])/(65+30*F().ability(receiver,'speed'));
    const ballETA=Math.max(coverETA,fieldTime+.2+distance/(receiverIndex===p.fielderIndex?85:150+80*arm)+(target&&!target.force?.15:0));
    const runnerETA=target?(target.fromBase===0?4.6:3.9)-1.25*n(g,target.runner,'speed'):0;
-   const margin=runnerETA-ballETA,outChance=settled||!target?0:clamp(.5+margin*.4,.01,.97);
-   const plausible=!settled&&!!target&&margin>-.9;
+   const timing=!p.bunt&&target?F().groundTiming(g,p,b,target,receiverIndex):null;
+   const margin=timing?timing.margin:runnerETA-ballETA,outChance=settled||!target?0:timing?Number(margin>0):clamp(.5+margin*.4,.01,.97);
+   const plausible=!settled&&!!target&&(timing?margin>0:margin>-.9);
    const damage=(base===4?1.5:.45)+.35*c.oneRunValue;
    const value=plausible?outChance*(1+(base===4?.30*c.oneRunValue:0)+(s.outs===2?.2:0))-errorRisk*damage-(1-outChance)*.08:0;
-   return {decision:`THROW_${base}B`,toBase:base,receiverIndex,runnerKey:target?.runner.key??null,fromBase:target?.fromBase??null,force:target?.force??false,outChance,distance,coverETA,ballETA,runnerETA,errorRisk,catching,damage,value,weight:plausible&&value>.12?value**4:0,reasons:[settled?'runner already arrived':!target?'no runner to retire':margin<=-.9?'too late':`arrival margin: ${margin.toFixed(2)}s`,`out chance: ${outChance.toFixed(2)}; throw risk: ${errorRisk.toFixed(3)}`,`receiver catching: ${catching.toFixed(2)}; damage: ${damage.toFixed(2)}`]};
+   return {decision:`THROW_${base}B`,toBase:base,receiverIndex,runnerKey:target?.runner.key??null,fromBase:target?.fromBase??null,force:target?.force??false,outChance,distance,coverETA,ballETA,runnerETA,...(timing||{}),timing,errorRisk,catching,damage,value,weight:plausible&&value>.12?value**4:0,reasons:[settled?'runner already arrived':!target?'no runner to retire':margin<=-.9?'too late':`arrival margin: ${margin.toFixed(2)}s`,`out chance: ${outChance.toFixed(2)}; throw risk: ${errorRisk.toFixed(3)}`,`receiver catching: ${catching.toFixed(2)}; damage: ${damage.toFixed(2)}`]};
   });
   const viable=candidates.filter(c=>c.weight>0),hold={decision:'HOLD_BALL',weight:viable.length?.015:1,reasons:[viable.length?'avoid marginal throw risk':'no reachable out; unnecessary throw risk']};
   // Settled plays do not consume tactical RNG, and cannot invent a late putout.
-  let selected=settled||!viable.length?hold:choose(g,[...viable,hold]);
+  let selected=settled||!viable.length?hold:p.bunt?choose(g,[...viable,hold]):choose(g,viable);
   if(selected.decision==='HOLD_BALL'&&p.fielderIndex>=6)selected={decision:'SECURE_RETURN',toBase:2,receiverIndex:5,weight:1,reasons:['no reachable out; return to infield to contain runners','avoid low-probability out attempt and long throw risk']};
   selected.action=selected.decision.startsWith('THROW_')?'OUT_ATTEMPT':selected.decision;
   candidates.push(hold,{decision:'SECURE_RETURN',legal:p.fielderIndex>=6,weight:p.fielderIndex>=6?1:0});
@@ -77,15 +85,15 @@
  }
  function groundPlay(g,p,b,pitcher){
   const s=g.state,f=F().defense(g)[p.fielderIndex],skill=F().ability(f,'fielding'),catching=F().ability(f,'catching');
-  const d=defenseDecision(g,p,b);p.defenseDecision=d;p.forceTrace={atContact:F().forcePlan(s.bases,b),advances:d.advances};
+  const d=defenseDecision(g,p,b);p.defenseDecision=d;p.runnerIntents=F().forcePlan(s.bases,b);p.forceTrace={atContact:F().forcePlan(s.bases,b),advances:d.advances};
   const catchError=g.rng()<(.003+.045*(1-(skill+catching)/2)**2)*.55;
   if(catchError){d.decision='HOLD_BALL';d.reasons=['fielding error; no throw opportunity'];}
   const hold=d.decision==='HOLD_BALL',throwError=!hold&&g.rng()<d.errorRisk,error=catchError||throwError;
   if(error){p.error=true;p.errorType=catchError?'groundFielding':'throwing';s.errors[1-offense(g)]++;s.virtualOuts++;s.unearned[b.key]=true;p.log=catchError?'ゴロ捕球エラー':'送球エラー';}
-  if(!hold)p.throw={from:p.fielder,toBase:d.toBase,kind:d.force?'force':'tag',runnerKey:d.runnerKey};
-  const success=!hold&&!error&&g.rng()<d.outChance,outKeys=[];
+  if(!hold)p.throw={from:p.fielder,toBase:d.toBase,kind:d.force?'force':'tag',runnerKey:d.runnerKey,timing:d.timing||null};
+  const success=!hold&&!error&&(d.timing?d.ballETA<d.runnerETA:g.rng()<d.outChance),outKeys=[];
   if(success){const runner=d.fromBase===0?b:s.bases[d.fromBase-1];outKeys.push(runner.key);recordOut(g,pitcher);F().move(g,runner,d.fromBase,d.toBase,'out',d.force?'forceOut':'tagOut');p.forceOut=d.force;
-   if(d.toBase===2&&d.force&&s.outs<3){const chance=clamp(.25+.2*skill+.15*catching+.1*F().ability(f,'arm')-.20*n(g,b,'speed')-(p.bunt?.15:0),.03,.75);if(g.rng()<chance){recordOut(g,pitcher);outKeys.push(b.key);F().move(g,b,0,1,'out','batterOut');p.doublePlay=true;p.throws=[p.throw,{fromBase:2,toBase:1}];}}
+   if(d.toBase===2&&d.force&&s.outs<3){const chance=clamp(.25+.2*skill+.15*catching+.1*F().ability(f,'arm')-.20*n(g,b,'speed')-(p.bunt?.15:0),.03,.75);const turn=F().defense(g)[d.receiverIndex],secondETA=d.ballETA+.25+.2*(1-F().ability(turn,'fielding'))+Math.hypot(140,90)/(150+80*F().ability(turn,'arm')),batterETA=.13+4.6-1.25*n(g,b,'speed');if(p.bunt?g.rng()<chance:secondETA<batterETA){recordOut(g,pitcher);outKeys.push(b.key);F().move(g,b,0,1,'out','batterOut');p.doublePlay=true;p.throws=[p.throw,{fromBase:2,toBase:1,timing:p.bunt?null:{fieldTime:d.ballETA,pickupTime:.25+.2*(1-F().ability(turn,'fielding')),ballETA:secondETA,runnerETA:batterETA}}];}}
   }
   // Removed runners must not remain in the terminal pre-switch snapshot.
   for(let i=0;i<3;i++)if(outKeys.includes(s.bases[i]?.key))s.bases[i]=null;
@@ -122,7 +130,7 @@
  function extraOptions(g,b){const s=g.state,c=context(g),fresh=s.balls===0&&s.strikes===0,speed=n(g,b,'speed'),meet=n(g,b,'meet');return [
   {decision:'SAFETY_BUNT',legal:(fresh||s.buntPlan==='SAFETY_BUNT')&&s.strikes<2&&s.outs<3&&!s.bases[0],weight:fresh&&!s.bases[0]?.10*speed**3*(1-n(g,b,'power')):0,reasons:[`batter speed ${speed.toFixed(2)}; surprise bunt for a hit`]},
   {decision:'SQUEEZE',legal:(fresh||s.buntPlan==='SQUEEZE')&&s.strikes<2&&s.outs<2&&!!s.bases[2],weight:fresh&&s.outs<2&&s.bases[2]?.25*c.oneRunValue*meet:0,reasons:[`third occupied ${!!s.bases[2]}; outs ${s.outs}; one-run value ${c.oneRunValue}`]},
-  {decision:'HIT_AND_RUN',legal:fresh&&s.outs<2&&!!s.bases[0]&&!s.bases[1],weight:fresh&&s.outs<2&&s.bases[0]&&!s.bases[1]?.12*meet*(.5+n(g,s.bases[0],'speed')):0,reasons:[`contact ${meet.toFixed(2)}; first occupied ${!!s.bases[0]}; second open ${!s.bases[1]}`]}
+  hitRunOption(g,b)
  ];}
  function matchup(g,b){const s=g.state,c=context(g),next=g.teams[offense(g)].lineup[(s.order[offense(g)]+1)%9],strength=offenseStrength(g,b),nextStrength=offenseStrength(g,next);
   const id=`${s.inning}/${s.half}/${s.paCompleted}`;if(s.matchupPlan?.id===id)return s.matchupPlan;
@@ -159,5 +167,5 @@
  }
 
  function eventTrace(e,decision){return {situation:{inning:e.inning,half:e.half,outs:e.outsBefore,score:e.scoreBefore,runners:e.runnersBefore},options:decision.candidates,reason:decision.reasons,intent:decision.intent,decision:decision.decision,offense:decision,defense:e.defenseDecision||null,execution:{matchup:decision.matchup.decision,alignment:decision.alignment.decision,running:e.runningExecution?.result??null,type:e.intentionalWalk?'intentional walk':e.hitAndRun?'hit and run':e.buntAttempt?'bunt attempt':e.bunt?'bunt stance / take pitch':e.eventType==='baserunning'?'steal attempt':'normal pitch',steal:e.stealExecution??null,buntQuality:e.buntQuality??null,buntPoint:e.bunt?e.landingPoint:null,defense:e.defenseDecision??null},outcome:{result:e.result,runsScored:e.runsScored,outsAfter:e.outsAfter},policy:'shared-alpha1'};}
- globalThis.SL_TACTICS={prepare,execute,extraOptions,matchup,alignment,alignments,enabled,context,buntOption,stealOption,offenseDecision,defenseDecision,groundPlay,resolveBunt,buntGeometry,eventTrace};
+ globalThis.SL_TACTICS={hitRunOption,prepare,execute,extraOptions,matchup,alignment,alignments,enabled,context,buntOption,stealOption,offenseDecision,defenseDecision,groundPlay,resolveBunt,buntGeometry,eventTrace};
 })();

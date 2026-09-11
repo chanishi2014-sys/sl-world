@@ -1,7 +1,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-006-engine-lab-20260911", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
+ version:"test-match-006-engine-lab-20260911-r2", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -181,7 +181,7 @@ function resolveFinalResult(g,batter,pitch,ball,effects){
  weights.double*=(c.doublePowerBase+c.doublePowerWeight*power)*Math.sqrt(suppression)*extraBase;
  weights.triple*=(c.tripleSpeedBase+c.tripleSpeedWeight*speed)*Math.sqrt(suppression)*extraBase;
  let result=weighted(g.rng,Object.entries(weights)),infieldHit=false;
- if(result==="groundout"&&g.rng()<clamp(c.infieldBase+c.infieldSpeed*speed,0,.25)){result="single";infieldHit=true;}
+ if(result==="groundout"&&!SL_TACTICS.enabled(g)&&g.rng()<clamp(c.infieldBase+c.infieldSpeed*speed,0,.25)){result="single";infieldHit=true;}
  return {battedResult:result,battedQuality:ball.score,battedGrade:ball.grade,infieldHit};
 }
 // Keep the exposed helper's string result for callers of the earlier alpha.
@@ -206,6 +206,7 @@ function applyPitch(g,pitch,batter,pitcher){const s=g.state,bs=s.batting[batter.
  else if(pitch.outcome==="calledStrike"||pitch.outcome==="swingingStrike"){s.strikes++;if(s.strikes===3){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;}}
  else if(pitch.outcome==="inPlay"){
   result=pitch.battedResult;bs.AB++;ended=true;if(pitch.bunt)SL_TACTICS.buntGeometry(g,pitch);else SL_FIELDING.geometry(g,pitch);result=pitch.battedResult;
+  pitch.runnerIntents=SL_FIELDING.forcePlan(s.bases,batter).map(r=>pitch.ballType==='ground'||r.fromBase===0?r:{...r,toBase:r.fromBase,force:false});
   const distances={single:1,double:2,triple:3,homeRun:4};
   if(Object.hasOwn(distances,result)){bs.H++;ps.H++;s.hits[offense(g)]++;if(result==="double")bs.doubles++;if(result==="triple")bs.triples++;if(result==="homeRun"){bs.HR++;ps.HR++;}advanceHit(g,batter,pitcher,distances[result],pitch);}
   else {s.suppressRBI=false;result=SL_FIELDING.field(g,pitch,batter,pitcher);s.suppressRBI=false;}
