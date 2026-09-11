@@ -15,7 +15,7 @@ function metric(r,id){let [kind,key]=id.split(':'),name,basis;
  if(kind==='operation'){name=label(key)+'選択率';basis='観測範囲内で1回以上 / 全試行（重複あり）';}
  if(kind==='matchup'){name=label(key);basis='各試行の最初の投手対打者判断 / 全試行';}
  if(kind==='alignment'){name=label(key);basis='各試行の最初の守備位置 / 全試行';}
- if(kind==='success'){name=label(key)+'成功率';basis=key==='STEAL'?'観測範囲全体の盗塁成功 / 盗塁実行（途中・H&R空振り後の盗塁も含む）':'成功 / 成否記録のある作戦（バントは打席内の計画結果）';if(key==='STEAL')name='盗塁成功率';}
+ if(kind==='success'){name=label(key)+'成功率';basis=key==='STEAL'?'観測範囲全体の盗塁成功 / 盗塁実行（途中・H&R空振り後の盗塁も含む）':'成功 / 成否記録のある作戦（バントは打席内の計画結果）';if(key==='STEAL')name='盗塁成功率';if(key==='SAC_BUNT'){name='送りバント犠打成立率';basis='sacrificeBunt（打者アウト＋走者進塁）/ 送りバント計画が完了した打席。安打・全員セーフ・四球は犠打成立に含めない。';}}
  if(kind==='outcome'){name={scored:'得点率',noScore:'無得点率',tookLead:'勝ち越し率',tiedAtEnd:'終了時同点率',draw:'試合引き分け率',outEnded:'アウト終了率',gameFinished:'試合終了率'}[key]||key;basis='該当試行 / 全試行';}
  const values=r.groups.map((g,i)=>{let n=0,d=g.trials.length;const s=g.summary;
   if(kind==='initial')n=key==='STEAL'?(s.initialDecision.STEAL_2B||0)+(s.initialDecision.STEAL_3B||0):s.initialDecision[key]||0;

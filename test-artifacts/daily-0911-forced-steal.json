@@ -1,0 +1,56 @@
+[
+  {
+    "arm": "S",
+    "trait": "盗塁○",
+    "attempts": 10000,
+    "safe": 6324
+  },
+  {
+    "arm": "S",
+    "trait": "none",
+    "attempts": 10000,
+    "safe": 6199
+  },
+  {
+    "arm": "S",
+    "trait": "盗塁×",
+    "attempts": 10000,
+    "safe": 5902
+  },
+  {
+    "arm": "C",
+    "trait": "盗塁○",
+    "attempts": 10000,
+    "safe": 6901
+  },
+  {
+    "arm": "C",
+    "trait": "none",
+    "attempts": 10000,
+    "safe": 6798
+  },
+  {
+    "arm": "C",
+    "trait": "盗塁×",
+    "attempts": 10000,
+    "safe": 6488
+  },
+  {
+    "arm": "G",
+    "trait": "盗塁○",
+    "attempts": 10000,
+    "safe": 8085
+  },
+  {
+    "arm": "G",
+    "trait": "none",
+    "attempts": 10000,
+    "safe": 7979
+  },
+  {
+    "arm": "G",
+    "trait": "盗塁×",
+    "attempts": 10000,
+    "safe": 7667
+  }
+]

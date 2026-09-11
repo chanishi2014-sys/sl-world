@@ -1,0 +1,3 @@
+speed sensitivity /1000 [ 14, 0, 0 ]
+10000 half-inning trials ms 65994
+PASS 006: 30 full games, 12 mode games, 7182 events; 900 scenario trials; deterministic replay; 3000 sensitivity + 10000 bulk trials; DB/team copies unchanged

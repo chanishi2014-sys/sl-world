@@ -1,7 +1,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-006-engine-lab-alpha1", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
+ version:"test-match-006-engine-lab-20260911", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -205,7 +205,7 @@ function applyPitch(g,pitch,batter,pitcher){const s=g.state,bs=s.batting[batter.
  else if(pitch.outcome==="foul"){if(s.strikes<2)s.strikes++;else if(pitch.buntAttempt){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;pitch.log="スリーバント失敗、三振";}}
  else if(pitch.outcome==="calledStrike"||pitch.outcome==="swingingStrike"){s.strikes++;if(s.strikes===3){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;}}
  else if(pitch.outcome==="inPlay"){
-  result=pitch.battedResult;bs.AB++;ended=true;if(pitch.bunt)SL_TACTICS.buntGeometry(g,pitch);else SL_FIELDING.geometry(g,pitch);
+  result=pitch.battedResult;bs.AB++;ended=true;if(pitch.bunt)SL_TACTICS.buntGeometry(g,pitch);else SL_FIELDING.geometry(g,pitch);result=pitch.battedResult;
   const distances={single:1,double:2,triple:3,homeRun:4};
   if(Object.hasOwn(distances,result)){bs.H++;ps.H++;s.hits[offense(g)]++;if(result==="double")bs.doubles++;if(result==="triple")bs.triples++;if(result==="homeRun"){bs.HR++;ps.HR++;}advanceHit(g,batter,pitcher,distances[result],pitch);}
   else {s.suppressRBI=false;result=SL_FIELDING.field(g,pitch,batter,pitcher);s.suppressRBI=false;}
@@ -220,7 +220,7 @@ function switchHalf(g){const s=g.state;if(s.outs<3||s.finished)return;
 // ==================== event log (one immutable record per pitch) ====================
 function onePitch(g){if(g.state.finished)return null;const operations=SL_TACTICS.prepare(g);const s=g.state,pitcher=currentPitcher(g),batter=currentBatter(g);
  s.playActions=[];s.playBefore=runners(s);
- const event={outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:s.events.length+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
+ const event={defensivePositions:SL_TACTICS.alignment(g).positions,outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:s.events.length+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
  const tactical=SL_TACTICS.enabled(g),decision=tactical?SL_TACTICS.offenseDecision(g,batter,pitcher):null;
  const steal=tactical?(decision.decision.startsWith("STEAL_")?SL_FIELDING.steal(g,pitcher,decision):null):SL_FIELDING.steal(g,pitcher);
  const pitch=steal||SL_TACTICS.execute(g,pitcher,batter,decision);if(!steal&&!pitch.intentionalWalk)s.pitching[pitcher.key].pitches++;

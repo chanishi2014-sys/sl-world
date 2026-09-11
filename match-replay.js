@@ -16,7 +16,7 @@
  function decisionDebug(e){
   if(!e.tactics)return '';
   const sections=[e.tactics.offense,e.tactics.defense].filter(Boolean);
-  return sections.map(d=>{const options=d.candidates?.filter(c=>c.toBase).map(c=>'- '+c.toBase+'B out chance: '+c.outChance.toFixed(2)+' / risk: '+c.errorRisk.toFixed(3)).join('\n');return 'Decision: '+d.decision.replaceAll('_',' ')+'\nReason:\n'+d.reasons.map(r=>'- '+r).join('\n')+(options?'\n'+options:'');}).join('\n\n');
+  return sections.map(d=>{const options=d.candidates?.filter(c=>c.toBase).map(c=>'- '+c.toBase+'B out chance: '+c.outChance.toFixed(2)+' / risk: '+c.errorRisk.toFixed(3)).join('\n');return 'Decision: '+d.decision.replaceAll('_',' ')+'\nReason:\n'+d.reasons.map(r=>'- '+r).join('\n')+(options?'\n'+options:'');}).join('\n\n')+'\n'+JSON.stringify({force:e.forceAtContact,trajectory:e.trajectory,return:e.returnDecision,running:e.runningDebug});
  }
  function resultLabel(e){return safeText(e.log,names[e.result]||'プレー終了');}
  function toReplayEvent(event){
@@ -49,14 +49,17 @@
   const steal=e.eventType==='baserunning',inPlay=e.outcome==='inPlay'&&!steal,foul=e.outcome==='foul',kind=e.ballType;
   const release=620,pitchEnd=release+Math.max(300,650-((Number(e.pitchSpeed)||140)-80)*4.4);
   const fielder=e.fielderIndex,target=e.presentation.target,fieldPoint=e.fieldingPoint;
-  const loose=inPlay&&(['single','double','triple'].includes(e.result)||(e.error&&e.errorType!=='throwing'));
-  const flight=inPlay||foul?Math.max(e.bunt?1300:kind==='line'?700:kind==='ground'?850:kind==='homer'?1900:1400,loose?0:distance(positions[fielder],target)/.18+180):0;
+  const loose=inPlay&&!e.trajectory&&(['single','double','triple'].includes(e.result)||(e.error&&e.errorType!=='throwing'));
+  const flight=e.trajectory?.fieldTime?e.trajectory.fieldTime*1000:inPlay||foul?Math.max(e.bunt?1300:kind==='line'?700:kind==='ground'?850:kind==='homer'?1900:1400,distance(positions[fielder],target)/.18+180):0;
   const landingAt=pitchEnd+flight,rollDuration=loose?Math.max(650,distance(positions[fielder],fieldPoint)/.18-flight+180):0;
   const caught=steal?pitchEnd:landingAt+rollDuration;
   let ready=caught+230,location=steal?positions[1]:loose?fieldPoint:target;
   const transfers=e.transfers.map(t=>{
-   const carried=t.fromIndex===t.toIndex,to=bases[t.toBase];
-   const start=ready,end=start+Math.max(300,distance(location,to)/(carried?.17:.42));
+   const carried=t.fromIndex===t.toIndex,to=t.toPoint||bases[t.toBase];
+   const travel=Math.max(300,distance(location,to)/(carried?.17:.42));
+   const earlyCover=kind==='ground'&&t.toBase===1&&t.toIndex===(fielder===2?0:2),coverStart=earlyCover?pitchEnd+140:caught;
+   const receiverReady=coverStart+distance(positions[t.toIndex],to)/.18;
+   const start=Math.max(ready,receiverReady-travel),end=start+travel;
    const leg={...t,fromPoint:location,toPoint:to,start,end,tagAt:end+(t.kind==='tag'?150:0),carried};
    ready=leg.tagAt+210;location=to;return leg;
   });
@@ -66,7 +69,7 @@
   if(['single','double','triple','walk'].includes(e.result))resultAt=Math.max(resultAt,pitchEnd+({single:2000,double:2800,triple:3500,walk:1600}[e.result]));
   const runEnd=resultAt-100,returnAt=resultAt+600,resetEnd=returnAt+850;
   const halfChanged=e.nextState&&!e.nextState.finished&&(e.nextState.inning!==e.inning||e.nextState.half!==e.half);
-  return {release,pitchEnd,kind,inPlay,foul,steal,target,fieldPoint,fielder,flight,landingAt,rollDuration,loose,caught,transfers,hasThrow:transfers.length>0,throwStart:transfers[0]?.start||caught,throwEnd:transfers.at(-1)?.end||caught,throwTarget:transfers.at(-1)?.toPoint||target,resultAt,runStart,runEnd,returnAt,resetEnd,halfChanged,end:halfChanged?returnAt+1600:resetEnd};
+  return {release,pitchEnd,kind,inPlay,foul,steal,target,fieldPoint,fielder,flight,landingAt,rollDuration,loose,caught,transfers,hasThrow:transfers.length>0,throwStart:transfers[0]?.start||caught,throwEnd:transfers.at(-1)?.end||caught,throwTarget:transfers.at(-1)?.toPoint||target,resultAt,runStart,runEnd,returnAt,resetEnd,runningDebug:{...e.runningDebug,returnStart:transfers[0]?.start??null,batterSecondArrival:e.actions.some(a=>a.runner?.key===e.batter.key&&a.toBase>=2)?runEnd:null},halfChanged,end:halfChanged?returnAt+1600:resetEnd};
  }
  function ballAnimation(e,p,time){
   if(time<p.release)return {phase:'windup',ground:positions[0],height:0,visible:false};
@@ -90,7 +93,7 @@
   const batterAction=e.actions.find(a=>a.runner?.key===e.batter.key&&a.fromBase===0);
   if(batterAction&&time>=p.runStart&&!people.some(r=>r.who.key===e.batter.key))people.push({who:e.batter,start:0});
   return people.map(({who,start})=>{
-   const actions=e.actions.filter(a=>a.runner?.key===who.key),action=actions.find(a=>a.result==='out')||actions.find(a=>a.toBase===4)||actions.at(-1);
+   const actions=e.actions.filter(a=>a.runner?.key===who.key);if(!actions.length){const force=e.forceAtContact?.find(a=>a.runner.key===who.key&&a.force);if(force)actions.push({...force,type:'forceStart'});}const action=actions.find(a=>a.result==='out')||actions.find(a=>a.toBase===4)||actions.at(-1);
    const finish=action?.toBase??start,leg=p.transfers.find(t=>t.runnerKey===who.key)||p.transfers.find(t=>t.toBase===finish&&t.kind!=='return');
    const end=leg?leg.tagAt+(action?.result==='out'?80:-80):p.runEnd;
    const t=progress(time,p.runStart,end),d=lerp(start,finish,t),segment=Math.min(3,Math.floor(d));
@@ -101,12 +104,16 @@
  function batterVisible(e,p,time){return !(time>=p.runStart&&e.actions.some(a=>a.runner?.key===e.batter.key&&a.fromBase===0))&&!(e.plateAppearanceEnded&&time>=p.resultAt);}
  function fieldingAnimation(e,p,time,i){
   const origin=positions[i];if(!p||(!p.inPlay&&!p.steal))return {position:origin,pose:{}};
-  let target=origin,start=p.pitchEnd+140,end=p.caught,role='support';
-  if(i===p.fielder){target=p.steal?positions[1]:p.fieldPoint;role='primary';}
-  else {const relevant=i<6,shift=relevant?9:3;const delta=[p.target[0]-origin[0],p.target[1]-origin[1]],len=Math.max(1,Math.hypot(...delta));target=[origin[0]+delta[0]/len*shift,origin[1]+delta[1]/len*shift];end=start+500;}
+  let target=origin,start=p.pitchEnd+140,end=p.caught,role='hold';
+  if(i===p.fielder){target=p.steal?positions[1]:p.target;end=p.landingAt;role='primary';if(time>=p.landingAt){start=p.landingAt;target=p.fieldPoint;end=p.caught;}}
+  // No future throw receiver or outcome is consulted before fielding is resolved.
+  else if(i===e.defensiveRoles?.secondary){target=p.target;role='secondary';end=p.landingAt;}
+  else if(p.kind==='ground'&&i=== (p.fielder===2?0:2)){target=bases[1];role='baseCover';end=start+Math.max(280,distance(origin,target)/.18);}
+  if(time>=p.caught&&e.returnFormation&&i!==p.fielder){const f=e.returnFormation;if(i===f.relayIndex){target=f.relayPoint;role='relay';start=p.caught;end=start+distance(origin,target)/.18;}else if(i===f.coverIndex){target=bases[2];role='baseCover';start=p.caught;end=start+distance(origin,target)/.18;}}
+
   const receiver=p.transfers.find(t=>t.toIndex===i);
-  if(receiver&&i!==p.fielder){target=receiver.toPoint;start=p.steal?p.release+70:p.pitchEnd+140;end=Math.min(receiver.end-120,start+Math.max(280,distance(origin,target)/.18));role='cover';}
-  let position=point(origin,target,progress(time,start,end));
+  if(receiver&&i!==p.fielder&&(p.steal||time>=p.caught)){target=receiver.toPoint;start=p.steal?p.release+70:p.kind==='ground'&&receiver.toBase===1&&i===(p.fielder===2?0:2)?p.pitchEnd+140:p.caught;end=Math.min(receiver.end-120,start+Math.max(280,distance(origin,target)/.18));role='cover';}
+  let position=point(i===p.fielder&&time>=p.landingAt?p.target:origin,target,progress(time,start,end));
   // A primary fielder may become a later receiver (for example a 3-6-3 DP).
   if(receiver&&i===p.fielder&&!receiver.carried){
    const departure=(p.transfers.find(t=>t.fromIndex===i)?.start??p.caught)+100;

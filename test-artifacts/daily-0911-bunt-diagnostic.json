@@ -1,0 +1,59 @@
+{
+  "method": "5000 seeded forced bunt plate appearances per trait; first-pitch contact and mean quality; not LAB conditional selection success",
+  "rows": [
+    {
+      "trait": "バント○",
+      "trials": 5000,
+      "inZone": 3074,
+      "contact": 2571,
+      "qualitySum": 1596.6796306559374,
+      "outcomes": {
+        "single": 1773,
+        "fieldersChoice": 223,
+        "sacrificeBunt": 2158,
+        "lineout": 588,
+        "walk": 165,
+        "doublePlay": 37,
+        "error": 35,
+        "strikeout": 21
+      },
+      "meanQuality": 0.6210344732228461
+    },
+    {
+      "trait": "none",
+      "trials": 5000,
+      "inZone": 3074,
+      "contact": 2252,
+      "qualitySum": 1126.8437904693524,
+      "outcomes": {
+        "single": 1738,
+        "fieldersChoice": 260,
+        "sacrificeBunt": 2079,
+        "lineout": 576,
+        "strikeout": 65,
+        "walk": 206,
+        "doublePlay": 41,
+        "error": 35
+      },
+      "meanQuality": 0.500374684933105
+    },
+    {
+      "trait": "バント×",
+      "trials": 5000,
+      "inZone": 3074,
+      "contact": 1984,
+      "qualitySum": 754.8508761288062,
+      "outcomes": {
+        "sacrificeBunt": 1926,
+        "fieldersChoice": 266,
+        "single": 1729,
+        "lineout": 563,
+        "walk": 260,
+        "strikeout": 181,
+        "doublePlay": 45,
+        "error": 30
+      },
+      "meanQuality": 0.38046919159718057
+    }
+  ]
+}

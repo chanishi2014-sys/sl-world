@@ -18,15 +18,14 @@
   const s=g.state,c=context(g),legal=F().canSteal(g,from),runner=s.bases[from-1],catcher=F().defense(g)[1];
   if(!legal)return {decision:`STEAL_${from+1}B`,fromBase:from,weight:0,legal:false,reasons:['destination occupied or no eligible runner']};
   const speed=n(g,runner,'speed'),arm=F().ability(catcher,'arm');
-  // Execution probability retains the previous engine formula. Traits affect selection only.
-  const success=clamp(.54+.35*speed-.18*arm-.08*n(g,pitcher,'control')-.05*n(g,pitcher,'velocity')-(from===2?.06:0),.2,.94);
+  const execution=F().stealExecution(g,runner,pitcher,from),success=execution.chance;
   const caution=(has(pitcher,'クイック○')?.04:0)+(has(catcher,'盗塁阻止○')?.03:0);
   const estimate=clamp(success-caution,0,1),gain=.30+(from===1?.12:0)+.20*c.oneRunValue,loss=.65+(s.outs===2?.30:0)+.20*c.oneRunValue+(s.bases[2]?.18:0);
   const value=estimate*gain-(1-estimate)*loss;
   const traits=(has(runner,'盗塁○')?1.15:has(runner,'盗塁×')?.7:1)*(has(runner,'積極盗塁')?1.25:has(runner,'慎重盗塁')?.55:1)*(has(runner,'走塁○')?1.05:has(runner,'走塁×')?.9:1);
   const repeated=s.lastStealPitch===s.pitching[pitcher.key].pitches;
   const weight=!repeated&&value>0?.12*value*speed**2*traits*(Math.abs(c.scoreDifference)>=4?.1:1)*(from===2?.6:1):0;
-  return {decision:`STEAL_${from+1}B`,fromBase:from,runner:identity(runner),legal:true,weight,successChance:success,estimatedValue:value,inputs:{speed,catcherArm:arm,gain,loss,traits,quickHint:has(pitcher,'クイック○')},reasons:[`runner speed: ${speed.toFixed(2)}; catcher arm: ${arm.toFixed(2)}`,`estimated success: ${estimate.toFixed(2)}`,`gain: ${gain.toFixed(2)}; failure cost: ${loss.toFixed(2)}`,`outs: ${s.outs}; score difference: ${c.scoreDifference}; inning: ${c.inning}`,`stored traits: ${(runner.specials||[]).filter(x=>['盗塁○','盗塁×','積極盗塁','慎重盗塁','走塁○','走塁×'].includes(x)).join(', ')||'none'}`,caution?'quick/catcher trait: cautious estimate':'no quick numeric ability exists',repeated?'wait for next delivered pitch':value>0?'opportunity favorable':'failure cost exceeds gain']};
+  return {decision:`STEAL_${from+1}B`,fromBase:from,runner:identity(runner),legal:true,weight,successChance:success,estimatedValue:value,inputs:{execution,speed,catcherArm:arm,gain,loss,traits,quickHint:has(pitcher,'クイック○')},reasons:[`runner speed: ${speed.toFixed(2)}; catcher arm: ${arm.toFixed(2)}`,`estimated success: ${estimate.toFixed(2)}`,`gain: ${gain.toFixed(2)}; failure cost: ${loss.toFixed(2)}`,`outs: ${s.outs}; score difference: ${c.scoreDifference}; inning: ${c.inning}`,`stored traits: ${(runner.specials||[]).filter(x=>['盗塁○','盗塁×','積極盗塁','慎重盗塁','走塁○','走塁×'].includes(x)).join(', ')||'none'}`,caution?'quick/catcher trait: cautious estimate':'no quick numeric ability exists',repeated?'wait for next delivered pitch':value>0?'opportunity favorable':'failure cost exceeds gain']};
  }
  function choose(g,candidates){const positive=candidates.filter(c=>c.weight>0);return weighted(g.tacticalRng,positive.map(c=>[c,c.weight]));}
  function offenseDecision(g,b,p){
@@ -41,21 +40,22 @@
  }
  function defenseDecision(g,p,b,{settled=false}={}){
   const c=context(g),s=g.state,fielders=F().defense(g),f=fielders[p.fielderIndex],point=p.landingPoint||F().layout.positions[p.fielderIndex],arm=F().ability(f,'arm'),skill=F().ability(f,'fielding');
-  let chain=0;while(chain<3&&s.bases[chain])chain++;
+  const forcePlan=F().forcePlan(s.bases,b);let chain=forcePlan.filter(a=>a.fromBase>0&&a.force).length;
   const advances=s.bases.flatMap((runner,i)=>runner?[{runner,fromBase:i+1,toBase:i<chain||p.bunt&&i<2?i+2:i+1,force:i<chain}]:[]);
   const targets=[{runner:b,fromBase:0,toBase:1,force:true},...advances.filter(a=>a.toBase!==a.fromBase)];
   const candidates=[1,2,3,4].map(base=>{
-   const target=targets.find(a=>a.toBase===base),receiverIndex=base===1?2:base===2?(p.fielderIndex===5?3:5):base===3?4:1,receiver=fielders[receiverIndex];
+   const target=targets.find(a=>a.toBase===base),receiverIndex=F().receiverIndex(base,p.fielderIndex,point),receiver=fielders[receiverIndex];
    const distance=Math.hypot(point[0]-F().layout.bases[base][0],point[1]-F().layout.bases[base][1]);
    const catching=F().ability(receiver,'catching'),errorRisk=.001+.020*(1-arm)**2+.010*(1-catching)**2+.006*(distance/300)**2;
-   const fieldTime=p.bunt?1.1+Math.hypot(point[0]-F().layout.positions[p.fielderIndex][0],point[1]-F().layout.positions[p.fielderIndex][1])/90+.8*(p.buntQuality??.5):.8+Math.hypot(point[0]-400,point[1]-430)/210+(1-skill)*.25;
-   const ballETA=fieldTime+.2+distance/(receiverIndex===p.fielderIndex?85:150+80*arm)+(target&&!target.force?.15:0);
+   const fieldTime=p.trajectory?.fieldTime??(p.bunt?1.1+Math.hypot(point[0]-F().layout.positions[p.fielderIndex][0],point[1]-F().layout.positions[p.fielderIndex][1])/90+Math.hypot(point[0]-400,point[1]-430)/(150-90*(p.buntQuality??.5)):.8+Math.hypot(point[0]-400,point[1]-430)/210+(1-skill)*.25);
+   const coverETA=Math.hypot(F().layout.positions[receiverIndex][0]-F().layout.bases[base][0],F().layout.positions[receiverIndex][1]-F().layout.bases[base][1])/(65+30*F().ability(receiver,'speed'));
+   const ballETA=Math.max(coverETA,fieldTime+.2+distance/(receiverIndex===p.fielderIndex?85:150+80*arm)+(target&&!target.force?.15:0));
    const runnerETA=target?(target.fromBase===0?4.6:3.9)-1.25*n(g,target.runner,'speed'):0;
    const margin=runnerETA-ballETA,outChance=settled||!target?0:clamp(.5+margin*.4,.01,.97);
    const plausible=!settled&&!!target&&margin>-.9;
    const damage=(base===4?1.5:.45)+.35*c.oneRunValue;
    const value=plausible?outChance*(1+(base===4?.30*c.oneRunValue:0)+(s.outs===2?.2:0))-errorRisk*damage-(1-outChance)*.08:0;
-   return {decision:`THROW_${base}B`,toBase:base,receiverIndex,runnerKey:target?.runner.key??null,fromBase:target?.fromBase??null,force:target?.force??false,outChance,distance,ballETA,runnerETA,errorRisk,catching,damage,value,weight:plausible&&value>.12?value**4:0,reasons:[settled?'runner already arrived':!target?'no runner to retire':margin<=-.9?'too late':`arrival margin: ${margin.toFixed(2)}s`,`out chance: ${outChance.toFixed(2)}; throw risk: ${errorRisk.toFixed(3)}`,`receiver catching: ${catching.toFixed(2)}; damage: ${damage.toFixed(2)}`]};
+   return {decision:`THROW_${base}B`,toBase:base,receiverIndex,runnerKey:target?.runner.key??null,fromBase:target?.fromBase??null,force:target?.force??false,outChance,distance,coverETA,ballETA,runnerETA,errorRisk,catching,damage,value,weight:plausible&&value>.12?value**4:0,reasons:[settled?'runner already arrived':!target?'no runner to retire':margin<=-.9?'too late':`arrival margin: ${margin.toFixed(2)}s`,`out chance: ${outChance.toFixed(2)}; throw risk: ${errorRisk.toFixed(3)}`,`receiver catching: ${catching.toFixed(2)}; damage: ${damage.toFixed(2)}`]};
   });
   const viable=candidates.filter(c=>c.weight>0),hold={decision:'HOLD_BALL',weight:viable.length?.015:1,reasons:[viable.length?'avoid marginal throw risk':'no reachable out; unnecessary throw risk']};
   // Settled plays do not consume tactical RNG, and cannot invent a late putout.
@@ -74,7 +74,7 @@
  }
  function groundPlay(g,p,b,pitcher){
   const s=g.state,f=F().defense(g)[p.fielderIndex],skill=F().ability(f,'fielding'),catching=F().ability(f,'catching');
-  const d=defenseDecision(g,p,b);p.defenseDecision=d;
+  const d=defenseDecision(g,p,b);p.defenseDecision=d;p.forceTrace={atContact:F().forcePlan(s.bases,b),advances:d.advances};
   const catchError=g.rng()<(.003+.045*(1-(skill+catching)/2)**2)*.55;
   if(catchError){d.decision='HOLD_BALL';d.reasons=['fielding error; no throw opportunity'];}
   const hold=d.decision==='HOLD_BALL',throwError=!hold&&g.rng()<d.errorRisk,error=catchError||throwError;
@@ -87,6 +87,7 @@
   // Removed runners must not remain in the terminal pre-switch snapshot.
   for(let i=0;i<3;i++)if(outKeys.includes(s.bases[i]?.key))s.bases[i]=null;
   advanceGround(g,p,b,pitcher,d,outKeys,error);
+  p.forceTrace.outKeys=outKeys;p.forceTrace.finalBases=s.bases.map(r=>r?.key||null);p.forceTrace.actions=s.playActions.map(a=>({...a}));
   if(error)return 'error';
   if(p.doublePlay){p.log='先行走者を封殺、一塁転送で併殺';return 'doublePlay';}
   if(success&&d.toBase===1){
@@ -107,11 +108,11 @@
   p.buntPop=g.rng()<.08+.12*(1-meet);p.outcome='inPlay';p.battedResult=p.buntPop?'lineout':'groundout';p.battedQuality=p.buntQuality;p.battedGrade='touch';return p;
  }
  function buntGeometry(g,p){
-  const angle=(g.rng()*2-1)*1.05,length=p.buntPop?25:25+100*p.buntQuality+25*g.rng();
+  const angle=(g.rng()*2-1)*1.05,length=p.buntPop?25:25+100*(1-p.buntQuality)+25*g.rng();
   p.landingPoint=[400+Math.sin(angle)*length,430-Math.cos(angle)*length];p.depth=length;p.sprayAngle=angle;
   p.fielderIndex=[0,1,2,4].reduce((best,i)=>{const at=F().layout.positions[i],prev=F().layout.positions[best];return Math.hypot(at[0]-p.landingPoint[0],at[1]-p.landingPoint[1])<Math.hypot(prev[0]-p.landingPoint[0],prev[1]-p.landingPoint[1])?i:best;},0);
   p.fieldDirection=p.landingPoint[0]<360?'left':p.landingPoint[0]>440?'right':'center';p.ballType=p.buntPop?'line':'ground';
  }
- function eventTrace(e,decision){return {intent:decision.intent,decision:decision.decision,offense:decision,defense:e.defenseDecision||null,execution:{type:e.buntAttempt?'bunt attempt':e.bunt?'bunt stance / take pitch':e.eventType==='baserunning'?'steal attempt':'normal pitch',buntQuality:e.buntQuality??null},outcome:{result:e.result,runsScored:e.runsScored,outsAfter:e.outsAfter},policy:'shared-alpha1'};}
+ function eventTrace(e,decision){return {intent:decision.intent,decision:decision.decision,offense:decision,defense:e.defenseDecision||null,execution:{type:e.buntAttempt?'bunt attempt':e.bunt?'bunt stance / take pitch':e.eventType==='baserunning'?'steal attempt':'normal pitch',steal:e.stealExecution??null,buntQuality:e.buntQuality??null,buntPoint:e.bunt?e.landingPoint:null,defense:e.defenseDecision??null},outcome:{result:e.result,runsScored:e.runsScored,outsAfter:e.outsAfter},policy:'shared-alpha1'};}
  globalThis.SL_TACTICS={enabled,context,buntOption,stealOption,offenseDecision,defenseDecision,groundPlay,resolveBunt,buntGeometry,eventTrace};
 })();

@@ -45,7 +45,7 @@ for(let seed=0;seed<150;seed++){
  assert(!/undefined|null/.test(V.bannerLabel(replay)));assert(!/undefined|null/.test(V.resultLabel(replay)));assert.equal(JSON.stringify(e),original,'replay is read-only');
  if(plan.halfChanged){assert.equal(V.transition(replay,plan,plan.returnAt+10).entering,false);const change=V.transition(replay,plan,plan.end);assert(change.entering&&change.progress===1);}
  else for(let i=0;i<9;i++)assert(separation(V.fieldingAnimation(replay,plan,plan.end,i).position,F.layout.positions[i])<.01,'fielder reset');
- if(plan.inPlay||plan.steal)for(let i=0;i<9;i++){if(i===plan.fielder||plan.transfers.some(t=>t.toIndex===i))continue;assert(separation(V.fieldingAnimation(replay,plan,plan.caught,i).position,F.layout.positions[i])<=(i<6?9.001:3.001),'bounded backup motion');}for(const time of [0,plan.runStart,plan.end])for(const r of V.runnerAnimation(replay,plan,time))assert(r.position.every(Number.isFinite));
+ if(plan.inPlay||plan.steal)for(let i=0;i<9;i++){if(i===plan.fielder||plan.transfers.some(t=>t.toIndex===i)||V.fieldingAnimation(replay,plan,plan.caught,i).role==='baseCover')continue;assert(separation(V.fieldingAnimation(replay,plan,plan.caught,i).position,F.layout.positions[i])<=(i<6?9.001:3.001),'bounded backup motion');}for(const time of [0,plan.runStart,plan.end])for(const r of V.runnerAnimation(replay,plan,time))assert(r.position.every(Number.isFinite));
  const before=V.scoreboardSnapshot(g,e),after=V.scoreboardSnapshot(g,e,true);assert.deepEqual(before.hits,e.hitsBefore);assert.deepEqual(after.errors,e.errorsAfter);
  }
  assert.deepEqual(Array.from(g.state.hits),hits);assert.deepEqual(Array.from(g.state.errors),errors);assert.deepEqual(Array.from(g.state.score),runs);

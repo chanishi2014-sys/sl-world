@@ -100,6 +100,19 @@
    <div class="toolbar"><button data-action="advance">1球進める</button><button data-action="auto">自動再生</button><button data-action="pause">一時停止</button><label>再生速度<select data-speed><option value="1">NORMAL</option><option value="2">FAST</option></select></label></div>
    <p class="note">結果は既存エンジンで確定済み。打球方向・走者経路はENGINEのeventを再生します。守備モーションは簡易表現です。通常の試合操作で進めた分は現在状態へ同期します。</p></div>`;
   const el=s=>root.querySelector(s),panel=el('[data-panel]'),canvas=el('canvas');let ctx=canvas.getContext('2d');
+  const live=document.createElement('section');live.className='live-lineups';live.setAttribute('aria-label','ライブラインナップ');root.append(live);
+  live.style.cssText='display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px;margin-top:18px';
+  let lineupSignature='';
+  function liveLineups(e,after){const g=getGame();if(!g||!globalThis.SL_ABILITY_DISPLAY)return;
+   const active=e&&!after?e.batter?.key:g.state.finished?null:SL_ENGINE.currentBatter(g)?.key;
+   const positions=['P','C','1B','2B','3B','SS','LF','CF','RF'];
+   const models=g.teams.map((team,side)=>{const fielders=SL_FIELDING.defense({...g,state:{...g.state,half:side===0?'bottom':'top'}});return {name:team.name,rows:team.lineup.map((p,i)=>({p,i,pos:positions[fielders.findIndex(x=>x.key===p.key)]||'DH'}))};});
+   const signature=JSON.stringify([active,models.map(m=>[m.name,m.rows.map(r=>[r.p.key,r.pos,r.p.profile.batting])])]);if(signature===lineupSignature)return;lineupSignature=signature;live.replaceChildren();
+   for(const m of models){const table=document.createElement('table');table.style.cssText='width:100%;table-layout:fixed;border-collapse:collapse;font-size:clamp(7px,2.2vw,11px)';const caption=table.createCaption();caption.textContent=m.name;caption.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    const head=table.createTHead().insertRow();for(const [i,label] of ['順','選手','守','ミ','パ','走','肩','守','捕'].entries()){const th=document.createElement('th');th.textContent=label;th.scope='col';th.style.width=i===1?'28%':i===0?'6%':i===2?'12%':'9%';head.append(th);}
+    const body=table.createTBody();for(const {p,i,pos} of m.rows){const row=body.insertRow();row.dataset.playerKey=p.key;row.classList.toggle('live-batter',p.key===active);if(p.key===active)row.style.outline='2px solid #389bff';const vals=[i+1,p.name,pos,...['meet','power','speed','arm','fielding','catching'].map(k=>SL_ABILITY_DISPLAY.getAbilityRank(k,p.profile.batting?.[k])||'—')];for(const [column,value] of vals.entries()){const cell=row.insertCell();cell.textContent=value;cell.title=String(value);cell.style.cssText='padding:4px 0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';if(column===1)cell.style.cssText+=';white-space:normal;word-break:break-all;line-height:1.3';}}live.append(table);
+   }
+  }
   const board=mountScoreboard(el('.stadium-board'));
   let scoreboardAfter=false,debugEnabled=false,lastPaint=null;
   let selectedMode='FULL';
@@ -199,7 +212,7 @@
    const g=getGame(),p=e?animationPlan(e):null,change=e&&!settled?transition(e,p,time):null;
    const oldSide=(e?e.half:g.state.half)==='top'?0:1,side=settled&&e?(e.nextState.half==='top'?0:1):change?.entering?1-oldSide:oldSide;
    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-   const follow=p&&!settled&&!reduced&&['homeRun','double','triple'].includes(e.result)?Math.sin(clamp((time-p.pitchEnd)/(p.resultAt-p.pitchEnd))*Math.PI):0;
+   const follow=p&&!settled&&!reduced&&time>=p.caught&&['homeRun','double','triple'].includes(e.result)?Math.sin(clamp((time-p.pitchEnd)/(p.resultAt-p.pitchEnd))*Math.PI):0;
    ctx.fillStyle='#071a27';ctx.fillRect(0,0,800,500);ctx.save();ctx.translate(400,250+follow*9);ctx.scale(1+follow*.025,1+follow*.025);ctx.translate(-400,-250);field();
    positions.forEach((origin,i)=>{
     let motion=e&&!settled?fieldingAnimation(e,p,time,i):{position:origin,pose:{}};
@@ -221,10 +234,10 @@
    const phase=e&&!settled?ballAnimation(e,p,time).phase:'';
    const captions={windup:'構え → リリース',pitch:'投球',catcher:'捕手が捕球',ground:'ゴロ',line:'ライナー',fly:'フライ',homer:'フェンスへ伸びる打球',foul:'ファウル',fieldCatch:'捕球',homerExit:'本塁打',foulDone:'ファウル',rolling:'バウンド → 減速 → 打球処理',carry:'捕球した野手がベースへ',baseTouch:'捕球 → ベースを踏む',throw:'送球 → ベースカバー',received:'カバー野手が捕球',tag:'捕球 → 走者へタッチ'};
    el('[data-debug]').textContent=debugEnabled?(change?(change.entering?'攻守交代：次の守備が定位置へ':'攻守交代：ベンチへ戻る'):[safeText(e?.playDescription,''),captions[phase]||'待機中'].filter(Boolean).join(' ／ ')):'';
-   if(debugEnabled&&e?.tactics)el('[data-debug]').textContent+='\n\n'+decisionDebug(e);
+   if(debugEnabled&&e?.tactics)el('[data-debug]').textContent+='\n\n'+decisionDebug(e)+'\n'+JSON.stringify(p?.runningDebug);
    if(e&&!settled&&!change)resultBanner(e,p,time);
   }
-  function scoreboard(e,after=false){board.update(scoreboardSnapshot(getGame(),e,after));}
+  function scoreboard(e,after=false){board.update(scoreboardSnapshot(getGame(),e,after));liveLineups(e,after);}
   function controls(){
    root.querySelectorAll('[data-action="advance"],[data-action="auto"]').forEach(b=>b.disabled=busy||getGame().state.finished||selectedMode==='SKIP');
    el('[data-action="advance"]').textContent=selectedMode==='FULL'?'1球進める':selectedMode==='MINI'?'1打席進める':'ハイライト開始';
