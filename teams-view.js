@@ -2,8 +2,10 @@
 (()=>{'use strict';
 const R=SL_TEAM_REGISTRY,D=SL_ABILITY_DISPLAY,T=SL_TRAITS,STORAGE_KEY='sl_world_players_v01';
 const BASIC=['meet','power','speed','arm','fielding','catching'];
+const PITCHING=['velocity','control','stamina'];
 // Both screens read the same registered values and official rank definitions.
 const basicAbilities=p=>BASIC.map(type=>({type,value:p.batting?.[type],spec:D.describeAbility(type,p.batting?.[type])}));
+const pitchingAbilities=p=>p.isPitcher===true?PITCHING.map(type=>({type,value:p.pitching?.[type],spec:D.describeAbility(type,p.pitching?.[type])})):[];
 const categoryLabels={blue:'青特殊能力（プラス系）',green:'緑特殊能力',red:'赤特殊能力（マイナス系）',gold:'金特殊能力（上位）',rainbow:'虹特殊能力（最上位・特別）'};
 function readRoster(storage){
  const byId=new Map(),byTeam=new Map();let ignored=0;
@@ -57,7 +59,7 @@ function render(root){
    if(roster.error)section.append(node('p','notice',roster.error));
    else if(!ids.length)section.append(node('p','notice','選手データ未登録'));
    for(const id of ids){const p=roster.byId.get(id),b=button(p.name||'氏名未登録','player',()=>move({playerId:id}));b.className='clubOpen player-open';b.dataset.playerId=String(id);b.dataset.focusKey='player:'+typeof id+':'+id;b.textContent='';b.append(node('span','roster-name',p.name||'氏名未登録'));
-    const abilities=node('span','roster-abilities');for(const {type,value,spec} of basicAbilities(p)){const cell=node('span','roster-ability');cell.dataset.ability=type;cell.setAttribute('aria-label',spec.label+' '+(spec.rank||'未設定')+' '+(value??'未設定'));cell.append(node('span','roster-ability-label',spec.label),node('span','ability-rank rank-'+(spec.rank||spec.status),spec.rank||'—'),node('small','',value==null||value===''?'—':String(value)));abilities.append(cell);}b.append(abilities);section.append(b);}
+    for(const [items,className] of [[pitchingAbilities(p),'roster-abilities roster-pitching'],[basicAbilities(p),'roster-abilities']]){if(!items.length)continue;const abilities=node('span',className);for(const {type,value,spec} of items){const cell=node('span','roster-ability');cell.dataset.ability=type;cell.setAttribute('aria-label',spec.label+' '+(spec.rank||'未設定')+' '+(value??'未設定'));cell.append(node('span','roster-ability-label',spec.label),node('span','ability-rank rank-'+(spec.rank||spec.status),spec.rank||'—'),node('small','',value==null||value===''?'—':String(value)));abilities.append(cell);}b.append(abilities);}section.append(b);}
    root.append(section);if(roster.ignored)root.append(node('p','notice','IDまたは所属を確認できない登録データがあります。選手エディターで確認してください。'));return;
   }
   root.dataset.screen='player';const p=roster.byId.get(state.playerId);root.append(button(club.currentName+'の所属選手へ戻る','team-back',team));title(p.name||'氏名未登録');root.append(node('p','notice',club.currentName+' ｜ '+league.name));
