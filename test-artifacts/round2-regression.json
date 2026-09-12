@@ -1,58 +1,58 @@
 [
   {
     "lab": false,
-    "events": 4067,
-    "plays": 1757,
-    "fcThird": 26,
-    "hitGround": 56,
-    "steal": 32,
-    "bunt": 36,
-    "hitRun": 6,
-    "ownershipChecks": 1834,
+    "events": 4129,
+    "plays": 1739,
+    "fcThird": 25,
+    "hitGround": 57,
+    "steal": 38,
+    "bunt": 28,
+    "hitRun": 4,
+    "ownershipChecks": 797,
     "phases": {},
     "realRoster": {
       "games": 12,
       "selected": {
-        "SWING_AWAY": 2252,
-        "SAFETY_BUNT": 34,
-        "STEAL_2B": 14,
-        "HIT_AND_RUN": 7
+        "SWING_AWAY": 2237,
+        "SAFETY_BUNT": 33,
+        "STEAL_2B": 17,
+        "HIT_AND_RUN": 6
       },
       "funnel": {
         "SWING_AWAY": {
-          "generated": 2307,
-          "eligible": 2307,
-          "positive": 2307
+          "generated": 2293,
+          "eligible": 2293,
+          "positive": 2293
         },
         "SAC_BUNT": {
-          "generated": 2307,
-          "eligible": 282,
-          "positive": 22
+          "generated": 2293,
+          "eligible": 308,
+          "positive": 20
         },
         "STEAL_2B": {
-          "generated": 2307,
-          "eligible": 457,
-          "positive": 207
+          "generated": 2293,
+          "eligible": 444,
+          "positive": 193
         },
         "STEAL_3B": {
-          "generated": 2307,
-          "eligible": 210,
+          "generated": 2293,
+          "eligible": 248,
           "positive": 0
         },
         "SAFETY_BUNT": {
-          "generated": 2307,
-          "eligible": 600,
-          "positive": 546
+          "generated": 2293,
+          "eligible": 602,
+          "positive": 550
         },
         "SQUEEZE": {
-          "generated": 2307,
-          "eligible": 18,
+          "generated": 2293,
+          "eligible": 17,
           "positive": 7
         },
         "HIT_AND_RUN": {
-          "generated": 2307,
-          "eligible": 113,
-          "positive": 74
+          "generated": 2293,
+          "eligible": 105,
+          "positive": 64
         }
       },
       "examples": {
@@ -505,7 +505,22 @@
                   332
                 ],
                 "initialRole": "HOLD",
-                "legs": []
+                "legs": [
+                  {
+                    "from": [
+                      400,
+                      332
+                    ],
+                    "to": [
+                      260,
+                      315
+                    ],
+                    "start": 0.25,
+                    "end": 3.521720333186529,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
               },
               {
                 "index": 1,
@@ -650,13 +665,13 @@
                       262.1807441969267
                     ],
                     "to": [
-                      260,
-                      315
+                      257.8366434920834,
+                      274.8505405489468
                     ],
                     "start": 0.6847368421052631,
-                    "end": 2.424720608540283,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
+                    "end": 2.0259703581757424,
+                    "role": "backup",
+                    "roleCode": "BACKUP"
                   }
                 ]
               },
@@ -842,708 +857,6 @@
             "completeAt": 2.896986331530344,
             "resetAt": 3.496986331530344,
             "resetEnd": 4.346986331530344
-          }
-        },
-        "relay": {
-          "sequence": 21,
-          "result": "flyout",
-          "decision": {
-            "decision": "SWING_AWAY",
-            "weight": 0.9909547738693467,
-            "intent": "score more runs",
-            "reasons": [
-              "retain chance for multiple runs",
-              "batter offense: 0.99"
-            ],
-            "matchup": {
-              "id": "2/top/7",
-              "decision": "CAUTIOUS",
-              "weight": 0.49547738693467336,
-              "intent": "prevent runs",
-              "options": [
-                {
-                  "decision": "CHALLENGE",
-                  "weight": 1
-                },
-                {
-                  "decision": "CAUTIOUS",
-                  "weight": 0.49547738693467336
-                },
-                {
-                  "decision": "INTENTIONAL_WALK",
-                  "weight": 0
-                }
-              ],
-              "reasons": [
-                "batter offense 0.99; next batter 0.92",
-                "first open true; outs 0; one-run value 0.4"
-              ]
-            },
-            "alignment": {
-              "decision": "NORMAL",
-              "intent": "prevent runs",
-              "options": [
-                "NORMAL",
-                "IN",
-                "DEEP"
-              ],
-              "reasons": [
-                "inning 2; run value 0.4; third occupied false"
-              ],
-              "positions": [
-                [
-                  400,
-                  332
-                ],
-                [
-                  400,
-                  462
-                ],
-                [
-                  553,
-                  302
-                ],
-                [
-                  473,
-                  253
-                ],
-                [
-                  249,
-                  302
-                ],
-                [
-                  325,
-                  250
-                ],
-                [
-                  200,
-                  155
-                ],
-                [
-                  400,
-                  104
-                ],
-                [
-                  600,
-                  155
-                ]
-              ]
-            },
-            "context": {
-              "inning": 2,
-              "outs": 0,
-              "scoreDifference": 0,
-              "remainingInnings": 8,
-              "close": true,
-              "oneRunValue": 0.4
-            },
-            "candidates": [
-              {
-                "decision": "SWING_AWAY",
-                "weight": 0.9909547738693467,
-                "legal": true,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "retain chance for multiple runs",
-                  "batter offense: 0.99"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "eligible",
-                  "eliminatedAt": null,
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0.5
-                }
-              },
-              {
-                "decision": "SAC_BUNT",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": 0.4,
-                "inputs": {
-                  "batterOffense": 0.9909547738693467,
-                  "nextBatterOffense": 0.9230597431602456
-                },
-                "reasons": [
-                  "inning: 2; remaining: 8",
-                  "score difference: 0; outs: 0",
-                  "one-run value: 0.4",
-                  "batter offense: 0.99; next: 0.92",
-                  "no sacrifice situation / two strikes"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "STEAL_2B",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "destination occupied or no eligible runner"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "STEAL_3B",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "destination occupied or no eligible runner"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "SAFETY_BUNT",
-                "weight": 0.0017090848615434638,
-                "legal": true,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "batter speed 0.95; surprise bunt for a hit"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "eligible",
-                  "eliminatedAt": null,
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0.0017217156104872297
-                }
-              },
-              {
-                "decision": "SQUEEZE",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "third occupied false; outs 0; one-run value 0.4"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "HIT_AND_RUN",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": 0.010050251256281395,
-                "inputs": {
-                  "meet": 1,
-                  "power": 0.9798994974874372,
-                  "speed": 0,
-                  "advanceValue": 0.010050251256281395,
-                  "missCost": 0
-                },
-                "reasons": [
-                  "runner or count gate",
-                  "contact advance value 0.010; miss cost 0.000"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              }
-            ],
-            "policy": "shared-006-alpha1"
-          },
-          "play": {
-            "schemaVersion": 2,
-            "clock": "seconds-since-contact",
-            "outsBefore": 0,
-            "primaryFielder": "home_1",
-            "actualFielder": "home_1",
-            "actualIndex": 6,
-            "catchPoint": [
-              213.28447333832707,
-              119.01285332639713
-            ],
-            "flight": 4.720000000000003,
-            "landingAt": 4.720000000000003,
-            "caught": 4.720000000000003,
-            "anticipation": {
-              "relayIndex": 5,
-              "coverIndex": 3,
-              "relayPoint": [
-                333.9668964819413,
-                187.5169885278839
-              ],
-              "targetBase": 2,
-              "radius": 251.31331364019104,
-              "recognizedAt": 0.35,
-              "source": "observed-trajectory-and-runners"
-            },
-            "tracks": [
-              {
-                "index": 0,
-                "key": "home_8",
-                "origin": [
-                  400,
-                  332
-                ],
-                "initialRole": "HOLD",
-                "legs": []
-              },
-              {
-                "index": 1,
-                "key": "home_5",
-                "origin": [
-                  400,
-                  462
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      400,
-                      462
-                    ],
-                    "to": [
-                      400,
-                      430
-                    ],
-                    "start": 0.25,
-                    "end": 1.0542328042328042,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 2,
-                "key": "home_0",
-                "origin": [
-                  553,
-                  302
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      553,
-                      302
-                    ],
-                    "to": [
-                      540,
-                      315
-                    ],
-                    "start": 0.25,
-                    "end": 0.6628968675013647,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 3,
-                "key": "home_3",
-                "origin": [
-                  473,
-                  253
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      473,
-                      253
-                    ],
-                    "to": [
-                      400,
-                      225
-                    ],
-                    "start": 0.25,
-                    "end": 2.044115763663989,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  },
-                  {
-                    "from": [
-                      400,
-                      225
-                    ],
-                    "to": [
-                      400,
-                      225
-                    ],
-                    "start": 6.400000000000005,
-                    "end": 6.401000000000005,
-                    "role": "receive",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 4,
-                "key": "home_2",
-                "origin": [
-                  249,
-                  302
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      249,
-                      302
-                    ],
-                    "to": [
-                      260,
-                      315
-                    ],
-                    "start": 0.25,
-                    "end": 0.6680340322385034,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 5,
-                "key": "home_7",
-                "origin": [
-                  325,
-                  250
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      325,
-                      250
-                    ],
-                    "to": [
-                      314.19242790319345,
-                      239.0034508536286
-                    ],
-                    "start": 0.33473684210526317,
-                    "end": 0.6847368421052631,
-                    "role": "secondary",
-                    "roleCode": "SECONDARY CHASE"
-                  },
-                  {
-                    "from": [
-                      314.19242790319345,
-                      239.0034508536286
-                    ],
-                    "to": [
-                      333.9668964819413,
-                      187.5169885278839
-                    ],
-                    "start": 0.6847368421052631,
-                    "end": 1.9367231170931036,
-                    "role": "relay",
-                    "roleCode": "CUTOFF"
-                  },
-                  {
-                    "from": [
-                      333.9668964819413,
-                      187.5169885278839
-                    ],
-                    "to": [
-                      333.9668964819413,
-                      187.5169885278839
-                    ],
-                    "start": 5.040000000000004,
-                    "end": 5.041000000000004,
-                    "role": "relay",
-                    "roleCode": "CUTOFF"
-                  }
-                ]
-              },
-              {
-                "index": 6,
-                "key": "home_1",
-                "origin": [
-                  200,
-                  155
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      200,
-                      155
-                    ],
-                    "to": [
-                      213.28447333832707,
-                      119.01285332639713
-                    ],
-                    "start": 0.35684210526315785,
-                    "end": 4.720000000000003,
-                    "role": "primary",
-                    "roleCode": "PRIMARY FIELDING"
-                  }
-                ]
-              },
-              {
-                "index": 7,
-                "key": "home_4",
-                "origin": [
-                  400,
-                  104
-                ],
-                "initialRole": "HOLD",
-                "legs": []
-              },
-              {
-                "index": 8,
-                "key": "home_6",
-                "origin": [
-                  600,
-                  155
-                ],
-                "initialRole": "HOLD",
-                "legs": []
-              }
-            ],
-            "transfers": [
-              {
-                "start": 5.083133246758678,
-                "end": 6.14415000264348,
-                "tagAt": 6.14415000264348,
-                "timing": {
-                  "ballETA": 6.14415000264348,
-                  "pickupTime": 0.3031672341242073
-                },
-                "toPoint": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "relay": true,
-                "fromIndex": 6,
-                "toIndex": 5,
-                "toBase": 2,
-                "from": {
-                  "key": "home_1",
-                  "id": "SLP_1788680280068_srd0g",
-                  "name": "近江谷",
-                  "isTest": false,
-                  "index": 6,
-                  "position": "LF",
-                  "moveSpeed": 23.684210526315788,
-                  "throwSpeed": 130.78947368421052,
-                  "reaction": 0.35684210526315785
-                },
-                "receiver": {
-                  "key": "home_7",
-                  "id": "SLP_1788681680373_oyxna",
-                  "name": "佐久間",
-                  "isTest": false,
-                  "index": 5,
-                  "position": "SS",
-                  "moveSpeed": 44.05263157894737,
-                  "throwSpeed": 199.73684210526315,
-                  "reaction": 0.33473684210526317
-                },
-                "kind": "return",
-                "runnerKey": null,
-                "result": "secured",
-                "fromPoint": [
-                  213.28447333832707,
-                  119.01285332639713
-                ],
-                "carried": false,
-                "throwerKey": "home_1",
-                "receiverKey": "home_7"
-              },
-              {
-                "start": 6.400000000000005,
-                "end": 6.780149604500851,
-                "tagAt": 6.780149604500851,
-                "timing": {
-                  "ballETA": 6.780149604500851,
-                  "pickupTime": 0.3031672341242073
-                },
-                "toPoint": [
-                  400,
-                  225
-                ],
-                "relay": false,
-                "fromIndex": 5,
-                "toIndex": 3,
-                "toBase": 2,
-                "from": {
-                  "key": "home_7",
-                  "id": "SLP_1788681680373_oyxna",
-                  "name": "佐久間",
-                  "isTest": false,
-                  "index": 5,
-                  "position": "SS",
-                  "moveSpeed": 44.05263157894737,
-                  "throwSpeed": 199.73684210526315,
-                  "reaction": 0.33473684210526317
-                },
-                "receiver": {
-                  "key": "home_3",
-                  "id": "SLP_1788680888186_sxx92",
-                  "name": "天田",
-                  "isTest": false,
-                  "index": 3,
-                  "position": "2B",
-                  "moveSpeed": 43.578947368421055,
-                  "throwSpeed": 191.05263157894737,
-                  "reaction": 0.35684210526315785
-                },
-                "kind": "return",
-                "runnerKey": null,
-                "result": "secured",
-                "fromPoint": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "carried": false,
-                "throwerKey": "home_7",
-                "receiverKey": "home_3"
-              }
-            ],
-            "runners": [
-              {
-                "runner": {
-                  "key": "away_4",
-                  "id": "SLP_1788672444024_3vx4h",
-                  "name": "柳田",
-                  "isTest": false
-                },
-                "fromBase": 0,
-                "toBase": 1,
-                "start": 0.13,
-                "arrivalAt": 3.904736842105263,
-                "end": 4.720000000000003,
-                "outAt": 4.720000000000003,
-                "state": "out",
-                "legs": [
-                  {
-                    "fromBase": 0,
-                    "toBase": 1,
-                    "start": 0.16,
-                    "end": 3.904736842105263
-                  }
-                ]
-              }
-            ],
-            "outs": [
-              {
-                "type": "OUT",
-                "at": 4.720000000000003,
-                "runnerKey": "away_4",
-                "toBase": 1,
-                "outCount": 1
-              }
-            ],
-            "timeline": [
-              {
-                "type": "PLAY_ACTIVE",
-                "at": 0,
-                "ballOwner": null
-              },
-              {
-                "type": "FIELD",
-                "at": 4.720000000000003,
-                "actorIndex": 6,
-                "actorKey": "home_1",
-                "point": [
-                  213.28447333832707,
-                  119.01285332639713
-                ],
-                "ballOwner": "home_1"
-              },
-              {
-                "type": "OUT",
-                "at": 4.720000000000003,
-                "runnerKey": "away_4",
-                "toBase": 1,
-                "outCount": 1
-              },
-              {
-                "type": "THROW_START",
-                "at": 5.083133246758678,
-                "actorIndex": 6,
-                "actorKey": "home_1",
-                "thrower": "home_1",
-                "origin": [
-                  213.28447333832707,
-                  119.01285332639713
-                ],
-                "ballOwner": null
-              },
-              {
-                "type": "RECEIVE",
-                "at": 6.14415000264348,
-                "actorIndex": 5,
-                "actorKey": "home_7",
-                "point": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "ballOwner": "home_7"
-              },
-              {
-                "type": "THROW_START",
-                "at": 6.400000000000005,
-                "actorIndex": 5,
-                "actorKey": "home_7",
-                "thrower": "home_7",
-                "origin": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "ballOwner": null
-              },
-              {
-                "type": "RECEIVE",
-                "at": 6.780149604500851,
-                "actorIndex": 3,
-                "actorKey": "home_3",
-                "point": [
-                  400,
-                  225
-                ],
-                "ballOwner": "home_3"
-              },
-              {
-                "type": "PLAY_COMPLETE",
-                "at": 6.781149604500851,
-                "ballOwner": "home_3",
-                "outCount": 1
-              },
-              {
-                "type": "POSITION_RESET",
-                "at": 7.381149604500851,
-                "ballOwner": "home_3"
-              }
-            ],
-            "completeAt": 6.781149604500851,
-            "resetAt": 7.381149604500851,
-            "resetEnd": 8.231149604500851
           }
         },
         "direct": {
@@ -2149,6 +1462,670 @@
             "resetEnd": 5.616344409288949
           }
         },
+        "relay": {
+          "sequence": 26,
+          "result": "single",
+          "decision": {
+            "decision": "SWING_AWAY",
+            "weight": 0.950251256281407,
+            "intent": "score more runs",
+            "reasons": [
+              "retain chance for multiple runs",
+              "batter offense: 0.95"
+            ],
+            "matchup": {
+              "id": "2/top/9",
+              "decision": "CAUTIOUS",
+              "weight": 0.4751256281407035,
+              "intent": "prevent runs",
+              "options": [
+                {
+                  "decision": "CHALLENGE",
+                  "weight": 1
+                },
+                {
+                  "decision": "CAUTIOUS",
+                  "weight": 0.4751256281407035
+                },
+                {
+                  "decision": "INTENTIONAL_WALK",
+                  "weight": 0
+                }
+              ],
+              "reasons": [
+                "batter offense 0.95; next batter 0.91",
+                "first open false; outs 1; one-run value 0.4"
+              ]
+            },
+            "alignment": {
+              "decision": "NORMAL",
+              "intent": "prevent runs",
+              "options": [
+                "NORMAL",
+                "IN",
+                "DEEP"
+              ],
+              "reasons": [
+                "inning 2; run value 0.4; third occupied false"
+              ],
+              "positions": [
+                [
+                  400,
+                  332
+                ],
+                [
+                  400,
+                  462
+                ],
+                [
+                  553,
+                  302
+                ],
+                [
+                  473,
+                  253
+                ],
+                [
+                  249,
+                  302
+                ],
+                [
+                  325,
+                  250
+                ],
+                [
+                  200,
+                  155
+                ],
+                [
+                  400,
+                  104
+                ],
+                [
+                  600,
+                  155
+                ]
+              ]
+            },
+            "context": {
+              "inning": 2,
+              "outs": 1,
+              "scoreDifference": 0,
+              "remainingInnings": 8,
+              "close": true,
+              "oneRunValue": 0.4
+            },
+            "candidates": [
+              {
+                "decision": "SWING_AWAY",
+                "weight": 0.950251256281407,
+                "legal": true,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "retain chance for multiple runs",
+                  "batter offense: 0.95"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "eligible",
+                  "eliminatedAt": null,
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0.5
+                }
+              },
+              {
+                "decision": "SAC_BUNT",
+                "weight": 0,
+                "legal": true,
+                "estimatedValue": 0.4,
+                "inputs": {
+                  "batterOffense": 0.950251256281407,
+                  "nextBatterOffense": 0.9094919039642658
+                },
+                "reasons": [
+                  "inning: 2; remaining: 8",
+                  "score difference: 0; outs: 1",
+                  "one-run value: 0.4",
+                  "batter offense: 0.95; next: 0.91",
+                  "advance a runner with one out"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "eligible",
+                  "eliminatedAt": "valuation-or-count",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "STEAL_2B",
+                "weight": 0.060321063522433375,
+                "legal": true,
+                "estimatedValue": 0.07419490813259305,
+                "inputs": {
+                  "execution": {
+                    "trait": null,
+                    "technique": 1,
+                    "speed": 0.8947368421052632,
+                    "startTime": 0.22,
+                    "runTime": 3.068421052631579,
+                    "acceleration": 0.16,
+                    "motion": 1.149748743718593,
+                    "pitchFlight": 0.44553020134228194,
+                    "pitchArrival": 1.5952789450608749,
+                    "popup": 0.6815789473684211,
+                    "throwStart": 2.276857892429296,
+                    "throwTime": 1.121544209215442,
+                    "coverETA": 1.668396495354089,
+                    "ballETA": 3.398402101644738,
+                    "tagAt": 3.548402101644738,
+                    "runnerETA": 3.448421052631579,
+                    "catcherArm": 0.8421052631578947,
+                    "chance": 0.653816998481783,
+                    "source": "shared-motion-clock"
+                  },
+                  "speed": 0.8947368421052632,
+                  "catcherArm": 0.8421052631578947,
+                  "gain": 0.5,
+                  "loss": 0.73,
+                  "traits": 1,
+                  "quickHint": false
+                },
+                "reasons": [
+                  "runner speed: 0.89; catcher arm: 0.84",
+                  "estimated success: 0.65",
+                  "gain: 0.50; failure cost: 0.73",
+                  "outs: 1; score difference: 0; inning: 2",
+                  "stored traits: none",
+                  "no quick numeric ability exists",
+                  "opportunity favorable"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "eligible",
+                  "eliminatedAt": null,
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0.05969000173499918
+                }
+              },
+              {
+                "decision": "STEAL_3B",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "destination occupied or no eligible runner"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "SAFETY_BUNT",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "batter speed 1.00; surprise bunt for a hit"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "SQUEEZE",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "third occupied false; outs 1; one-run value 0.4"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "HIT_AND_RUN",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": 0.15419201269505428,
+                "inputs": {
+                  "meet": 1,
+                  "power": 0.8894472361809045,
+                  "speed": 0.8947368421052632,
+                  "advanceValue": 0.15419201269505428,
+                  "missCost": 0
+                },
+                "reasons": [
+                  "runner or count gate",
+                  "contact advance value 0.154; miss cost 0.000"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              }
+            ],
+            "policy": "shared-006-alpha1"
+          },
+          "play": {
+            "schemaVersion": 2,
+            "clock": "seconds-since-contact",
+            "outsBefore": 1,
+            "primaryFielder": "home_1",
+            "actualFielder": "home_1",
+            "actualIndex": 6,
+            "catchPoint": [
+              206.02390252474945,
+              213.71549231095932
+            ],
+            "flight": 2.0751296534733252,
+            "landingAt": 2.0751296534733252,
+            "caught": 3.040000000000002,
+            "anticipation": {
+              "relayIndex": 5,
+              "coverIndex": 3,
+              "relayPoint": [
+                257.2352099044906,
+                225.74823390815337
+              ],
+              "targetBase": 2,
+              "radius": 249.19985803096534,
+              "recognizedAt": 0.35,
+              "source": "observed-trajectory-and-runners"
+            },
+            "tracks": [
+              {
+                "index": 0,
+                "key": "home_8",
+                "origin": [
+                  400,
+                  332
+                ],
+                "initialRole": "HOLD",
+                "legs": []
+              },
+              {
+                "index": 1,
+                "key": "home_5",
+                "origin": [
+                  400,
+                  462
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      400,
+                      462
+                    ],
+                    "to": [
+                      400,
+                      430
+                    ],
+                    "start": 0.25,
+                    "end": 1.0542328042328042,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "key": "home_0",
+                "origin": [
+                  553,
+                  302
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      553,
+                      302
+                    ],
+                    "to": [
+                      540,
+                      315
+                    ],
+                    "start": 0.25,
+                    "end": 0.6628968675013647,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "key": "home_3",
+                "origin": [
+                  473,
+                  253
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      473,
+                      253
+                    ],
+                    "to": [
+                      400,
+                      225
+                    ],
+                    "start": 0.25,
+                    "end": 2.044115763663989,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 4,
+                "key": "home_2",
+                "origin": [
+                  249,
+                  302
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      249,
+                      302
+                    ],
+                    "to": [
+                      247.14299150185968,
+                      287.8635548398933
+                    ],
+                    "start": 0.33473684210526317,
+                    "end": 0.6847368421052631,
+                    "role": "secondary",
+                    "roleCode": "SECONDARY CHASE"
+                  },
+                  {
+                    "from": [
+                      247.14299150185968,
+                      287.8635548398933
+                    ],
+                    "to": [
+                      260,
+                      315
+                    ],
+                    "start": 0.6847368421052631,
+                    "end": 1.4218617796128084,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "key": "home_7",
+                "origin": [
+                  325,
+                  250
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      325,
+                      250
+                    ],
+                    "to": [
+                      257.2352099044906,
+                      225.74823390815337
+                    ],
+                    "start": 0.35,
+                    "end": 1.9838118166558,
+                    "role": "relay",
+                    "roleCode": "CUTOFF"
+                  },
+                  {
+                    "from": [
+                      257.2352099044906,
+                      225.74823390815337
+                    ],
+                    "to": [
+                      268.6232844887994,
+                      217.35719464592174
+                    ],
+                    "start": 3.6400000000000023,
+                    "end": 3.9611066361438034,
+                    "role": "relay",
+                    "roleCode": "CUTOFF"
+                  }
+                ]
+              },
+              {
+                "index": 6,
+                "key": "home_1",
+                "origin": [
+                  200,
+                  155
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      200,
+                      155
+                    ],
+                    "to": [
+                      206.02390252474945,
+                      213.71549231095932
+                    ],
+                    "start": 0.35684210526315785,
+                    "end": 3.040000000000002,
+                    "role": "primary",
+                    "roleCode": "PRIMARY FIELDING"
+                  }
+                ]
+              },
+              {
+                "index": 7,
+                "key": "home_4",
+                "origin": [
+                  400,
+                  104
+                ],
+                "initialRole": "HOLD",
+                "legs": []
+              },
+              {
+                "index": 8,
+                "key": "home_6",
+                "origin": [
+                  600,
+                  155
+                ],
+                "initialRole": "HOLD",
+                "legs": []
+              }
+            ],
+            "transfers": [
+              {
+                "start": 3.7180505984074026,
+                "end": 4.197486888324411,
+                "tagAt": 4.197486888324411,
+                "timing": {
+                  "ballETA": 4.197486888324411,
+                  "pickupTime": 0.5656978714564354
+                },
+                "toPoint": [
+                  268.6232844887994,
+                  217.35719464592174
+                ],
+                "relay": true,
+                "fromIndex": 6,
+                "toIndex": 5,
+                "toBase": 2,
+                "from": {
+                  "key": "home_1",
+                  "id": "SLP_1788680280068_srd0g",
+                  "name": "近江谷",
+                  "isTest": false,
+                  "index": 6,
+                  "position": "LF",
+                  "moveSpeed": 23.684210526315788,
+                  "throwSpeed": 130.78947368421052,
+                  "reaction": 0.35684210526315785
+                },
+                "receiver": {
+                  "key": "home_7",
+                  "id": "SLP_1788681680373_oyxna",
+                  "name": "佐久間",
+                  "isTest": false,
+                  "index": 5,
+                  "position": "SS",
+                  "moveSpeed": 44.05263157894737,
+                  "throwSpeed": 199.73684210526315,
+                  "reaction": 0.33473684210526317
+                },
+                "kind": "return",
+                "runnerKey": null,
+                "result": "secured",
+                "fromPoint": [
+                  206.02390252474945,
+                  213.71549231095932
+                ],
+                "carried": false,
+                "throwerKey": "home_1",
+                "receiverKey": "home_7"
+              }
+            ],
+            "runners": [
+              {
+                "runner": {
+                  "key": "away_5",
+                  "id": "SLP_1788673892232_xk6x1",
+                  "name": "高橋",
+                  "isTest": false
+                },
+                "fromBase": 1,
+                "toBase": 2,
+                "start": 0.18,
+                "arrivalAt": 3.9694736842105267,
+                "end": 3.9694736842105267,
+                "outAt": null,
+                "state": "safe",
+                "legs": [
+                  {
+                    "fromBase": 1,
+                    "toBase": 1,
+                    "start": 0.2,
+                    "end": 0.201
+                  },
+                  {
+                    "fromBase": 1,
+                    "toBase": 2,
+                    "start": 0.8800000000000002,
+                    "end": 3.9694736842105267
+                  }
+                ]
+              },
+              {
+                "runner": {
+                  "key": "away_6",
+                  "id": "SLP_1788674294522_m6kw0",
+                  "name": "新垣",
+                  "isTest": false
+                },
+                "fromBase": 0,
+                "toBase": 1,
+                "start": 0.13,
+                "arrivalAt": 3.86,
+                "end": 3.86,
+                "outAt": null,
+                "state": "safe",
+                "legs": [
+                  {
+                    "fromBase": 0,
+                    "toBase": 1,
+                    "start": 0.16,
+                    "end": 3.86
+                  }
+                ]
+              }
+            ],
+            "outs": [],
+            "timeline": [
+              {
+                "type": "PLAY_ACTIVE",
+                "at": 0,
+                "ballOwner": null
+              },
+              {
+                "type": "FIELD",
+                "at": 3.040000000000002,
+                "actorIndex": 6,
+                "actorKey": "home_1",
+                "point": [
+                  206.02390252474945,
+                  213.71549231095932
+                ],
+                "ballOwner": "home_1"
+              },
+              {
+                "type": "THROW_START",
+                "at": 3.7180505984074026,
+                "actorIndex": 6,
+                "actorKey": "home_1",
+                "thrower": "home_1",
+                "origin": [
+                  206.02390252474945,
+                  213.71549231095932
+                ],
+                "ballOwner": null
+              },
+              {
+                "type": "RECEIVE",
+                "at": 4.197486888324411,
+                "actorIndex": 5,
+                "actorKey": "home_7",
+                "point": [
+                  268.6232844887994,
+                  217.35719464592174
+                ],
+                "ballOwner": "home_7"
+              },
+              {
+                "type": "PLAY_COMPLETE",
+                "at": 4.198486888324411,
+                "ballOwner": "home_7",
+                "outCount": 1
+              },
+              {
+                "type": "POSITION_RESET",
+                "at": 4.798486888324411,
+                "ballOwner": "home_7"
+              }
+            ],
+            "completeAt": 4.198486888324411,
+            "resetAt": 4.798486888324411,
+            "resetEnd": 5.648486888324411
+          }
+        },
         "hitAndRun": {
           "sequence": 67,
           "result": "single",
@@ -2532,20 +2509,6 @@
                     "end": 2.044115763663989,
                     "role": "baseCover",
                     "roleCode": "BASE COVER"
-                  },
-                  {
-                    "from": [
-                      400,
-                      225
-                    ],
-                    "to": [
-                      400,
-                      225
-                    ],
-                    "start": 4.8800000000000034,
-                    "end": 4.881000000000004,
-                    "role": "receive",
-                    "roleCode": "BASE COVER"
                   }
                 ]
               },
@@ -2722,55 +2685,6 @@
                 "carried": false,
                 "throwerKey": "home_1",
                 "receiverKey": "home_7"
-              },
-              {
-                "start": 4.8800000000000034,
-                "end": 5.272427545860281,
-                "tagAt": 5.272427545860281,
-                "timing": {
-                  "ballETA": 5.272427545860281,
-                  "pickupTime": 0.5663615509954469
-                },
-                "toPoint": [
-                  400,
-                  225
-                ],
-                "relay": false,
-                "fromIndex": 5,
-                "toIndex": 3,
-                "toBase": 2,
-                "from": {
-                  "key": "home_7",
-                  "id": "SLP_1788681680373_oyxna",
-                  "name": "佐久間",
-                  "isTest": false,
-                  "index": 5,
-                  "position": "SS",
-                  "moveSpeed": 44.05263157894737,
-                  "throwSpeed": 199.73684210526315,
-                  "reaction": 0.33473684210526317
-                },
-                "receiver": {
-                  "key": "home_3",
-                  "id": "SLP_1788680888186_sxx92",
-                  "name": "天田",
-                  "isTest": false,
-                  "index": 3,
-                  "position": "2B",
-                  "moveSpeed": 43.578947368421055,
-                  "throwSpeed": 191.05263157894737,
-                  "reaction": 0.35684210526315785
-                },
-                "kind": "return",
-                "runnerKey": null,
-                "result": "secured",
-                "fromPoint": [
-                  327.91201583318303,
-                  194.225044392925
-                ],
-                "carried": false,
-                "throwerKey": "home_7",
-                "receiverKey": "home_3"
               }
             ],
             "runners": [
@@ -2863,43 +2777,20 @@
                 "ballOwner": "home_7"
               },
               {
-                "type": "THROW_START",
-                "at": 4.8800000000000034,
-                "actorIndex": 5,
-                "actorKey": "home_7",
-                "thrower": "home_7",
-                "origin": [
-                  327.91201583318303,
-                  194.225044392925
-                ],
-                "ballOwner": null
-              },
-              {
-                "type": "RECEIVE",
-                "at": 5.272427545860281,
-                "actorIndex": 3,
-                "actorKey": "home_3",
-                "point": [
-                  400,
-                  225
-                ],
-                "ballOwner": "home_3"
-              },
-              {
                 "type": "PLAY_COMPLETE",
-                "at": 5.273427545860281,
-                "ballOwner": "home_3",
+                "at": 4.618817041436642,
+                "ballOwner": "home_7",
                 "outCount": 0
               },
               {
                 "type": "POSITION_RESET",
-                "at": 5.873427545860281,
-                "ballOwner": "home_3"
+                "at": 5.218817041436641,
+                "ballOwner": "home_7"
               }
             ],
-            "completeAt": 5.273427545860281,
-            "resetAt": 5.873427545860281,
-            "resetEnd": 6.723427545860281
+            "completeAt": 4.618817041436642,
+            "resetAt": 5.218817041436641,
+            "resetEnd": 6.068817041436641
           }
         },
         "fcThird": {
@@ -3849,58 +3740,58 @@
   },
   {
     "lab": true,
-    "events": 4067,
-    "plays": 1757,
-    "fcThird": 26,
-    "hitGround": 56,
-    "steal": 32,
-    "bunt": 36,
-    "hitRun": 6,
-    "ownershipChecks": 1834,
+    "events": 4129,
+    "plays": 1739,
+    "fcThird": 25,
+    "hitGround": 57,
+    "steal": 38,
+    "bunt": 28,
+    "hitRun": 4,
+    "ownershipChecks": 797,
     "phases": {},
     "realRoster": {
       "games": 12,
       "selected": {
-        "SWING_AWAY": 2252,
-        "SAFETY_BUNT": 34,
-        "STEAL_2B": 14,
-        "HIT_AND_RUN": 7
+        "SWING_AWAY": 2237,
+        "SAFETY_BUNT": 33,
+        "STEAL_2B": 17,
+        "HIT_AND_RUN": 6
       },
       "funnel": {
         "SWING_AWAY": {
-          "generated": 2307,
-          "eligible": 2307,
-          "positive": 2307
+          "generated": 2293,
+          "eligible": 2293,
+          "positive": 2293
         },
         "SAC_BUNT": {
-          "generated": 2307,
-          "eligible": 282,
-          "positive": 22
+          "generated": 2293,
+          "eligible": 308,
+          "positive": 20
         },
         "STEAL_2B": {
-          "generated": 2307,
-          "eligible": 457,
-          "positive": 207
+          "generated": 2293,
+          "eligible": 444,
+          "positive": 193
         },
         "STEAL_3B": {
-          "generated": 2307,
-          "eligible": 210,
+          "generated": 2293,
+          "eligible": 248,
           "positive": 0
         },
         "SAFETY_BUNT": {
-          "generated": 2307,
-          "eligible": 600,
-          "positive": 546
+          "generated": 2293,
+          "eligible": 602,
+          "positive": 550
         },
         "SQUEEZE": {
-          "generated": 2307,
-          "eligible": 18,
+          "generated": 2293,
+          "eligible": 17,
           "positive": 7
         },
         "HIT_AND_RUN": {
-          "generated": 2307,
-          "eligible": 113,
-          "positive": 74
+          "generated": 2293,
+          "eligible": 105,
+          "positive": 64
         }
       },
       "examples": {
@@ -4353,7 +4244,22 @@
                   332
                 ],
                 "initialRole": "HOLD",
-                "legs": []
+                "legs": [
+                  {
+                    "from": [
+                      400,
+                      332
+                    ],
+                    "to": [
+                      260,
+                      315
+                    ],
+                    "start": 0.25,
+                    "end": 3.521720333186529,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
               },
               {
                 "index": 1,
@@ -4498,13 +4404,13 @@
                       262.1807441969267
                     ],
                     "to": [
-                      260,
-                      315
+                      257.8366434920834,
+                      274.8505405489468
                     ],
                     "start": 0.6847368421052631,
-                    "end": 2.424720608540283,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
+                    "end": 2.0259703581757424,
+                    "role": "backup",
+                    "roleCode": "BACKUP"
                   }
                 ]
               },
@@ -4690,708 +4596,6 @@
             "completeAt": 2.896986331530344,
             "resetAt": 3.496986331530344,
             "resetEnd": 4.346986331530344
-          }
-        },
-        "relay": {
-          "sequence": 21,
-          "result": "flyout",
-          "decision": {
-            "decision": "SWING_AWAY",
-            "weight": 0.9909547738693467,
-            "intent": "score more runs",
-            "reasons": [
-              "retain chance for multiple runs",
-              "batter offense: 0.99"
-            ],
-            "matchup": {
-              "id": "2/top/7",
-              "decision": "CAUTIOUS",
-              "weight": 0.49547738693467336,
-              "intent": "prevent runs",
-              "options": [
-                {
-                  "decision": "CHALLENGE",
-                  "weight": 1
-                },
-                {
-                  "decision": "CAUTIOUS",
-                  "weight": 0.49547738693467336
-                },
-                {
-                  "decision": "INTENTIONAL_WALK",
-                  "weight": 0
-                }
-              ],
-              "reasons": [
-                "batter offense 0.99; next batter 0.92",
-                "first open true; outs 0; one-run value 0.4"
-              ]
-            },
-            "alignment": {
-              "decision": "NORMAL",
-              "intent": "prevent runs",
-              "options": [
-                "NORMAL",
-                "IN",
-                "DEEP"
-              ],
-              "reasons": [
-                "inning 2; run value 0.4; third occupied false"
-              ],
-              "positions": [
-                [
-                  400,
-                  332
-                ],
-                [
-                  400,
-                  462
-                ],
-                [
-                  553,
-                  302
-                ],
-                [
-                  473,
-                  253
-                ],
-                [
-                  249,
-                  302
-                ],
-                [
-                  325,
-                  250
-                ],
-                [
-                  200,
-                  155
-                ],
-                [
-                  400,
-                  104
-                ],
-                [
-                  600,
-                  155
-                ]
-              ]
-            },
-            "context": {
-              "inning": 2,
-              "outs": 0,
-              "scoreDifference": 0,
-              "remainingInnings": 8,
-              "close": true,
-              "oneRunValue": 0.4
-            },
-            "candidates": [
-              {
-                "decision": "SWING_AWAY",
-                "weight": 0.9909547738693467,
-                "legal": true,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "retain chance for multiple runs",
-                  "batter offense: 0.99"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "eligible",
-                  "eliminatedAt": null,
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0.5
-                }
-              },
-              {
-                "decision": "SAC_BUNT",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": 0.4,
-                "inputs": {
-                  "batterOffense": 0.9909547738693467,
-                  "nextBatterOffense": 0.9230597431602456
-                },
-                "reasons": [
-                  "inning: 2; remaining: 8",
-                  "score difference: 0; outs: 0",
-                  "one-run value: 0.4",
-                  "batter offense: 0.99; next: 0.92",
-                  "no sacrifice situation / two strikes"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "STEAL_2B",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "destination occupied or no eligible runner"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "STEAL_3B",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "destination occupied or no eligible runner"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "SAFETY_BUNT",
-                "weight": 0.0017090848615434638,
-                "legal": true,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "batter speed 0.95; surprise bunt for a hit"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "eligible",
-                  "eliminatedAt": null,
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0.0017217156104872297
-                }
-              },
-              {
-                "decision": "SQUEEZE",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": null,
-                "inputs": {},
-                "reasons": [
-                  "third occupied false; outs 0; one-run value 0.4"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              },
-              {
-                "decision": "HIT_AND_RUN",
-                "weight": 0,
-                "legal": false,
-                "estimatedValue": 0.010050251256281395,
-                "inputs": {
-                  "meet": 1,
-                  "power": 0.9798994974874372,
-                  "speed": 0,
-                  "advanceValue": 0.010050251256281395,
-                  "missCost": 0
-                },
-                "reasons": [
-                  "runner or count gate",
-                  "contact advance value 0.010; miss cost 0.000"
-                ],
-                "trace": {
-                  "generated": true,
-                  "eligibility": "blocked",
-                  "eliminatedAt": "situation",
-                  "swingWeight": 0.9909547738693467,
-                  "relativeWeight": 0
-                }
-              }
-            ],
-            "policy": "shared-006-alpha1"
-          },
-          "play": {
-            "schemaVersion": 2,
-            "clock": "seconds-since-contact",
-            "outsBefore": 0,
-            "primaryFielder": "home_1",
-            "actualFielder": "home_1",
-            "actualIndex": 6,
-            "catchPoint": [
-              213.28447333832707,
-              119.01285332639713
-            ],
-            "flight": 4.720000000000003,
-            "landingAt": 4.720000000000003,
-            "caught": 4.720000000000003,
-            "anticipation": {
-              "relayIndex": 5,
-              "coverIndex": 3,
-              "relayPoint": [
-                333.9668964819413,
-                187.5169885278839
-              ],
-              "targetBase": 2,
-              "radius": 251.31331364019104,
-              "recognizedAt": 0.35,
-              "source": "observed-trajectory-and-runners"
-            },
-            "tracks": [
-              {
-                "index": 0,
-                "key": "home_8",
-                "origin": [
-                  400,
-                  332
-                ],
-                "initialRole": "HOLD",
-                "legs": []
-              },
-              {
-                "index": 1,
-                "key": "home_5",
-                "origin": [
-                  400,
-                  462
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      400,
-                      462
-                    ],
-                    "to": [
-                      400,
-                      430
-                    ],
-                    "start": 0.25,
-                    "end": 1.0542328042328042,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 2,
-                "key": "home_0",
-                "origin": [
-                  553,
-                  302
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      553,
-                      302
-                    ],
-                    "to": [
-                      540,
-                      315
-                    ],
-                    "start": 0.25,
-                    "end": 0.6628968675013647,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 3,
-                "key": "home_3",
-                "origin": [
-                  473,
-                  253
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      473,
-                      253
-                    ],
-                    "to": [
-                      400,
-                      225
-                    ],
-                    "start": 0.25,
-                    "end": 2.044115763663989,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  },
-                  {
-                    "from": [
-                      400,
-                      225
-                    ],
-                    "to": [
-                      400,
-                      225
-                    ],
-                    "start": 6.400000000000005,
-                    "end": 6.401000000000005,
-                    "role": "receive",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 4,
-                "key": "home_2",
-                "origin": [
-                  249,
-                  302
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      249,
-                      302
-                    ],
-                    "to": [
-                      260,
-                      315
-                    ],
-                    "start": 0.25,
-                    "end": 0.6680340322385034,
-                    "role": "baseCover",
-                    "roleCode": "BASE COVER"
-                  }
-                ]
-              },
-              {
-                "index": 5,
-                "key": "home_7",
-                "origin": [
-                  325,
-                  250
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      325,
-                      250
-                    ],
-                    "to": [
-                      314.19242790319345,
-                      239.0034508536286
-                    ],
-                    "start": 0.33473684210526317,
-                    "end": 0.6847368421052631,
-                    "role": "secondary",
-                    "roleCode": "SECONDARY CHASE"
-                  },
-                  {
-                    "from": [
-                      314.19242790319345,
-                      239.0034508536286
-                    ],
-                    "to": [
-                      333.9668964819413,
-                      187.5169885278839
-                    ],
-                    "start": 0.6847368421052631,
-                    "end": 1.9367231170931036,
-                    "role": "relay",
-                    "roleCode": "CUTOFF"
-                  },
-                  {
-                    "from": [
-                      333.9668964819413,
-                      187.5169885278839
-                    ],
-                    "to": [
-                      333.9668964819413,
-                      187.5169885278839
-                    ],
-                    "start": 5.040000000000004,
-                    "end": 5.041000000000004,
-                    "role": "relay",
-                    "roleCode": "CUTOFF"
-                  }
-                ]
-              },
-              {
-                "index": 6,
-                "key": "home_1",
-                "origin": [
-                  200,
-                  155
-                ],
-                "initialRole": "HOLD",
-                "legs": [
-                  {
-                    "from": [
-                      200,
-                      155
-                    ],
-                    "to": [
-                      213.28447333832707,
-                      119.01285332639713
-                    ],
-                    "start": 0.35684210526315785,
-                    "end": 4.720000000000003,
-                    "role": "primary",
-                    "roleCode": "PRIMARY FIELDING"
-                  }
-                ]
-              },
-              {
-                "index": 7,
-                "key": "home_4",
-                "origin": [
-                  400,
-                  104
-                ],
-                "initialRole": "HOLD",
-                "legs": []
-              },
-              {
-                "index": 8,
-                "key": "home_6",
-                "origin": [
-                  600,
-                  155
-                ],
-                "initialRole": "HOLD",
-                "legs": []
-              }
-            ],
-            "transfers": [
-              {
-                "start": 5.083133246758678,
-                "end": 6.14415000264348,
-                "tagAt": 6.14415000264348,
-                "timing": {
-                  "ballETA": 6.14415000264348,
-                  "pickupTime": 0.3031672341242073
-                },
-                "toPoint": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "relay": true,
-                "fromIndex": 6,
-                "toIndex": 5,
-                "toBase": 2,
-                "from": {
-                  "key": "home_1",
-                  "id": "SLP_1788680280068_srd0g",
-                  "name": "近江谷",
-                  "isTest": false,
-                  "index": 6,
-                  "position": "LF",
-                  "moveSpeed": 23.684210526315788,
-                  "throwSpeed": 130.78947368421052,
-                  "reaction": 0.35684210526315785
-                },
-                "receiver": {
-                  "key": "home_7",
-                  "id": "SLP_1788681680373_oyxna",
-                  "name": "佐久間",
-                  "isTest": false,
-                  "index": 5,
-                  "position": "SS",
-                  "moveSpeed": 44.05263157894737,
-                  "throwSpeed": 199.73684210526315,
-                  "reaction": 0.33473684210526317
-                },
-                "kind": "return",
-                "runnerKey": null,
-                "result": "secured",
-                "fromPoint": [
-                  213.28447333832707,
-                  119.01285332639713
-                ],
-                "carried": false,
-                "throwerKey": "home_1",
-                "receiverKey": "home_7"
-              },
-              {
-                "start": 6.400000000000005,
-                "end": 6.780149604500851,
-                "tagAt": 6.780149604500851,
-                "timing": {
-                  "ballETA": 6.780149604500851,
-                  "pickupTime": 0.3031672341242073
-                },
-                "toPoint": [
-                  400,
-                  225
-                ],
-                "relay": false,
-                "fromIndex": 5,
-                "toIndex": 3,
-                "toBase": 2,
-                "from": {
-                  "key": "home_7",
-                  "id": "SLP_1788681680373_oyxna",
-                  "name": "佐久間",
-                  "isTest": false,
-                  "index": 5,
-                  "position": "SS",
-                  "moveSpeed": 44.05263157894737,
-                  "throwSpeed": 199.73684210526315,
-                  "reaction": 0.33473684210526317
-                },
-                "receiver": {
-                  "key": "home_3",
-                  "id": "SLP_1788680888186_sxx92",
-                  "name": "天田",
-                  "isTest": false,
-                  "index": 3,
-                  "position": "2B",
-                  "moveSpeed": 43.578947368421055,
-                  "throwSpeed": 191.05263157894737,
-                  "reaction": 0.35684210526315785
-                },
-                "kind": "return",
-                "runnerKey": null,
-                "result": "secured",
-                "fromPoint": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "carried": false,
-                "throwerKey": "home_7",
-                "receiverKey": "home_3"
-              }
-            ],
-            "runners": [
-              {
-                "runner": {
-                  "key": "away_4",
-                  "id": "SLP_1788672444024_3vx4h",
-                  "name": "柳田",
-                  "isTest": false
-                },
-                "fromBase": 0,
-                "toBase": 1,
-                "start": 0.13,
-                "arrivalAt": 3.904736842105263,
-                "end": 4.720000000000003,
-                "outAt": 4.720000000000003,
-                "state": "out",
-                "legs": [
-                  {
-                    "fromBase": 0,
-                    "toBase": 1,
-                    "start": 0.16,
-                    "end": 3.904736842105263
-                  }
-                ]
-              }
-            ],
-            "outs": [
-              {
-                "type": "OUT",
-                "at": 4.720000000000003,
-                "runnerKey": "away_4",
-                "toBase": 1,
-                "outCount": 1
-              }
-            ],
-            "timeline": [
-              {
-                "type": "PLAY_ACTIVE",
-                "at": 0,
-                "ballOwner": null
-              },
-              {
-                "type": "FIELD",
-                "at": 4.720000000000003,
-                "actorIndex": 6,
-                "actorKey": "home_1",
-                "point": [
-                  213.28447333832707,
-                  119.01285332639713
-                ],
-                "ballOwner": "home_1"
-              },
-              {
-                "type": "OUT",
-                "at": 4.720000000000003,
-                "runnerKey": "away_4",
-                "toBase": 1,
-                "outCount": 1
-              },
-              {
-                "type": "THROW_START",
-                "at": 5.083133246758678,
-                "actorIndex": 6,
-                "actorKey": "home_1",
-                "thrower": "home_1",
-                "origin": [
-                  213.28447333832707,
-                  119.01285332639713
-                ],
-                "ballOwner": null
-              },
-              {
-                "type": "RECEIVE",
-                "at": 6.14415000264348,
-                "actorIndex": 5,
-                "actorKey": "home_7",
-                "point": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "ballOwner": "home_7"
-              },
-              {
-                "type": "THROW_START",
-                "at": 6.400000000000005,
-                "actorIndex": 5,
-                "actorKey": "home_7",
-                "thrower": "home_7",
-                "origin": [
-                  333.9668964819413,
-                  187.5169885278839
-                ],
-                "ballOwner": null
-              },
-              {
-                "type": "RECEIVE",
-                "at": 6.780149604500851,
-                "actorIndex": 3,
-                "actorKey": "home_3",
-                "point": [
-                  400,
-                  225
-                ],
-                "ballOwner": "home_3"
-              },
-              {
-                "type": "PLAY_COMPLETE",
-                "at": 6.781149604500851,
-                "ballOwner": "home_3",
-                "outCount": 1
-              },
-              {
-                "type": "POSITION_RESET",
-                "at": 7.381149604500851,
-                "ballOwner": "home_3"
-              }
-            ],
-            "completeAt": 6.781149604500851,
-            "resetAt": 7.381149604500851,
-            "resetEnd": 8.231149604500851
           }
         },
         "direct": {
@@ -5997,6 +5201,670 @@
             "resetEnd": 5.616344409288949
           }
         },
+        "relay": {
+          "sequence": 26,
+          "result": "single",
+          "decision": {
+            "decision": "SWING_AWAY",
+            "weight": 0.950251256281407,
+            "intent": "score more runs",
+            "reasons": [
+              "retain chance for multiple runs",
+              "batter offense: 0.95"
+            ],
+            "matchup": {
+              "id": "2/top/9",
+              "decision": "CAUTIOUS",
+              "weight": 0.4751256281407035,
+              "intent": "prevent runs",
+              "options": [
+                {
+                  "decision": "CHALLENGE",
+                  "weight": 1
+                },
+                {
+                  "decision": "CAUTIOUS",
+                  "weight": 0.4751256281407035
+                },
+                {
+                  "decision": "INTENTIONAL_WALK",
+                  "weight": 0
+                }
+              ],
+              "reasons": [
+                "batter offense 0.95; next batter 0.91",
+                "first open false; outs 1; one-run value 0.4"
+              ]
+            },
+            "alignment": {
+              "decision": "NORMAL",
+              "intent": "prevent runs",
+              "options": [
+                "NORMAL",
+                "IN",
+                "DEEP"
+              ],
+              "reasons": [
+                "inning 2; run value 0.4; third occupied false"
+              ],
+              "positions": [
+                [
+                  400,
+                  332
+                ],
+                [
+                  400,
+                  462
+                ],
+                [
+                  553,
+                  302
+                ],
+                [
+                  473,
+                  253
+                ],
+                [
+                  249,
+                  302
+                ],
+                [
+                  325,
+                  250
+                ],
+                [
+                  200,
+                  155
+                ],
+                [
+                  400,
+                  104
+                ],
+                [
+                  600,
+                  155
+                ]
+              ]
+            },
+            "context": {
+              "inning": 2,
+              "outs": 1,
+              "scoreDifference": 0,
+              "remainingInnings": 8,
+              "close": true,
+              "oneRunValue": 0.4
+            },
+            "candidates": [
+              {
+                "decision": "SWING_AWAY",
+                "weight": 0.950251256281407,
+                "legal": true,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "retain chance for multiple runs",
+                  "batter offense: 0.95"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "eligible",
+                  "eliminatedAt": null,
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0.5
+                }
+              },
+              {
+                "decision": "SAC_BUNT",
+                "weight": 0,
+                "legal": true,
+                "estimatedValue": 0.4,
+                "inputs": {
+                  "batterOffense": 0.950251256281407,
+                  "nextBatterOffense": 0.9094919039642658
+                },
+                "reasons": [
+                  "inning: 2; remaining: 8",
+                  "score difference: 0; outs: 1",
+                  "one-run value: 0.4",
+                  "batter offense: 0.95; next: 0.91",
+                  "advance a runner with one out"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "eligible",
+                  "eliminatedAt": "valuation-or-count",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "STEAL_2B",
+                "weight": 0.060321063522433375,
+                "legal": true,
+                "estimatedValue": 0.07419490813259305,
+                "inputs": {
+                  "execution": {
+                    "trait": null,
+                    "technique": 1,
+                    "speed": 0.8947368421052632,
+                    "startTime": 0.22,
+                    "runTime": 3.068421052631579,
+                    "acceleration": 0.16,
+                    "motion": 1.149748743718593,
+                    "pitchFlight": 0.44553020134228194,
+                    "pitchArrival": 1.5952789450608749,
+                    "popup": 0.6815789473684211,
+                    "throwStart": 2.276857892429296,
+                    "throwTime": 1.121544209215442,
+                    "coverETA": 1.668396495354089,
+                    "ballETA": 3.398402101644738,
+                    "tagAt": 3.548402101644738,
+                    "runnerETA": 3.448421052631579,
+                    "catcherArm": 0.8421052631578947,
+                    "chance": 0.653816998481783,
+                    "source": "shared-motion-clock"
+                  },
+                  "speed": 0.8947368421052632,
+                  "catcherArm": 0.8421052631578947,
+                  "gain": 0.5,
+                  "loss": 0.73,
+                  "traits": 1,
+                  "quickHint": false
+                },
+                "reasons": [
+                  "runner speed: 0.89; catcher arm: 0.84",
+                  "estimated success: 0.65",
+                  "gain: 0.50; failure cost: 0.73",
+                  "outs: 1; score difference: 0; inning: 2",
+                  "stored traits: none",
+                  "no quick numeric ability exists",
+                  "opportunity favorable"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "eligible",
+                  "eliminatedAt": null,
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0.05969000173499918
+                }
+              },
+              {
+                "decision": "STEAL_3B",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "destination occupied or no eligible runner"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "SAFETY_BUNT",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "batter speed 1.00; surprise bunt for a hit"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "SQUEEZE",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": null,
+                "inputs": {},
+                "reasons": [
+                  "third occupied false; outs 1; one-run value 0.4"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              },
+              {
+                "decision": "HIT_AND_RUN",
+                "weight": 0,
+                "legal": false,
+                "estimatedValue": 0.15419201269505428,
+                "inputs": {
+                  "meet": 1,
+                  "power": 0.8894472361809045,
+                  "speed": 0.8947368421052632,
+                  "advanceValue": 0.15419201269505428,
+                  "missCost": 0
+                },
+                "reasons": [
+                  "runner or count gate",
+                  "contact advance value 0.154; miss cost 0.000"
+                ],
+                "trace": {
+                  "generated": true,
+                  "eligibility": "blocked",
+                  "eliminatedAt": "situation",
+                  "swingWeight": 0.950251256281407,
+                  "relativeWeight": 0
+                }
+              }
+            ],
+            "policy": "shared-006-alpha1"
+          },
+          "play": {
+            "schemaVersion": 2,
+            "clock": "seconds-since-contact",
+            "outsBefore": 1,
+            "primaryFielder": "home_1",
+            "actualFielder": "home_1",
+            "actualIndex": 6,
+            "catchPoint": [
+              206.02390252474945,
+              213.71549231095932
+            ],
+            "flight": 2.0751296534733252,
+            "landingAt": 2.0751296534733252,
+            "caught": 3.040000000000002,
+            "anticipation": {
+              "relayIndex": 5,
+              "coverIndex": 3,
+              "relayPoint": [
+                257.2352099044906,
+                225.74823390815337
+              ],
+              "targetBase": 2,
+              "radius": 249.19985803096534,
+              "recognizedAt": 0.35,
+              "source": "observed-trajectory-and-runners"
+            },
+            "tracks": [
+              {
+                "index": 0,
+                "key": "home_8",
+                "origin": [
+                  400,
+                  332
+                ],
+                "initialRole": "HOLD",
+                "legs": []
+              },
+              {
+                "index": 1,
+                "key": "home_5",
+                "origin": [
+                  400,
+                  462
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      400,
+                      462
+                    ],
+                    "to": [
+                      400,
+                      430
+                    ],
+                    "start": 0.25,
+                    "end": 1.0542328042328042,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 2,
+                "key": "home_0",
+                "origin": [
+                  553,
+                  302
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      553,
+                      302
+                    ],
+                    "to": [
+                      540,
+                      315
+                    ],
+                    "start": 0.25,
+                    "end": 0.6628968675013647,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 3,
+                "key": "home_3",
+                "origin": [
+                  473,
+                  253
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      473,
+                      253
+                    ],
+                    "to": [
+                      400,
+                      225
+                    ],
+                    "start": 0.25,
+                    "end": 2.044115763663989,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 4,
+                "key": "home_2",
+                "origin": [
+                  249,
+                  302
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      249,
+                      302
+                    ],
+                    "to": [
+                      247.14299150185968,
+                      287.8635548398933
+                    ],
+                    "start": 0.33473684210526317,
+                    "end": 0.6847368421052631,
+                    "role": "secondary",
+                    "roleCode": "SECONDARY CHASE"
+                  },
+                  {
+                    "from": [
+                      247.14299150185968,
+                      287.8635548398933
+                    ],
+                    "to": [
+                      260,
+                      315
+                    ],
+                    "start": 0.6847368421052631,
+                    "end": 1.4218617796128084,
+                    "role": "baseCover",
+                    "roleCode": "BASE COVER"
+                  }
+                ]
+              },
+              {
+                "index": 5,
+                "key": "home_7",
+                "origin": [
+                  325,
+                  250
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      325,
+                      250
+                    ],
+                    "to": [
+                      257.2352099044906,
+                      225.74823390815337
+                    ],
+                    "start": 0.35,
+                    "end": 1.9838118166558,
+                    "role": "relay",
+                    "roleCode": "CUTOFF"
+                  },
+                  {
+                    "from": [
+                      257.2352099044906,
+                      225.74823390815337
+                    ],
+                    "to": [
+                      268.6232844887994,
+                      217.35719464592174
+                    ],
+                    "start": 3.6400000000000023,
+                    "end": 3.9611066361438034,
+                    "role": "relay",
+                    "roleCode": "CUTOFF"
+                  }
+                ]
+              },
+              {
+                "index": 6,
+                "key": "home_1",
+                "origin": [
+                  200,
+                  155
+                ],
+                "initialRole": "HOLD",
+                "legs": [
+                  {
+                    "from": [
+                      200,
+                      155
+                    ],
+                    "to": [
+                      206.02390252474945,
+                      213.71549231095932
+                    ],
+                    "start": 0.35684210526315785,
+                    "end": 3.040000000000002,
+                    "role": "primary",
+                    "roleCode": "PRIMARY FIELDING"
+                  }
+                ]
+              },
+              {
+                "index": 7,
+                "key": "home_4",
+                "origin": [
+                  400,
+                  104
+                ],
+                "initialRole": "HOLD",
+                "legs": []
+              },
+              {
+                "index": 8,
+                "key": "home_6",
+                "origin": [
+                  600,
+                  155
+                ],
+                "initialRole": "HOLD",
+                "legs": []
+              }
+            ],
+            "transfers": [
+              {
+                "start": 3.7180505984074026,
+                "end": 4.197486888324411,
+                "tagAt": 4.197486888324411,
+                "timing": {
+                  "ballETA": 4.197486888324411,
+                  "pickupTime": 0.5656978714564354
+                },
+                "toPoint": [
+                  268.6232844887994,
+                  217.35719464592174
+                ],
+                "relay": true,
+                "fromIndex": 6,
+                "toIndex": 5,
+                "toBase": 2,
+                "from": {
+                  "key": "home_1",
+                  "id": "SLP_1788680280068_srd0g",
+                  "name": "近江谷",
+                  "isTest": false,
+                  "index": 6,
+                  "position": "LF",
+                  "moveSpeed": 23.684210526315788,
+                  "throwSpeed": 130.78947368421052,
+                  "reaction": 0.35684210526315785
+                },
+                "receiver": {
+                  "key": "home_7",
+                  "id": "SLP_1788681680373_oyxna",
+                  "name": "佐久間",
+                  "isTest": false,
+                  "index": 5,
+                  "position": "SS",
+                  "moveSpeed": 44.05263157894737,
+                  "throwSpeed": 199.73684210526315,
+                  "reaction": 0.33473684210526317
+                },
+                "kind": "return",
+                "runnerKey": null,
+                "result": "secured",
+                "fromPoint": [
+                  206.02390252474945,
+                  213.71549231095932
+                ],
+                "carried": false,
+                "throwerKey": "home_1",
+                "receiverKey": "home_7"
+              }
+            ],
+            "runners": [
+              {
+                "runner": {
+                  "key": "away_5",
+                  "id": "SLP_1788673892232_xk6x1",
+                  "name": "高橋",
+                  "isTest": false
+                },
+                "fromBase": 1,
+                "toBase": 2,
+                "start": 0.18,
+                "arrivalAt": 3.9694736842105267,
+                "end": 3.9694736842105267,
+                "outAt": null,
+                "state": "safe",
+                "legs": [
+                  {
+                    "fromBase": 1,
+                    "toBase": 1,
+                    "start": 0.2,
+                    "end": 0.201
+                  },
+                  {
+                    "fromBase": 1,
+                    "toBase": 2,
+                    "start": 0.8800000000000002,
+                    "end": 3.9694736842105267
+                  }
+                ]
+              },
+              {
+                "runner": {
+                  "key": "away_6",
+                  "id": "SLP_1788674294522_m6kw0",
+                  "name": "新垣",
+                  "isTest": false
+                },
+                "fromBase": 0,
+                "toBase": 1,
+                "start": 0.13,
+                "arrivalAt": 3.86,
+                "end": 3.86,
+                "outAt": null,
+                "state": "safe",
+                "legs": [
+                  {
+                    "fromBase": 0,
+                    "toBase": 1,
+                    "start": 0.16,
+                    "end": 3.86
+                  }
+                ]
+              }
+            ],
+            "outs": [],
+            "timeline": [
+              {
+                "type": "PLAY_ACTIVE",
+                "at": 0,
+                "ballOwner": null
+              },
+              {
+                "type": "FIELD",
+                "at": 3.040000000000002,
+                "actorIndex": 6,
+                "actorKey": "home_1",
+                "point": [
+                  206.02390252474945,
+                  213.71549231095932
+                ],
+                "ballOwner": "home_1"
+              },
+              {
+                "type": "THROW_START",
+                "at": 3.7180505984074026,
+                "actorIndex": 6,
+                "actorKey": "home_1",
+                "thrower": "home_1",
+                "origin": [
+                  206.02390252474945,
+                  213.71549231095932
+                ],
+                "ballOwner": null
+              },
+              {
+                "type": "RECEIVE",
+                "at": 4.197486888324411,
+                "actorIndex": 5,
+                "actorKey": "home_7",
+                "point": [
+                  268.6232844887994,
+                  217.35719464592174
+                ],
+                "ballOwner": "home_7"
+              },
+              {
+                "type": "PLAY_COMPLETE",
+                "at": 4.198486888324411,
+                "ballOwner": "home_7",
+                "outCount": 1
+              },
+              {
+                "type": "POSITION_RESET",
+                "at": 4.798486888324411,
+                "ballOwner": "home_7"
+              }
+            ],
+            "completeAt": 4.198486888324411,
+            "resetAt": 4.798486888324411,
+            "resetEnd": 5.648486888324411
+          }
+        },
         "hitAndRun": {
           "sequence": 67,
           "result": "single",
@@ -6380,20 +6248,6 @@
                     "end": 2.044115763663989,
                     "role": "baseCover",
                     "roleCode": "BASE COVER"
-                  },
-                  {
-                    "from": [
-                      400,
-                      225
-                    ],
-                    "to": [
-                      400,
-                      225
-                    ],
-                    "start": 4.8800000000000034,
-                    "end": 4.881000000000004,
-                    "role": "receive",
-                    "roleCode": "BASE COVER"
                   }
                 ]
               },
@@ -6570,55 +6424,6 @@
                 "carried": false,
                 "throwerKey": "home_1",
                 "receiverKey": "home_7"
-              },
-              {
-                "start": 4.8800000000000034,
-                "end": 5.272427545860281,
-                "tagAt": 5.272427545860281,
-                "timing": {
-                  "ballETA": 5.272427545860281,
-                  "pickupTime": 0.5663615509954469
-                },
-                "toPoint": [
-                  400,
-                  225
-                ],
-                "relay": false,
-                "fromIndex": 5,
-                "toIndex": 3,
-                "toBase": 2,
-                "from": {
-                  "key": "home_7",
-                  "id": "SLP_1788681680373_oyxna",
-                  "name": "佐久間",
-                  "isTest": false,
-                  "index": 5,
-                  "position": "SS",
-                  "moveSpeed": 44.05263157894737,
-                  "throwSpeed": 199.73684210526315,
-                  "reaction": 0.33473684210526317
-                },
-                "receiver": {
-                  "key": "home_3",
-                  "id": "SLP_1788680888186_sxx92",
-                  "name": "天田",
-                  "isTest": false,
-                  "index": 3,
-                  "position": "2B",
-                  "moveSpeed": 43.578947368421055,
-                  "throwSpeed": 191.05263157894737,
-                  "reaction": 0.35684210526315785
-                },
-                "kind": "return",
-                "runnerKey": null,
-                "result": "secured",
-                "fromPoint": [
-                  327.91201583318303,
-                  194.225044392925
-                ],
-                "carried": false,
-                "throwerKey": "home_7",
-                "receiverKey": "home_3"
               }
             ],
             "runners": [
@@ -6711,43 +6516,20 @@
                 "ballOwner": "home_7"
               },
               {
-                "type": "THROW_START",
-                "at": 4.8800000000000034,
-                "actorIndex": 5,
-                "actorKey": "home_7",
-                "thrower": "home_7",
-                "origin": [
-                  327.91201583318303,
-                  194.225044392925
-                ],
-                "ballOwner": null
-              },
-              {
-                "type": "RECEIVE",
-                "at": 5.272427545860281,
-                "actorIndex": 3,
-                "actorKey": "home_3",
-                "point": [
-                  400,
-                  225
-                ],
-                "ballOwner": "home_3"
-              },
-              {
                 "type": "PLAY_COMPLETE",
-                "at": 5.273427545860281,
-                "ballOwner": "home_3",
+                "at": 4.618817041436642,
+                "ballOwner": "home_7",
                 "outCount": 0
               },
               {
                 "type": "POSITION_RESET",
-                "at": 5.873427545860281,
-                "ballOwner": "home_3"
+                "at": 5.218817041436641,
+                "ballOwner": "home_7"
               }
             ],
-            "completeAt": 5.273427545860281,
-            "resetAt": 5.873427545860281,
-            "resetEnd": 6.723427545860281
+            "completeAt": 4.618817041436642,
+            "resetAt": 5.218817041436641,
+            "resetEnd": 6.068817041436641
           }
         },
         "fcThird": {

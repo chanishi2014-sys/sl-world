@@ -1,6 +1,8 @@
 # 過程ベースの試合エンジンと CUSTOM MATCH TEST
 
-エンジン識別子: `process-engine-20260912-v1`
+初回改修のエンジン識別子: `process-engine-20260912-v1`
+
+夜の限定回帰修正は [NIGHT-REGRESSION-20260912.md](NIGHT-REGRESSION-20260912.md) を参照。以下の初回検証値は日中の版の記録。
 
 ## 実装
 

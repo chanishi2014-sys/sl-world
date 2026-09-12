@@ -1,0 +1,184 @@
+{
+  "passed": true,
+  "version": "process-engine-20260912-night-v2",
+  "scenes": [
+    [
+      "infield",
+      "flyout"
+    ],
+    [
+      "shallow",
+      [
+        "READ_HOLD",
+        "TAG_RETURN",
+        "HOLD"
+      ]
+    ],
+    [
+      "deep second",
+      "flyout",
+      3
+    ],
+    [
+      "deep third",
+      "sacrificeFly"
+    ],
+    [
+      "same contact tag race",
+      7.983906422894063,
+      7.777576734022405,
+      7.9200000000000035
+    ],
+    [
+      "appeal",
+      2.4988144115390907,
+      4.3381578947368435
+    ]
+  ],
+  "coverage": [
+    "2B -> SS",
+    "SS -> 2B",
+    "3B line -> SS backup",
+    "1B vacated -> first/second handoff"
+  ],
+  "fc": {
+    "normal": {
+      "source": "completed-play-history",
+      "classification": "groundout",
+      "classificationReason": "batter retired at first",
+      "outs": 2,
+      "actions": [
+        {
+          "type": "forceOut",
+          "runner": {
+            "key": "away_0",
+            "id": "CUSTOM_0_0",
+            "name": "CUSTOM A C",
+            "isTest": true
+          },
+          "fromBase": 0,
+          "toBase": 1,
+          "result": "out"
+        },
+        {
+          "type": "runnerAdvance",
+          "runner": {
+            "key": "away_3",
+            "id": "CUSTOM_0_3",
+            "name": "CUSTOM A 3B",
+            "isTest": true
+          },
+          "fromBase": 1,
+          "toBase": 2,
+          "result": "safe"
+        }
+      ],
+      "batterKey": "away_0",
+      "batterBase": 0,
+      "fieldingIndex": 0,
+      "target": 1,
+      "fieldingMistake": null,
+      "throws": [
+        {
+          "from": {
+            "key": "home_8",
+            "id": "CUSTOM_1_8",
+            "name": "CUSTOM B P",
+            "isTest": true,
+            "position": "P"
+          },
+          "toIndex": 2,
+          "toBase": 1,
+          "kind": "force",
+          "runnerKey": "away_0",
+          "timing": {
+            "fieldTime": 1.5200000000000007,
+            "ballArrival": 1.5200000000000007,
+            "fieldArrival": 1.4617033619354387,
+            "movement": 48.44244727228654,
+            "reaction": 0.31263157894736837,
+            "pickupTime": 0.7422962254670379,
+            "turnDelay": 0.1816385917083669,
+            "throwTime": 0.9059807120794823,
+            "coverETA": 1.5200000000000007,
+            "ballETA": 3.168276937546521,
+            "runnerETA": 3.8299999999999996,
+            "margin": 0.6617230624534787,
+            "source": "arrival-race"
+          },
+          "fromIndex": 0,
+          "toPoint": [
+            540,
+            315
+          ],
+          "start": 2.262296225467039,
+          "end": 3.168276937546521,
+          "tagAt": 3.168276937546521
+        }
+      ]
+    },
+    "choice": {
+      "source": "completed-play-history",
+      "classification": "fieldersChoice",
+      "classificationReason": "another runner targeted; batter remains safe",
+      "outs": 2,
+      "actions": [
+        {
+          "type": "forceOut",
+          "runner": {
+            "key": "away_3",
+            "id": "CUSTOM_0_3",
+            "name": "CUSTOM A 3B",
+            "isTest": true
+          },
+          "fromBase": 1,
+          "toBase": 2,
+          "result": "out"
+        }
+      ],
+      "batterKey": "away_0",
+      "batterBase": 1,
+      "fieldingIndex": 5,
+      "target": 2,
+      "fieldingMistake": null,
+      "throws": [
+        {
+          "from": {
+            "key": "home_4",
+            "id": "CUSTOM_1_4",
+            "name": "CUSTOM B SS",
+            "isTest": true,
+            "position": "SS"
+          },
+          "toIndex": 3,
+          "toBase": 2,
+          "kind": "force",
+          "runnerKey": "away_3",
+          "timing": {
+            "fieldTime": 1.6800000000000008,
+            "ballArrival": 1.6800000000000008,
+            "fieldArrival": 1.536744553579536,
+            "movement": 51.6060259305456,
+            "reaction": 0.31263157894736837,
+            "pickupTime": 0.6373287560522141,
+            "turnDelay": 0.1272645055623347,
+            "throwTime": 0.4218263540874503,
+            "coverETA": 2.104591575922326,
+            "ballETA": 2.739155110139665,
+            "runnerETA": 3.398421052631579,
+            "margin": 0.6592659424919138,
+            "source": "arrival-race"
+          },
+          "fromIndex": 5,
+          "toPoint": [
+            400,
+            225
+          ],
+          "start": 2.317328756052215,
+          "end": 2.739155110139665,
+          "tagAt": 2.739155110139665
+        }
+      ]
+    }
+  }
+}
