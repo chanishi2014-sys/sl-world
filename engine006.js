@@ -1,7 +1,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"test-match-006-engine-lab-20260911-r2", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
+ version:"process-engine-20260912-v1", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -16,18 +16,8 @@ const CONFIG = {
  // Lower the small-gap slope; the cubic term retains the extreme-gap advantage.
  contact:{baseLogit:1.45,duelWeight:2.8,gapCurve:.90,chasePenalty:.65,min:.12,max:.975,foulBase:.29,foulDifficulty:.12,foulMin:.18,foulMax:.42},
  batted:{qualityBase:.48,meetWeight:.32,powerWeight:.23,pitchWeight:.60,gapCompression:.82,extremeGap:.40,noise:.18,
-  thresholds:{perfect:.82,strong:.62,normal:.38,jammed:.18},
-  // Direct outcome distributions conditioned on batted quality, never a team/league strength table.
-  outcomes:{
-   perfect:{groundout:.07,flyout:.10,lineout:.09,single:.38,double:.22,triple:.02,homeRun:.12},
-   strong:{groundout:.16,flyout:.20,lineout:.14,single:.25,double:.17,triple:.02,homeRun:.06},
-   normal:{groundout:.33,flyout:.23,lineout:.12,single:.23,double:.075,triple:.005,homeRun:.01},
-   jammed:{groundout:.48,flyout:.25,lineout:.10,single:.15,double:.017,triple:.002,homeRun:.001},
-   touch:{groundout:.60,flyout:.24,lineout:.06,single:.096,double:.004,triple:0,homeRun:0}},
-  hrPowerBase:.12,hrPowerWeight:1.35,doublePowerBase:.65,doublePowerWeight:.70,
-  tripleSpeedBase:.30,tripleSpeedWeight:1.40,longBallSuppression:.65,
-  infieldBase:.015,infieldSpeed:.10},
- running:{extraBase:.08,speedWeight:.62,twoOutBonus:.12,strongHitBonus:.08,min:.02,max:.85}
+  thresholds:{perfect:.82,strong:.62,normal:.38,jammed:.18}
+  },
 };
 const STORAGE_KEY="sl_world_players_v01";
 const PITCH_CATALOG={straight:["ツーシーム","ムービングファスト"],slider:["スライダー","Hスライダー","カットボール"],curve:["カーブ","スローカーブ","Sスライダー","Dカーブ","スラーブ","ナックルカーブ"],fork:["フォーク","SFF","Vスライダー","チェンジアップ","パーム","ナックル"],sinker:["シンカー","スクリュー","Hシンカー"],shoot:["シュート","Hシュート","シンキングファスト"]};
@@ -64,7 +54,7 @@ function makeTeam(name,side,db,cfg){
  const bench=roster.filter(p=>!selected.includes(p)).map((p,i)=>adaptPlayer(p,`${side}_bench_${i}`,cfg)); return {name,lineup,bench,pitcher:lineup[8],rosterCount:roster.length,testCount:lineup.filter(p=>p.isTest).length};
 }
 // ==================== RNG (seeded, no Math.random / wall clock) ====================
-function createRNG(seed){let value=2166136261;for(const ch of String(seed)){value^=ch.charCodeAt(0);value=Math.imul(value,16777619);}return ()=>{value=(value+0x6D2B79F5)|0;let t=value;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};}
+function createRNG(seed){let value=2166136261;for(const ch of String(seed)){value^=ch.charCodeAt(0);value=Math.imul(value,16777619);}const rng=()=>{value=(value+0x6D2B79F5)|0;let t=value;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};rng.getState=()=>value;rng.setState=n=>{value=n|0;};return rng;}
 function weighted(rng,entries){const sum=entries.reduce((n,[,w])=>n+w,0);let n=rng()*sum;for(const [item,w]of entries){n-=w;if(n<0)return item;}return entries.at(-1)[0];}
 // ==================== game state / statistics ====================
 function newGame(teams,seed,cfg=CONFIG){
@@ -86,22 +76,9 @@ function creditRun(g,runner,batter,pitcher){const s=g.state,side=offense(g);s.sc
  if(!s.unearned[runner.key]&&s.virtualOuts<3)s.pitching[pitcher.key].ER++;
  SL_FIELDING.move(g,runner,(s.playBefore?.findIndex(r=>r?.key===runner.key)??-1)+1,4,"safe","scoringPlay");}
 function walkOff(g){const s=g.state;return s.inning===g.config.innings&&s.half==="bottom"&&s.score[1]>s.score[0];}
-function advanceHit(g,batter,pitcher,bases,hit={}){
- const s=g.state,previous=[...s.bases];s.bases=[null,null,null];
- // Score lead runners first. A non-HR walk-off ends scoring at the winning run.
- for(let i=2;i>=0;i--){const runner=previous[i];if(!runner)continue;let target=i+bases;
-  // Safe extra advancement only: no new fielding errors or baserunning outs.
-  if(bases<3&&!hit.infieldHit&&target<3){
-   const c=g.config.running,extra=target+1;
-   const chance=clamp(c.extraBase+(hit.hitAndRun?.18:0)+c.speedWeight*scaled(runner,"speed",g.config)+(s.outs===2?c.twoOutBonus:0)+(hit.battedQuality>=g.config.batted.thresholds.strong?c.strongHitBonus:0)+specialModifiers(runner,pitcher).baserunning,c.min,c.max);
-   if((extra>=3||!s.bases[extra])&&g.rng()<chance)target=extra;
-  }
-  if(target>=3){creditRun(g,runner,batter,pitcher);if(bases!==4&&walkOff(g)){finish(g,"walkoff");return;}}
-  else s.bases[target]=runner;
- }
- if(bases===4)creditRun(g,batter,batter,pitcher);else s.bases[bases-1]=batter;
- if(walkOff(g))finish(g,"walkoff");
-}
+// A confirmed fence crossing awards four bases by rule. All live-ball advances
+// are resolved by SL_FIELDING.process; this helper cannot prescribe hit bases.
+function advanceHit(g,batter,pitcher,bases){if(bases!==4)throw Error('Live-ball advances require the process resolver');const previous=[...g.state.bases];g.state.bases=[null,null,null];for(let i=2;i>=0;i--)if(previous[i])creditRun(g,previous[i],batter,pitcher);creditRun(g,batter,batter,pitcher);if(walkOff(g))finish(g,'walkoff');}
 function advanceWalk(g,batter,pitcher){const s=g.state;if(s.bases[0]){if(s.bases[1]){if(s.bases[2])creditRun(g,s.bases[2],batter,pitcher);s.bases[2]=s.bases[1];}s.bases[1]=s.bases[0];}s.bases[0]=batter;if(walkOff(g))finish(g,"walkoff");}
 // ==================== individual special-effect extension points ====================
 // Empty in this alpha: all stored specials remain intact, but none receive an invented effect.
@@ -173,20 +150,11 @@ function generateBattedQuality(g,batter,pitch,effects){
 }
 // ==================== 5. final outcome conditioned on batted quality ====================
 function resolveFinalResult(g,batter,pitch,ball,effects){
- const c=g.config.batted,power=scaled(batter,"power",g.config),speed=scaled(batter,"speed",g.config);
- const weights={...c.outcomes[ball.grade]};
- const suppression=clamp(1-c.longBallSuppression*(pitch.pitchQuality-.5),.60,1.40);
- const extraBase=clamp(1+effects.extraBase,.10,3);
- weights.homeRun*=(c.hrPowerBase+c.hrPowerWeight*power)*suppression*extraBase;
- weights.double*=(c.doublePowerBase+c.doublePowerWeight*power)*Math.sqrt(suppression)*extraBase;
- weights.triple*=(c.tripleSpeedBase+c.tripleSpeedWeight*speed)*Math.sqrt(suppression)*extraBase;
- let result=weighted(g.rng,Object.entries(weights)),infieldHit=false;
- if(result==="groundout"&&!SL_TACTICS.enabled(g)&&g.rng()<clamp(c.infieldBase+c.infieldSpeed*speed,0,.25)){result="single";infieldHit=true;}
- return {battedResult:result,battedQuality:ball.score,battedGrade:ball.grade,infieldHit};
+ return SL_FIELDING.process.generate(g,batter,ball,effects);
 }
-// Keep the exposed helper's string result for callers of the earlier alpha.
+// Contact generation returns physical parameters, never an outcome prediction.
 function resolveBattedBall(g,batter,pitch={pitchQuality:.5},effects=specialModifiers(batter,null)){
- return resolveFinalResult(g,batter,pitch,generateBattedQuality(g,batter,pitch,effects),effects).battedResult;
+ return resolveFinalResult(g,batter,pitch,generateBattedQuality(g,batter,pitch,effects),effects);
 }
 function resolvePitch(g,pitcher,batter){
  const effects=specialModifiers(batter,pitcher);
@@ -205,11 +173,9 @@ function applyPitch(g,pitch,batter,pitcher){const s=g.state,bs=s.batting[batter.
  else if(pitch.outcome==="foul"){if(s.strikes<2)s.strikes++;else if(pitch.buntAttempt){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;pitch.log="スリーバント失敗、三振";}}
  else if(pitch.outcome==="calledStrike"||pitch.outcome==="swingingStrike"){s.strikes++;if(s.strikes===3){result="strikeout";bs.AB++;bs.K++;ps.K++;recordOut(g,pitcher);ended=true;}}
  else if(pitch.outcome==="inPlay"){
-  result=pitch.battedResult;bs.AB++;ended=true;if(pitch.bunt)SL_TACTICS.buntGeometry(g,pitch);else SL_FIELDING.geometry(g,pitch);result=pitch.battedResult;
-  pitch.runnerIntents=SL_FIELDING.forcePlan(s.bases,batter).map(r=>pitch.ballType==='ground'||r.fromBase===0?r:{...r,toBase:r.fromBase,force:false});
-  const distances={single:1,double:2,triple:3,homeRun:4};
-  if(Object.hasOwn(distances,result)){bs.H++;ps.H++;s.hits[offense(g)]++;if(result==="double")bs.doubles++;if(result==="triple")bs.triples++;if(result==="homeRun"){bs.HR++;ps.HR++;}advanceHit(g,batter,pitcher,distances[result],pitch);}
-  else {s.suppressRBI=false;result=SL_FIELDING.field(g,pitch,batter,pitcher);s.suppressRBI=false;}
+  bs.AB++;ended=true;
+  if(!pitch.physical)Object.assign(pitch,SL_FIELDING.process.generate(g,batter,{score:pitch.battedQuality??.5,grade:pitch.battedGrade||'normal'}));
+  result=SL_FIELDING.process.play(g,pitch,batter,pitcher);pitch.battedResult=result;
  }
  return {result,ended};
 }
@@ -221,11 +187,11 @@ function switchHalf(g){const s=g.state;if(s.outs<3||s.finished)return;
 // ==================== event log (one immutable record per pitch) ====================
 function onePitch(g){if(g.state.finished)return null;const operations=SL_TACTICS.prepare(g);const s=g.state,pitcher=currentPitcher(g),batter=currentBatter(g);
  s.playActions=[];s.playBefore=runners(s);
- const event={defensivePositions:SL_TACTICS.alignment(g).positions,outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:s.events.length+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
+ const event={defensivePositions:SL_TACTICS.alignment(g).positions,outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:(s.eventCount||0)+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
  const tactical=SL_TACTICS.enabled(g),decision=tactical?SL_TACTICS.offenseDecision(g,batter,pitcher):null;
  const steal=tactical?(decision.decision.startsWith("STEAL_")?SL_FIELDING.steal(g,pitcher,decision):null):SL_FIELDING.steal(g,pitcher);
- const pitch=steal||SL_TACTICS.execute(g,pitcher,batter,decision);if(!steal&&!pitch.intentionalWalk)s.pitching[pitcher.key].pitches++;
- if(pitch.intentionalWalk)s.balls=3; const applied=steal?{result:steal.result,ended:false}:applyPitch(g,pitch,batter,pitcher);
+ const pitch=steal||SL_TACTICS.execute(g,pitcher,batter,decision);if(!pitch.intentionalWalk)s.pitching[pitcher.key].pitches++;
+ if(pitch.intentionalWalk)s.balls=3; const applied=steal?{result:steal.result,ended:false}:applyPitch(g,pitch,batter,pitcher);if(steal&&s.outs<3){const delivered=applyPitch(g,{outcome:steal.deliveredPitch.outcome},batter,pitcher);applied.ended=delivered.ended;steal.pitchResult=delivered.result;}
  Object.assign(event,pitch,{result:applied.result,plateAppearanceEnded:applied.ended,outsAfter:s.outs,ballsAfter:s.balls,strikesAfter:s.strikes,runnersAfter:runners(s),scoreAfter:[...s.score],pitchCount:s.pitching[pitcher.key].pitches});
  event.eventType=steal?'baserunning':'pitch';event.hit=['single','double','triple','homeRun'].includes(event.result);
  event.hitsAfter=[...s.hits];event.errorsAfter=[...s.errors];event.runsScored=s.score.reduce((n,v,i)=>n+v-event.scoreBefore[i],0);event.scoringPlay=event.runsScored>0;
@@ -236,7 +202,7 @@ function onePitch(g){if(g.state.finished)return null;const operations=SL_TACTICS
  if(decision)event.tactics=SL_TACTICS.eventTrace(event,decision);event.operations=operations;
  if(applied.ended)completePA(g);switchHalf(g);
  event.nextState={inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,runners:runners(s),score:[...s.score],hits:[...s.hits],errors:[...s.errors],finished:s.finished,finishReason:s.finishReason};
- s.events.push(event);return event;
+ s.eventCount=(s.eventCount||0)+1;if(g.retainEvents!==false)s.events.push(event);return event;
 }
 function advance(g,mode){let count=0;const pa=g.state.paCompleted,inning=g.state.inning;
  while(!g.state.finished){onePitch(g);count++;if(mode==="pitch"||(mode==="atbat"&&g.state.paCompleted!==pa)||(mode==="inning"&&g.state.inning!==inning))break;
@@ -286,7 +252,7 @@ function createDuelTest(preset,seed,startPitches=0,cfg=CONFIG){
  if(!Number.isInteger(startPitches)||startPitches<0||startPitches>500)throw Error("開始投球数は0〜500の整数で指定してください。");
  const batting=BALANCE_PROFILES[preset.batting],pitching=BALANCE_PROFILES[preset.pitching];
  const teams=[virtualTeam("BATTER","away",batting,pitching,0,cfg),virtualTeam("PITCHER","home",batting,pitching,preset.breaking,cfg)];
- return {game:newGame(teams,seed,cfg),startPitches,counts:{PA:0,AB:0,H:0,TB:0,single:0,double:0,triple:0,homeRun:0,strikeout:0,walk:0,groundout:0,flyout:0,lineout:0},fiveAB:{atBats:0,hits:0,groups:0,hitless:0}};
+ return {game:newGame(teams,seed,cfg),startPitches,counts:{PA:0,AB:0,H:0,TB:0,single:0,double:0,triple:0,homeRun:0,strikeout:0,walk:0,groundout:0,flyout:0,lineout:0,error:0,fieldersChoice:0,doublePlay:0,sacrificeBunt:0,sacrificeFly:0},fiveAB:{atBats:0,hits:0,groups:0,hitless:0}};
 }
 function stepDuelTest(test){
  const g=test.game,s=g.state;

@@ -1,0 +1,26 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+  const browser=await chromium.launch({headless:true,channel:'msedge'});
+  const page=await browser.newPage({viewport:{width:1100,height:950}}),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('http://127.0.0.1:4173/custom-match.html');
+  await page.locator('#import').setInputFiles('test-artifacts/custom-match-browser.json');
+  await page.waitForFunction(()=>document.querySelector('#scenes button'));
+  await page.locator('#scenes button').first().click();
+  await page.waitForURL('**/engine-lab.html?custom=1');
+  await page.getByRole('button',{name:'保存場面の1投を再現'}).click();
+  await page.waitForFunction(()=>document.querySelector('#setupSection').textContent.includes('"matched": true'));
+  const canvas=page.locator('.custom-scene-viewer canvas');
+  assert(await canvas.isVisible());
+  const before=await canvas.evaluate(c=>c.toDataURL());
+  await page.locator('#setupSection input[type=range]').evaluate(s=>{s.value=Number(s.max)*.7;s.dispatchEvent(new Event('input'));});
+  assert.notEqual(await canvas.evaluate(c=>c.toDataURL()),before);
+  await canvas.scrollIntoViewIfNeeded();
+  await page.screenshot({path:'test-artifacts/custom-match-lab.png'});
+  await page.setViewportSize({width:390,height:844});
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
+  assert.deepEqual(errors,[]);
+  await browser.close();
+  console.log('PASS saved-scene canvas visible, timeline changes image, mobile width, no exceptions');
+})().catch(e=>{console.error(e);process.exitCode=1;});

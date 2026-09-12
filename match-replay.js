@@ -14,6 +14,7 @@
  const banners={sacrificeBunt:'SAC BUNT',error:'ERROR',fieldersChoice:'FC',doublePlay:'DOUBLE PLAY',sacrificeFly:'SAC FLY',stolenBase:'SAFE',caughtStealing:'OUT',groundout:'OUT',flyout:'OUT',lineout:'OUT',single:'SINGLE',double:'DOUBLE',triple:'TRIPLE',homeRun:'HOME RUN',strikeout:'STRIKE OUT',calledStrike:'STRIKE',swingingStrike:'STRIKE',foul:'FOUL',ball:'BALL',walk:'FOUR BALLS'};
  const safeText=(value,fallback='—')=>typeof value==='string'&&value.trim()&&!/^(undefined|null)$/i.test(value)?value:fallback;
  function decisionDebug(e){
+ if(e.tactics?.situation)return ['Situation: '+JSON.stringify(e.tactics.situation),'Options: '+JSON.stringify(e.tactics.options),'Decision: '+e.tactics.decision,'Reason: '+(e.tactics.reason||[]).join('; '),'Execution: '+JSON.stringify(e.tactics.execution),'Outcome: '+JSON.stringify(e.tactics.outcome),'Defense: '+JSON.stringify(e.defenseDecision||null),'Operations: '+JSON.stringify(e.operations||[])].join('\n');
   if(!e.tactics)return '';
   const sections=[e.tactics.offense,e.tactics.defense].filter(Boolean);
   return sections.map(d=>{const options=d.candidates?.filter(c=>c.toBase).map(c=>'- '+c.toBase+'B out chance: '+c.outChance.toFixed(2)+' / risk: '+c.errorRisk.toFixed(3)).join('\n');return 'Decision: '+d.decision.replaceAll('_',' ')+'\nReason:\n'+d.reasons.map(r=>'- '+r).join('\n')+(options?'\n'+options:'');}).join('\n\n')+'\n'+JSON.stringify({force:e.forceAtContact,trajectory:e.trajectory,return:e.returnDecision,running:e.runningDebug});
@@ -46,9 +47,9 @@
   e.play??=SL_FIELDING.buildPlay(e);
   return e;
  }
- function animationPlan(e){
+ function animationPlan(e){const positions=e.defensivePositions||layout.positions;
   const steal=e.eventType==='baserunning',inPlay=e.outcome==='inPlay'&&!steal,foul=e.outcome==='foul',kind=e.ballType;
-  const release=620,pitchEnd=release+Math.max(300,650-((Number(e.pitchSpeed)||140)-80)*4.4);
+  const execution=e.stealExecution||e.runningExecution?.stealExecution,release=execution?execution.motion*1000:620,pitchEnd=execution?execution.pitchArrival*1000:release+Math.max(300,650-((Number(e.pitchSpeed)||140)-80)*4.4);
   const fielder=e.fielderIndex,target=e.presentation.target,fieldPoint=e.fieldingPoint;
   const loose=inPlay&&!e.trajectory&&(['single','double','triple'].includes(e.result)||(e.error&&e.errorType!=='throwing'));
   const flight=e.trajectory?.fieldTime?e.trajectory.fieldTime*1000:inPlay||foul?Math.max(e.bunt?1300:kind==='line'?700:kind==='ground'?850:kind==='homer'?1900:1400,distance(positions[fielder],target)/.18+180):0;
@@ -73,7 +74,7 @@
   if(e.play){const q=e.play,ms=t=>pitchEnd+t*1000,legs=q.transfers.map(t=>({...t,start:ms(t.start),end:ms(t.end),tagAt:ms(t.tagAt)}));return {release,pitchEnd,kind,inPlay,foul,steal,target,fieldPoint:q.catchPoint,fielder:q.actualIndex,flight:q.flight*1000,landingAt:ms(q.landingAt),rollDuration:(q.caught-q.landingAt)*1000,loose:q.caught>q.landingAt,caught:ms(q.caught),transfers:legs,hasThrow:!!legs.length,throwStart:legs[0]?.start??ms(q.caught),throwEnd:legs.at(-1)?.end??ms(q.caught),throwTarget:legs.at(-1)?.toPoint||q.catchPoint,resultAt:ms(q.completeAt),runStart:ms(Math.min(.13,...q.runners.map(r=>r.start))),runEnd:ms(q.completeAt),returnAt:ms(q.resetAt),resetEnd:ms(q.resetEnd),halfChanged,end:halfChanged?ms(q.resetAt)+1600:ms(q.resetEnd),runningDebug:{...e.runningDebug,playPhase:'engine-timeline',ownership:q.timeline,runnerStates:q.runners,returnStart:legs[0]?.start??null}};}
   return {release,pitchEnd,kind,inPlay,foul,steal,target,fieldPoint,fielder,flight,landingAt,rollDuration,loose,caught,transfers,hasThrow:transfers.length>0,throwStart:transfers[0]?.start||caught,throwEnd:transfers.at(-1)?.end||caught,throwTarget:transfers.at(-1)?.toPoint||target,resultAt,runStart,runEnd,returnAt,resetEnd,runningDebug:{...e.runningDebug,returnStart:transfers[0]?.start??null,batterSecondArrival:e.actions.some(a=>a.runner?.key===e.batter.key&&a.toBase>=2)?runEnd:null},halfChanged,end:halfChanged?returnAt+1600:resetEnd};
  }
- function ballAnimation(e,p,time){
+ function ballAnimation(e,p,time){const positions=e.defensivePositions||layout.positions;
   if(time<p.release)return {phase:'windup',ground:positions[0],height:0,visible:false};
   if(time<p.pitchEnd)return {phase:'pitch',ground:point(positions[0],p.steal?positions[1]:bases[0],progress(time,p.release,p.pitchEnd)),height:4,visible:true};
   if(!p.inPlay&&!p.foul&&!p.steal)return {phase:'catcher',ground:positions[1],height:8,visible:time<p.pitchEnd+230};
@@ -81,6 +82,7 @@
    const state=SL_FIELDING.samplePlay(e.play,(time-p.pitchEnd)/1000),active=p.transfers.find(t=>time>=t.start&&time<t.end),last=p.transfers.filter(t=>time>=t.end).at(-1);
    return {phase:active?(active.carried?'carry':'throw'):last?(last.kind==='tag'?(time>=last.tagAt?'tag':'received'):last.kind==='force'?'baseTouch':'received'):'fieldCatch',ground:state.ballPosition||p.fieldPoint,height:active?12:8,visible:time<p.returnAt,ballOwner:state.ballOwner,thrower:active?.throwerKey??null,playPhase:state.phase};
   }
+  if(e.physical&&!p.steal&&time>=p.pitchEnd&&time<p.caught){const b=SL_FIELDING.process.ballAt(e,(time-p.pitchEnd)/1000);return {phase:p.kind,ground:b.point,height:b.height,visible:true};}
   if(Number.isFinite(e.trajectory?.initialSpeed)&&p.kind==='ground'&&time>=p.pitchEnd&&time<p.landingAt){const seconds=(time-p.pitchEnd)/1000,d=Math.min(distance(bases[0],p.target),Math.max(0,e.trajectory.initialSpeed*seconds-e.trajectory.deceleration*seconds*seconds/2));return {phase:'ground',ground:[400+Math.sin(e.sprayAngle)*d,430-Math.cos(e.sprayAngle)*d],height:Math.abs(Math.sin(seconds*8))*3,visible:true};}
   if(!p.steal&&time<p.landingAt){const t=progress(time,p.pitchEnd,p.landingAt);return {phase:p.kind,ground:point(bases[0],p.target,t),height:p.kind==='ground'?Math.abs(Math.sin(t*Math.PI*5))*(e.bunt?1:3):p.kind==='line'?Math.sin(t*Math.PI)*18:p.kind==='homer'?Math.sin(t*Math.PI)*115+25*t:Math.sin(t*Math.PI)*95,visible:true};}
   if(p.kind==='homer'&&!p.steal)return {phase:'homerExit',ground:p.target,height:0,visible:false};
@@ -96,6 +98,7 @@
   return {phase,ground:[held[0]+12*facing,held[1]],height:phase==='tag'||(!receivedLeg&&p.kind==='ground')?6:30,visible:time<p.returnAt};
  }
  function runnerAnimation(e,p,time){
+  if(e.play&&e.runnerDecisions)return e.play.runners.filter(r=>r.fromBase>0||time>=p.pitchEnd+r.start*1000).map(r=>{const seconds=(time-p.pitchEnd)/1000,leg=r.legs?.filter(l=>l.start<=seconds).at(-1);const d=leg?leg.fromBase+(leg.toBase-leg.fromBase)*clamp01((Math.min(seconds,r.end)-leg.start)/(leg.end-leg.start)):r.fromBase,segment=Math.min(3,Math.floor(d));return {who:r.runner,start:r.fromBase,finish:r.toBase,position:point(bases[segment],bases[segment+1],d-segment),running:!!leg&&seconds<Math.min(leg.end,r.end),visible:!(r.outAt!=null&&seconds>=r.outAt+.4)&&d<4,state:seconds>=r.end?r.state:'running'};});
   if(e.play)return e.play.runners.filter(r=>r.fromBase>0||time>=p.pitchEnd+r.start*1000).map(r=>{const seconds=(time-p.pitchEnd)/1000,elapsed=Math.max(0,Math.min(seconds,r.end)-r.start),duration=Math.max(.001,r.arrivalAt-r.start),fraction=clamp01(elapsed/duration),d=lerp(r.fromBase,r.toBase,fraction),segment=Math.min(3,Math.floor(d));return {who:r.runner,start:r.fromBase,finish:r.toBase,position:point(bases[segment],bases[segment+1],d-segment),running:seconds>=r.start&&seconds<r.end&&r.toBase!==r.fromBase,visible:!(r.outAt!=null&&seconds>=r.outAt+.4)&&!(r.toBase===4&&fraction===1),state:seconds>=r.end?r.state:'running'};});
   const people=e.runnersBefore.flatMap((who,i)=>who?[{who,start:i+1}]:[]);
   const batterAction=e.actions.find(a=>a.runner?.key===e.batter.key&&a.fromBase===0);

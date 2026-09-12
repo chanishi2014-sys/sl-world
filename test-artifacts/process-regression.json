@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "inspected": 732,
+  "races": [
+    {
+      "speed": 0.05263157894736842,
+      "arm": 2,
+      "runnerETA": 3.9957894736842103,
+      "tagAt": 3.9713500999171196,
+      "safe": false
+    },
+    {
+      "speed": 0.05263157894736842,
+      "arm": 20,
+      "runnerETA": 3.9957894736842103,
+      "tagAt": 3.637024081108342,
+      "safe": false
+    },
+    {
+      "speed": 1,
+      "arm": 2,
+      "runnerETA": 3.38,
+      "tagAt": 3.9713500999171196,
+      "safe": true
+    },
+    {
+      "speed": 1,
+      "arm": 20,
+      "runnerETA": 3.38,
+      "tagAt": 3.637024081108342,
+      "safe": true
+    }
+  ],
+  "results": {
+    "flyout": 86,
+    "calledStrike": 108,
+    "groundout": 53,
+    "swingingStrike": 34,
+    "foul": 85,
+    "ball": 225,
+    "lineout": 31,
+    "strikeout": 26,
+    "walk": 17,
+    "single": 39,
+    "stolenBase": 12,
+    "fieldersChoice": 7,
+    "caughtStealing": 5,
+    "error": 3,
+    "sacrificeBunt": 1
+  },
+  "batch": {
+    "runCount": 100,
+    "bytes": 542175,
+    "ms": 44462.217899999996,
+    "sceneCount": 32,
+    "detailCount": 6,
+    "averages": {
+      "runs": 0.75,
+      "allowed": 0.71,
+      "hits": 5.29,
+      "homeRuns": 0.01,
+      "stealAttempts": 2.01,
+      "stealSuccess": 1.65,
+      "sacrifices": 0.04,
+      "sacrificeAttempts": 0.15,
+      "hitRun": 0.77,
+      "squeeze": 0.09,
+      "doublePlays": 0.33
+    }
+  }
+}

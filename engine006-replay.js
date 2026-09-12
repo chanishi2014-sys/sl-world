@@ -49,7 +49,7 @@
  }
  function animationPlan(e){const positions=e.defensivePositions||layout.positions;
   const steal=e.eventType==='baserunning',inPlay=e.outcome==='inPlay'&&!steal,foul=e.outcome==='foul',kind=e.ballType;
-  const release=620,pitchEnd=release+Math.max(300,650-((Number(e.pitchSpeed)||140)-80)*4.4);
+  const execution=e.stealExecution||e.runningExecution?.stealExecution,release=execution?execution.motion*1000:620,pitchEnd=execution?execution.pitchArrival*1000:release+Math.max(300,650-((Number(e.pitchSpeed)||140)-80)*4.4);
   const fielder=e.fielderIndex,target=e.presentation.target,fieldPoint=e.fieldingPoint;
   const loose=inPlay&&!e.trajectory&&(['single','double','triple'].includes(e.result)||(e.error&&e.errorType!=='throwing'));
   const flight=e.trajectory?.fieldTime?e.trajectory.fieldTime*1000:inPlay||foul?Math.max(e.bunt?1300:kind==='line'?700:kind==='ground'?850:kind==='homer'?1900:1400,distance(positions[fielder],target)/.18+180):0;
@@ -82,6 +82,7 @@
    const state=SL_FIELDING.samplePlay(e.play,(time-p.pitchEnd)/1000),active=p.transfers.find(t=>time>=t.start&&time<t.end),last=p.transfers.filter(t=>time>=t.end).at(-1);
    return {phase:active?(active.carried?'carry':'throw'):last?(last.kind==='tag'?(time>=last.tagAt?'tag':'received'):last.kind==='force'?'baseTouch':'received'):'fieldCatch',ground:state.ballPosition||p.fieldPoint,height:active?12:8,visible:time<p.returnAt,ballOwner:state.ballOwner,thrower:active?.throwerKey??null,playPhase:state.phase};
   }
+  if(e.physical&&!p.steal&&time>=p.pitchEnd&&time<p.caught){const b=SL_FIELDING.process.ballAt(e,(time-p.pitchEnd)/1000);return {phase:p.kind,ground:b.point,height:b.height,visible:true};}
   if(Number.isFinite(e.trajectory?.initialSpeed)&&p.kind==='ground'&&time>=p.pitchEnd&&time<p.landingAt){const seconds=(time-p.pitchEnd)/1000,d=Math.min(distance(bases[0],p.target),Math.max(0,e.trajectory.initialSpeed*seconds-e.trajectory.deceleration*seconds*seconds/2));return {phase:'ground',ground:[400+Math.sin(e.sprayAngle)*d,430-Math.cos(e.sprayAngle)*d],height:Math.abs(Math.sin(seconds*8))*3,visible:true};}
   if(!p.steal&&time<p.landingAt){const t=progress(time,p.pitchEnd,p.landingAt);return {phase:p.kind,ground:point(bases[0],p.target,t),height:p.kind==='ground'?Math.abs(Math.sin(t*Math.PI*5))*(e.bunt?1:3):p.kind==='line'?Math.sin(t*Math.PI)*18:p.kind==='homer'?Math.sin(t*Math.PI)*115+25*t:Math.sin(t*Math.PI)*95,visible:true};}
   if(p.kind==='homer'&&!p.steal)return {phase:'homerExit',ground:p.target,height:0,visible:false};
@@ -97,6 +98,7 @@
   return {phase,ground:[held[0]+12*facing,held[1]],height:phase==='tag'||(!receivedLeg&&p.kind==='ground')?6:30,visible:time<p.returnAt};
  }
  function runnerAnimation(e,p,time){
+  if(e.play&&e.runnerDecisions)return e.play.runners.filter(r=>r.fromBase>0||time>=p.pitchEnd+r.start*1000).map(r=>{const seconds=(time-p.pitchEnd)/1000,leg=r.legs?.filter(l=>l.start<=seconds).at(-1);const d=leg?leg.fromBase+(leg.toBase-leg.fromBase)*clamp01((Math.min(seconds,r.end)-leg.start)/(leg.end-leg.start)):r.fromBase,segment=Math.min(3,Math.floor(d));return {who:r.runner,start:r.fromBase,finish:r.toBase,position:point(bases[segment],bases[segment+1],d-segment),running:!!leg&&seconds<Math.min(leg.end,r.end),visible:!(r.outAt!=null&&seconds>=r.outAt+.4)&&d<4,state:seconds>=r.end?r.state:'running'};});
   if(e.play)return e.play.runners.filter(r=>r.fromBase>0||time>=p.pitchEnd+r.start*1000).map(r=>{const seconds=(time-p.pitchEnd)/1000,elapsed=Math.max(0,Math.min(seconds,r.end)-r.start),duration=Math.max(.001,r.arrivalAt-r.start),fraction=clamp01(elapsed/duration),d=lerp(r.fromBase,r.toBase,fraction),segment=Math.min(3,Math.floor(d));return {who:r.runner,start:r.fromBase,finish:r.toBase,position:point(bases[segment],bases[segment+1],d-segment),running:seconds>=r.start&&seconds<r.end&&r.toBase!==r.fromBase,visible:!(r.outAt!=null&&seconds>=r.outAt+.4)&&!(r.toBase===4&&fraction===1),state:seconds>=r.end?r.state:'running'};});
   const people=e.runnersBefore.flatMap((who,i)=>who?[{who,start:i+1}]:[]);
   const batterAction=e.actions.find(a=>a.runner?.key===e.batter.key&&a.fromBase===0);

@@ -40,7 +40,14 @@ function normalizeScenario(input){
  for(const p of Object.values(s.players))if(p.isTest&&String(p.id).startsWith('LAB_'))p.name=String(p.id).slice(4)+' '+Object.entries({...p.batting,...p.pitching}).map(([k,v])=>k+'='+v).join(' / ');
  return s;
 }
-function setup(s){s=normalizeScenario(s);validate(s);const teams=['AWAY','HOME'].map((name,i)=>E.makeTeam(name,i?'home':'away',[],E.CONFIG)),off=s.half==='top'?0:1,def=1-off;
+function setup(s){s=normalizeScenario(s);validate(s);if(s.resume){
+ const teams=copy(s.resume.teams),st=s.resume.state,off=s.half==='top'?0:1,def=1-off;
+ function replace(side,key,raw){const index=teams[side].lineup.findIndex(p=>p.key===key);if(index<0)return;const old=teams[side].lineup[index],p=E.adaptPlayer({...raw,mainPosition:old.profile.mainPosition},key,E.CONFIG);teams[side].lineup[index]=p;if(teams[side].pitcher.key===key)teams[side].pitcher=p;}
+ replace(off,teams[off].lineup[s.order-1].key,s.players.batter);replace(off,teams[off].lineup[s.order%9].key,s.players.next);
+ replace(def,teams[def].pitcher.key,s.players.pitcher);const catcher=teams[def].lineup.find(p=>p.profile.mainPosition==='C');if(catcher)replace(def,catcher.key,s.players.catcher);
+ const reserved=new Set([teams[off].lineup[s.order-1].key,teams[off].lineup[s.order%9].key,...st.bases.filter(Boolean).map(r=>r.key)]),free=teams[off].lineup.filter(p=>!reserved.has(p.key)),runnerIndices=s.bases.map((yes,i)=>{if(!yes)return null;const saved=st.bases[i],r=saved&&teams[off].lineup.find(p=>p.key===saved.key)||free.shift();replace(off,r.key,s.players['runner'+(i+1)]||r.profile);return teams[off].lineup.findIndex(p=>p.key===r.key);});
+ return {scenario:copy(s),teams,runnerIndices,config:copy(E.CONFIG)};
+ }const teams=['AWAY','HOME'].map((name,i)=>E.makeTeam(name,i?'home':'away',[],E.CONFIG)),off=s.half==='top'?0:1,def=1-off;
  function put(side,index,raw){const p=E.adaptPlayer(raw,`${side?'home':'away'}_${index}`,E.CONFIG);teams[side].lineup[index]=p;if(index===8)teams[side].pitcher=p;return p;}
  // Give every fielder an explicit position so catcher and replacements are stable.
  const pos=['C','1B','2B','3B','SS','LF','CF','RF','P'];
@@ -58,7 +65,7 @@ function setup(s){s=normalizeScenario(s);validate(s);const teams=['AWAY','HOME']
  if(s.players.defensiveBench){const raw=copy(s.players.defensiveBench);if(raw.mainPosition==='OF')raw.mainPosition='LF';teams[def].bench.push(E.adaptPlayer(raw,'lab_def_bench',E.CONFIG));}
  return {scenario:copy(s),teams,runnerIndices,config:copy(E.CONFIG)};
 }
-function create(bundle,seed){const s=bundle.scenario,g=E.newGame(bundle.teams,seed,bundle.config),st=g.state,off=s.half==='top'?0:1;Object.assign(st,{inning:s.inning,half:s.half,outs:s.outs,virtualOuts:s.outs,score:[...s.score]});st.lines=[Array(9).fill(null),Array(9).fill(null)];for(let side=0;side<2;side++){for(let i=0;i<s.inning;i++)st.lines[side][i]=0;st.lines[side][0]=s.score[side];}st.order[off]=s.order-1;st.bases=s.bases.map((yes,i)=>yes?g.teams[off].lineup[bundle.runnerIndices[i]]:null);st.pitching[E.currentPitcher(g).key].pitches=s.fatigue;return g;}
+function create(bundle,seed){const s=bundle.scenario,g=E.newGame(bundle.teams,seed,bundle.config);if(s.resume){g.state=copy(s.resume.state);g.state.events=[];const st=g.state,off=s.half==='top'?0:1;if(st.outs!==s.outs)st.virtualOuts=s.outs;Object.assign(st,{inning:s.inning,half:s.half,outs:s.outs,score:copy(s.score)});st.order[off]=s.order-1;st.bases=s.bases.map((yes,i)=>yes?g.teams[off].lineup[bundle.runnerIndices[i]]:null);st.pitching[E.currentPitcher(g).key].pitches=s.fatigue;if(String(seed)===s.resume.seed){g.rng.setState(s.resume.rng);g.tacticalRng.setState(s.resume.tacticalRng);}return g;}const st=g.state,off=s.half==='top'?0:1;Object.assign(st,{inning:s.inning,half:s.half,outs:s.outs,virtualOuts:s.outs,score:[...s.score]});st.lines=[Array(9).fill(null),Array(9).fill(null)];for(let side=0;side<2;side++){for(let i=0;i<s.inning;i++)st.lines[side][i]=0;st.lines[side][0]=s.score[side];}st.order[off]=s.order-1;st.bases=s.bases.map((yes,i)=>yes?g.teams[off].lineup[bundle.runnerIndices[i]]:null);st.pitching[E.currentPitcher(g).key].pitches=s.fatigue;return g;}
 function anomalies(e){const out=[],add=(severity,rule,detail)=>out.push({severity,rule,detail,sequence:e.sequence});
  const d=e.tactics?.decision,keys=e.runnersAfter.filter(Boolean).map(p=>p.key);
  if(new Set(keys).size!==keys.length||e.outsAfter>3||e.outsAfter<e.outsBefore)add('CRITICAL','STATE_LEGALITY','duplicate runner / invalid out count');
@@ -79,7 +86,7 @@ function trial(bundle,seed,{events=false}={}){const g=create(bundle,seed),initia
  do {if(++guard>3000)throw Error('scenario pitch guard exceeded: '+seed);const e=E.onePitch(g);if(!e)break;e.sequence=guard;lastEvent=e;if(events)all.push(e);flags.push(...anomalies(e));
   const t=e.tactics,add=(map,k)=>map[k]=(map[k]||0)+1;
   // Selection rates use initial count / PA opportunities plus legal steal attempts.
-  if((e.balls===0&&e.strikes===0)||e.eventType==='baserunning'){
+  if(guard===1||(e.balls===0&&e.strikes===0)||e.eventType==='baserunning'){
    add(counts,t.decision);add(counts,'MATCHUP:'+t.offense.matchup.decision);add(counts,'ALIGNMENT:'+t.offense.alignment.decision);for(const r of t.reason||[])add(reasons,r);
    traces.push({sequence:e.sequence,intent:t.intent,situation:t.situation,options:t.options,decision:t.decision,reason:t.reason,matchup:t.offense.matchup,alignment:t.offense.alignment.decision,execution:t.execution,outcome:t.outcome});
   }

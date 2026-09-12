@@ -85,7 +85,7 @@
 </head><body>
 <div class="sl-home-return"><a href="./index.html#home">← SL WORLD HOME</a></div>
 <header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #006 / ENGINE LAB</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p><p id="engineVersion" class="note engine-version"></p></header>
-<main><p><a href="engine-lab.html">SL WORLD ENGINE LAB</a> / <a href="engine-test.html">005 baseline</a></p>
+<main><p><a href="./custom-match.html">CUSTOM MATCH TEST — 実戦バッチ / JSON / LAB</a></p><p><a href="engine-lab.html">SL WORLD ENGINE LAB</a> / <a href="engine-test.html">005 baseline</a></p>
 <section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
 <div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
@@ -121,7 +121,7 @@
 <div id="teamBalanceResults"></div>
 <p class="note">打率＝安打÷打数、出塁率＝（安打＋四球）÷打席、長打率＝塁打÷打数、OPS＝出塁率＋長打率。凡打率は三振を除く打球アウト÷打席。本塁打率・三振率・四球率の分母も打席数です。5打数0安打は四球を除いた連続5打数ごとの実測です。</p>
 </details>
-<section class="card note"><h2>このαでの範囲</h2>ストレート・スローボールは標準球種。追加球種は所持分だけ選択します。変化量は制球との兼ね合いで投球品質に反映します。球種の細かな固有効果・特殊能力の打撃／投球への個別効果は未実装です。登録済みの盗塁・走塁・クイック関連特性は戦術判断のみで参照します。守備・失策・フォースプレー・併殺・タッチアップ・二盗／三盗に対応。送りバントと説明可能な基本戦術判断に対応。死球・交代AI・勝敗投手・セーブは未実装。安打では走力・打球品質・アウト数に応じた安全な追加進塁があります（内野安打を除く）。守備位置の不足は出場選手で補完します。</section>
+<section class="card note"><h2>PROCESS ENGINE</h2>打球の方向・速度・高さから追球と捕球を計算し、送球・走塁の到達時刻でプレーを解決します。記録分類はプレー後です。盗塁適性はスタートと加速、クイックは投手モーション、バント適性は打球生成へ反映します。成績分布は暫定調整値です。自責点は失策出塁・仮想アウト数を用いた暫定集計です。実戦データの採取はCUSTOM MATCH TESTをご利用ください。</section>
 </main>
 <script src="./engine006-fielding.js"></script>
 <script src="./engine006-tactics.js"></script>

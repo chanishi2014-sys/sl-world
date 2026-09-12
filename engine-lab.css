@@ -8,3 +8,4 @@
 #solMeta{white-space:pre-line;font-size:16px;line-height:1.65}
 .metrics-table tbody td small{display:block;white-space:normal;font-size:10px;font-weight:400;color:var(--muted);overflow-wrap:anywhere}
 .conditions.matrix-conditions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.comparison-controls{margin:14px 0}.number-error,#configurationError{display:block;color:#ffd18c;font-size:13px;overflow-wrap:anywhere}#fixedMeetControls{margin:12px 0}.metrics-table+h4{margin-top:24px}
+.custom-scene-viewer canvas{width:100%;aspect-ratio:8/5;display:block}.custom-scene-viewer>.toolbar,.custom-scene-viewer .stadium-board,.custom-scene-viewer .live-lineups,.custom-scene-viewer [data-panel]>.toolbar{display:none!important}.custom-scene-viewer [data-detail]{font-size:13px}

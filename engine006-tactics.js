@@ -52,14 +52,14 @@
   const advances=s.bases.flatMap((runner,i)=>runner?[{runner,fromBase:i+1,toBase:i<chain||p.bunt&&i<2||p.squeeze&&i===2?i+2:i+1,force:i<chain}]:[]);
   const targets=[{runner:b,fromBase:0,toBase:1,force:true},...advances.filter(a=>a.toBase!==a.fromBase)];
   const candidates=[1,2,3,4].map(base=>{
-   const target=targets.find(a=>a.toBase===base),receiverIndex=F().receiverIndex(base,p.fielderIndex,point),receiver=fielders[receiverIndex];
+   const target=targets.find(a=>a.toBase===base),receiverIndex=p.defensivePlan?F().process.receiverFor(p,base,p.fielderIndex,point):F().receiverIndex(base,p.fielderIndex,point),receiver=fielders[receiverIndex];
    const distance=Math.hypot(point[0]-F().layout.bases[base][0],point[1]-F().layout.bases[base][1]);
-   const catching=F().ability(receiver,'catching'),errorRisk=.001+.020*(1-arm)**2+.010*(1-catching)**2+.006*(distance/300)**2;
+   const catching=F().ability(receiver,'catching'),errorRisk=(p.handling?.throwRisk??0)+.001+.020*(1-arm)**2+.010*(1-catching)**2+.006*(distance/300)**2;
    const fieldTime=p.trajectory?.fieldTime??(p.bunt?1.1+Math.hypot(point[0]-alignment(g).positions[p.fielderIndex][0],point[1]-alignment(g).positions[p.fielderIndex][1])/90+Math.hypot(point[0]-400,point[1]-430)/(150-90*(p.buntQuality??.5)):.8+Math.hypot(point[0]-400,point[1]-430)/210+Math.hypot(point[0]-alignment(g).positions[p.fielderIndex][0],point[1]-alignment(g).positions[p.fielderIndex][1])/150+(1-skill)*.25);
    const coverETA=Math.hypot(F().layout.positions[receiverIndex][0]-F().layout.bases[base][0],F().layout.positions[receiverIndex][1]-F().layout.bases[base][1])/(65+30*F().ability(receiver,'speed'));
    const ballETA=Math.max(coverETA,fieldTime+.2+distance/(receiverIndex===p.fielderIndex?85:150+80*arm)+(target&&!target.force?.15:0));
    const runnerETA=target?(target.fromBase===0?4.6:3.9)-1.25*n(g,target.runner,'speed'):0;
-   const timing=!p.bunt&&target?F().groundTiming(g,p,b,target,receiverIndex):null;
+   const timing=target?F().groundTiming(g,p,b,target,receiverIndex):null;
    const margin=timing?timing.margin:runnerETA-ballETA,outChance=settled||!target?0:timing?Number(margin>0):clamp(.5+margin*.4,.01,.97);
    const plausible=!settled&&!!target&&(timing?margin>0:margin>-.9);
    const damage=(base===4?1.5:.45)+.35*c.oneRunValue;
@@ -85,21 +85,25 @@
  }
  function groundPlay(g,p,b,pitcher){
   const s=g.state,f=F().defense(g)[p.fielderIndex],skill=F().ability(f,'fielding'),catching=F().ability(f,'catching');
-  const d=defenseDecision(g,p,b);p.defenseDecision=d;p.runnerIntents=F().forcePlan(s.bases,b);p.forceTrace={atContact:F().forcePlan(s.bases,b),advances:d.advances};
+  let d=defenseDecision(g,p,b);const ordinaryOut=d.candidates.some(c=>c.outChance>0);p.runnerIntents=F().forcePlan(s.bases,b);
   const catchError=g.rng()<(.003+.045*(1-(skill+catching)/2)**2)*.55;
-  if(catchError){d.decision='HOLD_BALL';d.reasons=['fielding error; no throw opportunity'];}
-  const hold=d.decision==='HOLD_BALL',throwError=!hold&&g.rng()<d.errorRisk,error=catchError||throwError;
-  if(error){p.error=true;p.errorType=catchError?'groundFielding':'throwing';s.errors[1-offense(g)]++;s.virtualOuts++;s.unearned[b.key]=true;p.log=catchError?'ゴロ捕球エラー':'送球エラー';}
-  if(!hold)p.throw={from:p.fielder,toBase:d.toBase,kind:d.force?'force':'tag',runnerKey:d.runnerKey,timing:d.timing||null};
-  const success=!hold&&!error&&(d.timing?d.ballETA<d.runnerETA:g.rng()<d.outChance),outKeys=[];
+  if(catchError){p.misplayAt=p.trajectory?.fieldTime??d.fieldTime??d.candidates[0].fieldTime;p.recoveryTime=.7+1.5*(1-catching)+g.rng()*.8;p.trajectory={...p.trajectory,fieldTime:p.misplayAt+p.recoveryTime};if(p.defensivePlan)F().process.moveTrack(g,p,p.fielderIndex,p.fieldingPoint,p.misplayAt,'primary',p.trajectory.fieldTime);d=defenseDecision(g,p,b);d.reasons.push('bobble recovered after '+p.recoveryTime.toFixed(2)+'s');}
+  p.defenseDecision=d;p.forceTrace={atContact:F().forcePlan(s.bases,b),advances:d.advances};
+  const hold=d.decision==='HOLD_BALL',throwError=!hold&&d.receiverIndex!==p.fielderIndex&&g.rng()<d.errorRisk,error=catchError||throwError;
+  let missPoint=null;
+  if(throwError&&d.timing){const base=F().layout.bases[d.toBase],at=p.fieldingPoint||p.landingPoint,dx=base[0]-at[0],dy=base[1]-at[1],length=Math.max(1,Math.hypot(dx,dy)),offset=(g.rng()<.5?-1:1)*(18+22*(1-F().ability(f,'arm'))+20*g.rng());missPoint=[base[0]-dy/length*offset,base[1]+dx/length*offset];const travel=Math.hypot(missPoint[0]-at[0],missPoint[1]-at[1])/F().process.throwSpeed(f,p.fielderIndex),cover=p.defensivePlan?F().process.coverTime(g,p,d.receiverIndex,missPoint,d.fieldTime):d.coverETA;d.nominalBallETA=d.ballETA;d.ballETA=Math.max(cover,d.fieldTime+d.pickupTime+travel);d.timing={...d.timing,ballETA:d.ballETA,nominalBallETA:d.nominalBallETA,throwTime:travel,missPoint};d.reasons.push('throw missed the intended base');}
+  if(!hold)p.throw={from:p.fielder,toIndex:d.receiverIndex,toBase:d.toBase,...(missPoint?{toPoint:missPoint,result:'miss'}:{}),kind:missPoint?'return':d.force?'force':'tag',runnerKey:d.runnerKey,timing:d.timing||null};
+  const success=!hold&&!throwError&&d.ballETA<d.runnerETA,outKeys=[];
+  p.fieldingMistake=error?{type:throwError?'throwing':'handling',costOut:!success&&ordinaryOut}:null;
+  if(p.fieldingMistake?.costOut){p.error=true;p.errorType=throwError?'throwing':'groundFielding';s.errors[1-offense(g)]++;s.virtualOuts++;s.unearned[b.key]=true;p.log=throwError?'送球エラー':'ゴロ捕球エラー';}
   if(success){const runner=d.fromBase===0?b:s.bases[d.fromBase-1];outKeys.push(runner.key);recordOut(g,pitcher);F().move(g,runner,d.fromBase,d.toBase,'out',d.force?'forceOut':'tagOut');p.forceOut=d.force;
-   if(d.toBase===2&&d.force&&s.outs<3){const chance=clamp(.25+.2*skill+.15*catching+.1*F().ability(f,'arm')-.20*n(g,b,'speed')-(p.bunt?.15:0),.03,.75);const turn=F().defense(g)[d.receiverIndex],secondETA=d.ballETA+.25+.2*(1-F().ability(turn,'fielding'))+Math.hypot(140,90)/(150+80*F().ability(turn,'arm')),batterETA=.13+4.6-1.25*n(g,b,'speed');if(p.bunt?g.rng()<chance:secondETA<batterETA){recordOut(g,pitcher);outKeys.push(b.key);F().move(g,b,0,1,'out','batterOut');p.doublePlay=true;p.throws=[p.throw,{fromBase:2,toBase:1,timing:p.bunt?null:{fieldTime:d.ballETA,pickupTime:.25+.2*(1-F().ability(turn,'fielding')),ballETA:secondETA,runnerETA:batterETA}}];}}
+   if(d.toBase===2&&d.force&&s.outs<3){const chance=clamp(.25+.2*skill+.15*catching+.1*F().ability(f,'arm')-.20*n(g,b,'speed')-(p.bunt?.15:0),.03,.75);const turn=F().defense(g)[d.receiverIndex],secondETA=d.ballETA+.25+.2*(1-F().ability(turn,'fielding'))+Math.hypot(140,90)/(165+55*F().ability(turn,'arm')),batterETA=.13+(p.physical?F().process.runTime(g,b,0):4.6-1.25*n(g,b,'speed'));if(secondETA<batterETA){recordOut(g,pitcher);outKeys.push(b.key);F().move(g,b,0,1,'out','batterOut');p.doublePlay=true;p.throws=[p.throw,{fromBase:2,toBase:1,timing:{fieldTime:d.ballETA,pickupTime:.25+.2*(1-F().ability(turn,'fielding')),ballETA:secondETA,runnerETA:batterETA}}];}}
   }
   // Removed runners must not remain in the terminal pre-switch snapshot.
   for(let i=0;i<3;i++)if(outKeys.includes(s.bases[i]?.key))s.bases[i]=null;
-  advanceGround(g,p,b,pitcher,d,outKeys,error);
+  advanceGround(g,p,b,pitcher,d,outKeys,!!p.error);
   p.forceTrace.outKeys=outKeys;p.forceTrace.finalBases=s.bases.map(r=>r?.key||null);p.forceTrace.actions=s.playActions.map(a=>({...a}));
-  if(error)return 'error';
+  if(p.error)return 'error';
   if(!success&&(hold||d.toBase===1)){s.batting[b.key].H++;s.pitching[pitcher.key].H++;s.hits[offense(g)]++;p.infieldHit=true;p.log='一塁で打者セーフ、内野安打';return 'single';}
   if(p.doublePlay){p.log='先行走者を封殺、一塁転送で併殺';return 'doublePlay';}
   if(success&&d.toBase===1){
@@ -116,7 +120,7 @@
   p.buntAttempt=true;const meet=n(g,batter,'meet'),contact=clamp(.7+(has(batter,'バント○')?.10:has(batter,'バント×')?-.10:0)+.2*meet-.20*p.pitchQuality,.4,.9);
   if(g.rng()>=contact){p.outcome=g.rng()<.7?'foul':'swingingStrike';return p;}
   p.buntQuality=clamp(.35+(has(batter,'バント○')?.12:has(batter,'バント×')?-.12:0)+.4*meet-.25*p.pitchQuality+.20*centeredNoise(g.rng),.05,.9);
-  p.buntPop=g.rng()<.08+.12*(1-meet);p.outcome='inPlay';p.battedResult=p.buntPop?'lineout':'groundout';p.battedQuality=p.buntQuality;p.battedGrade='touch';return p;
+  p.buntPop=g.rng()<.08+.12*(1-meet);p.outcome='inPlay';p.battedResult=null;p.battedQuality=p.buntQuality;p.battedGrade='touch';p.physical={exitVelocity:p.buntPop?8:8+5*(1-p.buntQuality),launchAngle:p.buntPop?65:0,sprayAngle:(g.rng()*2-1)*.72,type:p.buntPop?'FLY':'GROUND',hangTime:p.buntPop?1.5:0,horizontalSpeed:p.buntPop?18:65+30*(1-p.buntQuality),deceleration:65,height:p.buntPop?15:0};return p;
  }
  function buntGeometry(g,p){
   const angle=(g.rng()*2-1)*1.05,length=p.buntPop?25:25+100*(1-p.buntQuality)+25*g.rng();
@@ -161,7 +165,7 @@
   if(d.decision==='HIT_AND_RUN'){
    const effects=specialModifiers(b,p);pitch=generatePitchQuality(local,p,effects);Object.assign(pitch,judgePitch(local,pitch,effects),{swing:true});Object.assign(pitch,resolveContact(local,b,pitch,effects));if(pitch.outcome==='inPlay')Object.assign(pitch,resolveFinalResult(local,b,pitch,generateBattedQuality(local,b,pitch,effects),effects));pitch.hitAndRun=true;
    // A miss exposes the started runner to the existing legal steal execution.
-   if(pitch.outcome==='swingingStrike'&&F().canSteal(g,1)){const running=F().steal(g,p,{fromBase:1});pitch.runningExecution=running;}
+   if(pitch.outcome==='swingingStrike'&&F().canSteal(g,1)){const running=F().steal(g,p,{fromBase:1,noPitch:true,pitchSpeed:pitch.pitchSpeed});pitch.runningExecution=running;}
   }else pitch=resolvePitch(local,p,b);
   return pitch;
  }
