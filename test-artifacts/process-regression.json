@@ -1,71 +1,69 @@
 {
   "passed": true,
-  "inspected": 707,
+  "inspected": 712,
   "races": [
     {
       "speed": 0.05263157894736842,
       "arm": 2,
-      "runnerETA": 3.9957894736842103,
+      "runnerETA": 4.219434865231724,
       "tagAt": 3.9713500999171196,
       "safe": false
     },
     {
       "speed": 0.05263157894736842,
       "arm": 20,
-      "runnerETA": 3.9957894736842103,
+      "runnerETA": 4.219434865231724,
       "tagAt": 3.637024081108342,
       "safe": false
     },
     {
       "speed": 1,
       "arm": 2,
-      "runnerETA": 3.38,
+      "runnerETA": 3.5942626262626263,
       "tagAt": 3.9713500999171196,
       "safe": true
     },
     {
       "speed": 1,
       "arm": 20,
-      "runnerETA": 3.38,
+      "runnerETA": 3.5942626262626263,
       "tagAt": 3.637024081108342,
       "safe": true
     }
   ],
   "results": {
-    "flyout": 90,
-    "calledStrike": 97,
-    "groundout": 55,
-    "swingingStrike": 38,
-    "foul": 88,
-    "ball": 212,
-    "lineout": 28,
-    "strikeout": 27,
-    "walk": 14,
-    "single": 34,
-    "stolenBase": 13,
-    "fieldersChoice": 3,
-    "caughtStealing": 5,
-    "error": 2,
-    "sacrificeFly": 1
+    "flyout": 112,
+    "calledStrike": 82,
+    "groundout": 42,
+    "swingingStrike": 32,
+    "foul": 86,
+    "ball": 246,
+    "single": 20,
+    "lineout": 30,
+    "strikeout": 22,
+    "walk": 32,
+    "error": 1,
+    "fieldersChoice": 5,
+    "doublePlay": 2
   },
   "batch": {
-    "runCount": 100,
-    "bytes": 556541,
-    "ms": 42172.7497,
-    "sceneCount": 32,
-    "detailCount": 6,
+    "runCount": 10,
+    "bytes": 393035,
+    "ms": 2300.7168000000006,
+    "sceneCount": 21,
+    "detailCount": 5,
     "averages": {
-      "runs": 0.51,
-      "allowed": 0.59,
-      "hits": 5.2,
-      "homeRuns": 0.01,
-      "stealAttempts": 1.95,
-      "stealSuccess": 1.54,
-      "sacrifices": 0.02,
-      "sacrificeAttempts": 0.12,
-      "hitRun": 0.68,
-      "squeeze": 0.12,
-      "doublePlays": 0.36
+      "runs": 0.1,
+      "allowed": 0,
+      "hits": 3.3,
+      "homeRuns": 0,
+      "stealAttempts": 0,
+      "stealSuccess": 0,
+      "sacrifices": 0,
+      "sacrificeAttempts": 0.2,
+      "hitRun": 0.2,
+      "squeeze": 0,
+      "doublePlays": 0.7
     }
   }
 }

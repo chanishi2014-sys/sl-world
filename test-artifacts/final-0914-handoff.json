@@ -1,0 +1,3289 @@
+{
+  "seed": 230,
+  "physical": {
+    "exitVelocity": 19.549725190736353,
+    "launchAngle": 9.13734668516554,
+    "sprayAngle": 0.36712144687771797,
+    "type": "FLY",
+    "hangTime": 0.6329314294863299,
+    "horizontalSpeed": 62.730359477583754,
+    "deceleration": 62
+  },
+  "fielders": [
+    4,
+    15,
+    5,
+    7,
+    18,
+    4,
+    6,
+    14,
+    14
+  ],
+  "roles": [
+    {
+      "at": 0.04,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            332
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 62.58577345524277,
+          "estimatedArrival": 2.1283055237174997,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": 0.04,
+          "reasonForRoleChange": "release to BASE COVER for the next defensive play"
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            462
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 70.51341072299999,
+          "estimatedArrival": 1.9892453473473417,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": 0.04,
+          "reasonForRoleChange": "current arrival estimate with handoff hysteresis"
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            553,
+            342
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.80510341231866,
+          "estimatedArrival": 4.456262834265786,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": 0.04,
+          "reasonForRoleChange": "release to BASE COVER for the next defensive play"
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            473,
+            293
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 115.93010322465086,
+          "estimatedArrival": 3.515054980777464,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": 0.04,
+          "reasonForRoleChange": "release to BASE COVER for the next defensive play"
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            249,
+            342
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.9246605536634,
+          "estimatedArrival": 4.432739540425386,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": 0.04,
+          "reasonForRoleChange": "release to BASE COVER for the next defensive play"
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.171073412617988,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.149170108505203,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400,
+            104
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 289.2929088847567,
+          "estimatedArrival": 13.391566310859849,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": 0.04,
+          "reasonForRoleChange": "release to BACKUP for the next defensive play"
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 13.95990411189759,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.12,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            332
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 62.58577345524277,
+          "estimatedArrival": 2.1283055237174997,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            462
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 70.51341072299999,
+          "estimatedArrival": 1.9892453473473417,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            553,
+            342
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.80510341231866,
+          "estimatedArrival": 4.456262834265786,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            473,
+            293
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 115.93010322465086,
+          "estimatedArrival": 3.515054980777464,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            249,
+            342
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.9246605536634,
+          "estimatedArrival": 4.432739540425386,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.171073412617988,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.149170108505203,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400,
+            104
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 289.2929088847567,
+          "estimatedArrival": 13.391566310859849,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 13.95990411189759,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.24,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            332
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 62.58577345524277,
+          "estimatedArrival": 2.1283055237174997,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            462
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 70.51341072299999,
+          "estimatedArrival": 1.9892453473473417,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            553,
+            342
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.80510341231866,
+          "estimatedArrival": 4.456262834265786,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            473,
+            293
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 115.93010322465086,
+          "estimatedArrival": 3.515054980777464,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            249,
+            342
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.9246605536634,
+          "estimatedArrival": 4.432739540425386,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.171073412617988,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.149170108505203,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400,
+            104
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 289.2929088847567,
+          "estimatedArrival": 13.391566310859849,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 13.95990411189759,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.36,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            333.4248496993988
+          ],
+          "movementDirection": [
+            0,
+            1.4248496993988056
+          ],
+          "distanceToLanding": 61.19921367326034,
+          "estimatedArrival": 2.138355028595129,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0.001800462131735303,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400.3185071544683,
+            460.4083083308807
+          ],
+          "movementDirection": [
+            0.3185071544683069,
+            -1.5916916691193137
+          ],
+          "distanceToLanding": 68.8901942085067,
+          "estimatedArrival": 1.9966137683999734,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 8.881784197001253e-18,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            552.3740536161994,
+            340.699957510568
+          ],
+          "movementDirection": [
+            -0.6259463838006241,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.67255775899585,
+          "estimatedArrival": 4.574496317328995,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.07403804103655316,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            471.91781459050316,
+            291.9919368788249
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211750983
+          ],
+          "distanceToLanding": 116.25969428918438,
+          "estimatedArrival": 3.6700281690579164,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.09856075989858228,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            249.6328607107844,
+            340.44661461898374
+          ],
+          "movementDirection": [
+            0.6328607107843993,
+            -1.5533853810162555
+          ],
+          "distanceToLanding": 172.7855728633684,
+          "estimatedArrival": 4.55227917283326,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0.07490973296962919,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.218441833670619,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.196538529557834,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400.0740403447983,
+            104.8887046516998
+          ],
+          "movementDirection": [
+            0.07404034479827715,
+            0.888704651699797
+          ],
+          "distanceToLanding": 288.40163743898245,
+          "estimatedArrival": 13.399018716682981,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.000056046964118587894,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.007272532950221,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.48,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            337.6993987975952
+          ],
+          "movementDirection": [
+            0,
+            1.4248496993988056
+          ],
+          "distanceToLanding": 57.05085678514489,
+          "estimatedArrival": 2.1415153952888164,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0.002067026300990351,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            401.2740286178732,
+            455.63323332352275
+          ],
+          "movementDirection": [
+            0.3185071544683069,
+            -1.5916916691193137
+          ],
+          "distanceToLanding": 64.02055378622948,
+          "estimatedArrival": 1.996613768399972,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 8.881784197001253e-18,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            550.4962144647975,
+            336.7998300422721
+          ],
+          "movementDirection": [
+            -0.6259463838006241,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.3589987355841,
+          "estimatedArrival": 4.689598266973139,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.07635026924553939,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            468.6712583620126,
+            288.9677475152996
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211750983
+          ],
+          "distanceToLanding": 117.35479266747247,
+          "estimatedArrival": 3.8227618916553396,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.10135097253336679,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            251.5314428431376,
+            335.786458475935
+          ],
+          "movementDirection": [
+            0.6328607107843993,
+            -1.5533853810162555
+          ],
+          "distanceToLanding": 172.4655452603359,
+          "estimatedArrival": 4.668715880528979,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0.07723736610279248,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.338441833670619,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.316538529557832,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400.2961613791931,
+            107.55481860679919
+          ],
+          "movementDirection": [
+            0.07404034479827715,
+            0.888704651699797
+          ],
+          "distanceToLanding": 285.7278422767024,
+          "estimatedArrival": 13.399104613415929,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.000057092626784500666,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.127272532950222,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.6,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            341.97394789579164
+          ],
+          "movementDirection": [
+            0,
+            1.4248496993988056
+          ],
+          "distanceToLanding": 52.92258785810301,
+          "estimatedArrival": 2.1351066240894356,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0.002488044634394129,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            402.22955008127815,
+            450.8581583161648
+          ],
+          "movementDirection": [
+            0.3185071544683069,
+            -1.5916916691193137
+          ],
+          "distanceToLanding": 59.15092967393734,
+          "estimatedArrival": 2.0073848269828747,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 6.87082944050843e-8,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            548.6183753133957,
+            332.8997025739762
+          ],
+          "movementDirection": [
+            -0.6259463838006241,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.17214155511493,
+          "estimatedArrival": 4.799216392964156,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.0785053268603187,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            465.4247021335221,
+            285.9435581517743
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211750983
+          ],
+          "distanceToLanding": 118.60585948906025,
+          "estimatedArrival": 3.9675610826261023,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.10403809967321381,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            253.4300249754908,
+            331.1263023328862
+          ],
+          "movementDirection": [
+            0.6328607107843993,
+            -1.5533853810162555
+          ],
+          "distanceToLanding": 172.29195498614936,
+          "estimatedArrival": 4.788312546129111,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0.07936619399257555,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.452429281480233,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.426506027488525,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400.51828241358794,
+            110.22093256189858
+          ],
+          "movementDirection": [
+            0.07404034479827715,
+            0.888704651699797
+          ],
+          "distanceToLanding": 283.0540765109468,
+          "estimatedArrival": 13.380968975235056,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.000056282196783881136,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.228234268899428,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.72,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            346.24849699398806
+          ],
+          "movementDirection": [
+            0,
+            1.4248496993988056
+          ],
+          "distanceToLanding": 48.81950318534525,
+          "estimatedArrival": 2.0565857287747553,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0.004028134094014115,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            403.21563322353967,
+            446.0893353349472
+          ],
+          "movementDirection": [
+            0.33462682557370726,
+            -1.5883809570117933
+          ],
+          "distanceToLanding": 54.28122559181668,
+          "estimatedArrival": 2.0997142620060236,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 1.7478865991016334e-7,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            546.7405361619941,
+            328.99957510568026
+          ],
+          "movementDirection": [
+            -0.6259463838005104,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.11246901530384,
+          "estimatedArrival": 4.84285710759864,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.079423843330449,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            462.17814590503156,
+            282.91936878824896
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 120.00801700534174,
+          "estimatedArrival": 4.025531834128624,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.10656481293657936,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            255.328607107844,
+            326.46614618983745
+          ],
+          "movementDirection": [
+            0.6328607107843993,
+            -1.5533853810162555
+          ],
+          "distanceToLanding": 172.26524473246317,
+          "estimatedArrival": 4.906969868118796,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0.07993991938367499,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.522222024380967,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.461575856755317,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400.74236524697346,
+            112.88688234748687
+          ],
+          "movementDirection": [
+            0.07469427779517446,
+            0.888649928529432
+          ],
+          "distanceToLanding": 280.3804104360564,
+          "estimatedArrival": 13.225195205133533,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00004396032683691154,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.185305966109999,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.84,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            350.5230460921845
+          ],
+          "movementDirection": [
+            0,
+            1.4248496993988056
+          ],
+          "distanceToLanding": 44.748530891136774,
+          "estimatedArrival": 2.030902308644724,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0.005549640513808844,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            404.23769997396914,
+            441.32806478213485
+          ],
+          "movementDirection": [
+            0.343288463796398,
+            -1.5865315022449522
+          ],
+          "distanceToLanding": 49.4116117701121,
+          "estimatedArrival": 2.1390518429722984,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 6.540711882330185e-8,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            544.8626970105923,
+            325.09944763738434
+          ],
+          "movementDirection": [
+            -0.6259463838006241,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.18013581300173,
+          "estimatedArrival": 4.9323577150071465,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.08120035486740085,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            458.931589676541,
+            279.89517942472355
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 121.55603680308322,
+          "estimatedArrival": 4.146268152982577,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.10917463552165123,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            257.2271892401972,
+            321.8059900467887
+          ],
+          "movementDirection": [
+            0.6328607107844277,
+            -1.5533853810162555
+          ],
+          "distanceToLanding": 172.385482774227,
+          "estimatedArrival": 5.028542884369197,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0.08152698561813099,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.621566548719238,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.545972485470756,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            400.98366762028166,
+            115.55132873278575
+          ],
+          "movementDirection": [
+            0.08043412443606712,
+            0.8881487950996245
+          ],
+          "distanceToLanding": 277.70745530305715,
+          "estimatedArrival": 13.159088003081388,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.000056580642301309325,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.236030774158639,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 0.96,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            400,
+            354.7975951903809
+          ],
+          "movementDirection": [
+            0,
+            1.4248496993988056
+          ],
+          "distanceToLanding": 40.71930356172479,
+          "estimatedArrival": 2.027531972543375,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0.0072509275245713845,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": 0.96,
+          "reasonForRoleChange": "current arrival estimate with handoff hysteresis"
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            405.27799731090005,
+            436.57074073887713
+          ],
+          "movementDirection": [
+            0.34806728956942834,
+            -1.5854899365568826
+          ],
+          "distanceToLanding": 44.54221358524775,
+          "estimatedArrival": 2.156662452590073,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 7.717685042152312e-9,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": 0.96,
+          "reasonForRoleChange": "release to BASE COVER for the next defensive play"
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            542.9848578591907,
+            321.1993201690884
+          ],
+          "movementDirection": [
+            -0.6259463838005104,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.3749665458267,
+          "estimatedArrival": 5.042903559949876,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.08332937922139952,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            455.6850334480505,
+            276.8709900611981
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 123.24442266607068,
+          "estimatedArrival": 4.294969036372101,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.11173511903885491,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            259.1257713725504,
+            317.1458339037399
+          ],
+          "movementDirection": [
+            0.6328607107843709,
+            -1.5533853810162555
+          ],
+          "distanceToLanding": 172.65236209983627,
+          "estimatedArrival": 5.153447687142728,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0.08352619444211429,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.73246438917187,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.650146711715166,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            401.2325133582803,
+            118.21508119391581
+          ],
+          "movementDirection": [
+            0.08294857933287858,
+            0.887917487043353
+          ],
+          "distanceToLanding": 275.03488273999903,
+          "estimatedArrival": 13.129584010049687,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00006321429953394464,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.325045047203592,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.08,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            401.78040790678597,
+            358.6837134068883
+          ],
+          "movementDirection": [
+            0.5938333355916257,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 36.45714595403842,
+          "estimatedArrival": 2.019440307709598,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            402.22835988338886,
+            432.7741535670024
+          ],
+          "movementDirection": [
+            -1.0165458091703954,
+            -1.2655290572915874
+          ],
+          "distanceToLanding": 41.60731603874479,
+          "estimatedArrival": 2.2415884739940504,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0.03520655901661883,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            541.1070187077889,
+            317.2991927007925
+          ],
+          "movementDirection": [
+            -0.6259463838006241,
+            -1.3000424894319735
+          ],
+          "distanceToLanding": 147.69645797759816,
+          "estimatedArrival": 5.171146923347422,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0.08570498873382083,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            452.43847721955996,
+            273.8468006976726
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 125.0674899828731,
+          "estimatedArrival": 4.465724831630316,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.11419040626259029,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.192648779815901,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.85192782957654,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.769211082792815,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            401.48479841659105,
+            120.87851011634825
+          ],
+          "movementDirection": [
+            0.08409501943691566,
+            0.8878096408108149
+          ],
+          "distanceToLanding": 272.36252668007234,
+          "estimatedArrival": 13.12793717469485,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00006851944414687061,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.443209377051208,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.2,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            403.56190791356084,
+            362.56933146824645
+          ],
+          "movementDirection": [
+            0.5938333355916257,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 32.19838299009042,
+          "estimatedArrival": 2.0194403077095977,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 1.7763568394002505e-17,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            -0.19526826504795736,
+            -0.2430954524191975
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.3195011913327077,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0.039767992731224985,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.2111074176835785,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            449.1919209910694,
+            270.8226113341472
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 127.01943977297904,
+          "estimatedArrival": 4.641122961767056,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.11653234491176423,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.312648779815901,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 4.97192782957654,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 16.889211082792816,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            401.73729002352763,
+            123.54191946602077
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 269.69023996881356,
+          "estimatedArrival": 13.128043023878378,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.0000701665940429308,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.563209377051207,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.32,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            405.3434079203357,
+            366.4549495296046
+          ],
+          "movementDirection": [
+            0.5938333355916257,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 27.944441007556634,
+          "estimatedArrival": 2.0194403077095973,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.3997331986014827,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.331107417683579,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            445.9453647625789,
+            267.7984219706218
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211750983
+          ],
+          "distanceToLanding": 129.09442593376858,
+          "estimatedArrival": 4.819836351179029,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.1187613678344769,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.432648779815901,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 5.09192782957654,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 17.009211082792813,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            401.9897816304642,
+            126.20532881569329
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 267.01801462086854,
+          "estimatedArrival": 13.128150775658339,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.0000715993464148923,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.683209377051208,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.44,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            407.1249079271106,
+            370.3405675909628
+          ],
+          "movementDirection": [
+            0.5938333355916257,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 23.69791634846541,
+          "estimatedArrival": 2.019440307709597,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.5197331986014824,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.451107417683579,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            442.69880853408836,
+            264.77423260709634
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 131.28661482192123,
+          "estimatedArrival": 5.001697077633472,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.1208783790801035,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.5526487798159,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 5.21192782957654,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 17.129211082792814,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            402.2422732374008,
+            128.8687381653658
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 264.3458524971699,
+          "estimatedArrival": 13.128260753894082,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00007307641427723333,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.803209377051207,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.56,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            408.9064079338855,
+            374.22618565232096
+          ],
+          "movementDirection": [
+            0.5938333355916257,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 19.46366448741601,
+          "estimatedArrival": 2.0194403077095964,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.6397331986014825,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.571107417683578,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            439.4522523055978,
+            261.7500432435709
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 133.59023674255607,
+          "estimatedArrival": 5.1865402740914455,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.12288524118215126,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.672648779815901,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 5.331927829576539,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 17.249211082792815,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            402.4947648443374,
+            131.53214751503833
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 261.6737555346192,
+          "estimatedArrival": 13.12837302827713,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00007459964337102499,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 14.923209377051208,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.68,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            410.6879079406604,
+            378.11180371367914
+          ],
+          "movementDirection": [
+            0.5938333355916825,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 15.251910414250313,
+          "estimatedArrival": 2.019440307709595,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 3.552713678800501e-17,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.7597331986014826,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.691107417683578,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            436.2056960771073,
+            258.7258538800454
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751552
+          ],
+          "distanceToLanding": 135.99962930746273,
+          "estimatedArrival": 5.37420526615729,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.12478460406844435,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.7926487798159005,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 5.451927829576539,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 17.369211082792816,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            402.747256451274,
+            134.19555686471085
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 259.001725750001,
+          "estimatedArrival": 13.128487671436709,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00007617097649462501,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 15.043209377051207,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.8,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            412.4694079474354,
+            381.9974217750373
+          ],
+          "movementDirection": [
+            0.5938333355916825,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 11.088320309033232,
+          "estimatedArrival": 2.0194403077095933,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 2.6645352591003756e-17,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.8797331986014827,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.811107417683578,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            432.95913984861676,
+            255.70166451651997
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751268
+          ],
+          "distanceToLanding": 138.50927293111022,
+          "estimatedArrival": 5.5645364689438725,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.12657974349167306,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 5.912648779815901,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 5.5719278295765395,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 17.489211082792814,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            402.99974805821057,
+            136.85896621438337
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 256.3297652441418,
+          "estimatedArrival": 13.12860475909614,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00007779245969015136,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 15.163209377051208,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    },
+    {
+      "at": 1.92,
+      "predictedLandingPoint": [
+        414.25096979091035,
+        392.94168441230954
+      ],
+      "predictedLandingTime": 0.6329314294863299,
+      "ballSpeed": 62.730359477583754,
+      "trajectory": "FLY",
+      "fielders": [
+        {
+          "index": 0,
+          "currentPosition": [
+            414.2509079542104,
+            385.8830398363955
+          ],
+          "movementDirection": [
+            0.5938333355916825,
+            1.2952060204527243
+          ],
+          "distanceToLanding": 7.058644576184916,
+          "estimatedArrival": 2.0194403077095915,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "PRIMARY FIELDING",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 1,
+          "currentPosition": [
+            400,
+            430
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 39.70401609633842,
+          "estimatedArrival": 2.999733198601483,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.63157894736842,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 2,
+          "currentPosition": [
+            540,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 147.9450058891972,
+          "estimatedArrival": 5.931107417683578,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.89473684210526,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 3,
+          "currentPosition": [
+            429.7125836201262,
+            252.6774751529946
+          ],
+          "movementDirection": [
+            -1.0821854094968444,
+            -1.0080631211751268
+          ],
+          "distanceToLanding": 141.11381895953596,
+          "estimatedArrival": 5.757384064843233,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 38.8421052631579,
+          "turnDelay": 0.1282744129754165,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 4,
+          "currentPosition": [
+            260,
+            315
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 172.82438442090395,
+          "estimatedArrival": 6.032648779815901,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 44.05263157894737,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 5,
+          "currentPosition": [
+            325,
+            290
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 136.24509531818578,
+          "estimatedArrival": 5.69192782957654,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 37.421052631578945,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 6,
+          "currentPosition": [
+            200,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 320.18701291169305,
+          "estimatedArrival": 17.609211082792815,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 21.31578947368421,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 7,
+          "currentPosition": [
+            403.25223966514716,
+            139.5223755640559
+          ],
+          "movementDirection": [
+            0.08416386897886241,
+            0.8878031165575067
+          ],
+          "distanceToLanding": 253.65787620633023,
+          "estimatedArrival": 13.128724370239237,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0.00007946624889465959,
+          "assignedRole": "BACKUP",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        },
+        {
+          "index": 8,
+          "currentPosition": [
+            600,
+            155
+          ],
+          "movementDirection": [
+            0,
+            0
+          ],
+          "distanceToLanding": 301.8591515998553,
+          "estimatedArrival": 15.283209377051207,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 23.42105263157895,
+          "turnDelay": 0,
+          "assignedRole": "HOLD",
+          "roleChangeTime": null,
+          "reasonForRoleChange": null
+        }
+      ]
+    }
+  ]
+}

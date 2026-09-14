@@ -144,7 +144,7 @@
    if(pose.running){hand=[13,-18-gait];glove=[-13,-18+gait]}
    limb([[8,-26],[14,-23],hand],color,7);ellipse(...hand,3,3,'#edbd91');
    limb([[-8,-26],[-13,-23],glove],color,7);
-   if(pose.role!=='batter'&&!pose.running){ellipse(...glove,6,7,'#9a6537');limb([[glove[0]-3,glove[1]-2],[glove[0]+3,glove[1]+3]],'#523c27',1)}
+   if(pose.role!=='batter'&&pose.role!=='runner'&&!pose.running){ellipse(...glove,6,7,'#9a6537');limb([[glove[0]-3,glove[1]-2],[glove[0]+3,glove[1]+3]],'#523c27',1)}
    else ellipse(...glove,3,3,'#edbd91');
    if(pose.role==='catcher'){
     path([[-6,-27],[6,-27],[7,-13],[-6,-13]],'#21364a');ctx.strokeStyle='#91a7b9';ctx.lineWidth=1;
@@ -225,7 +225,7 @@
    });
    if(!change){
     if(!e||settled){(e?e.nextState.runners:g.state.bases).forEach((who,i)=>{if(who)person(bases[i+1][0]+9,bases[i+1][1],palette[side],'走',{role:'runner'})});}
-    else runnerAnimation(e,p,time).forEach(r=>{if(r.visible)person(r.position[0]+9,r.position[1],palette[side],'走',{running:r.running,time,facing:r.finish>r.start&&r.position[0]>400?1:-1})});
+    else runnerAnimation(e,p,time).forEach(r=>{if(r.visible)person(r.position[0]+9,r.position[1],palette[side],'走',{role:'runner',running:r.running,time,facing:r.finish>r.start&&r.position[0]>400?1:-1})});
     const showBatter=(!e||settled)?!(e?e.nextState.finished:g.state.finished):batterVisible(e,p,time);
     if(showBatter)person(377,438,palette[side],'打',e&&!settled?battingAnimation(e,p,time):{role:'batter'});
     if(e&&!settled)drawBall(ballAnimation(e,p,time));

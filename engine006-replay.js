@@ -39,7 +39,7 @@
   e.transfers=e.transfers||[];
   if(!e.transfers.length&&(e.throw||steal)){
    let from=index;
-   e.transfers=(e.throws||[e.throw||{toBase:e.toBase}]).filter(t=>bases[t.toBase]).map(t=>{const toIndex=t.toBase===1?2:t.toBase===2?(from===5?3:5):t.toBase===3?4:1;const transfer={fromIndex:from,toIndex,toBase:t.toBase,kind:steal||e.tagUp?'tag':'force',runnerKey:e.runner?.key,result:e.caughtStealing?'out':e.tag?.result||(['groundout','doublePlay'].includes(e.result)?'out':'safe')};from=toIndex;return transfer;});
+   e.transfers=(e.throws||[e.throw||{toBase:e.toBase}]).filter(t=>bases[t.toBase]).map(t=>{const toIndex=t.toIndex??(steal&&t.toBase===2?3:t.toBase===1?2:t.toBase===2?(from===5?3:5):t.toBase===3?4:1);const transfer={fromIndex:from,toIndex,toBase:t.toBase,kind:steal||e.tagUp?'tag':'force',runnerKey:e.runner?.key,result:e.caughtStealing?'out':e.tag?.result||(['groundout','doublePlay'].includes(e.result)?'out':'safe')};from=toIndex;return transfer;});
   }
   if(!e.actions){e.actions=[];e.runnersBefore.forEach((runner,i)=>{if(!runner)return;const to=e.runnersAfter.findIndex(p=>p?.key===runner.key)+1;if(to&&to!==i+1)e.actions.push({runner,fromBase:i+1,toBase:to,result:'safe',type:'runnerAdvance'});});const to=e.runnersAfter.findIndex(p=>p?.key===e.batter.key)+1;if(to)e.actions.push({runner:e.batter,fromBase:0,toBase:to,result:'safe',type:'runnerAdvance'});if(steal&&e.runner)e.actions.push({runner:e.runner,fromBase:e.fromBase,toBase:e.toBase,result:e.caughtStealing?'out':'safe',type:e.result});}
   e.runsScored=e.runsScored??e.scoreAfter.reduce((n,v,i)=>n+v-e.scoreBefore[i],0);

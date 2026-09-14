@@ -1,0 +1,31 @@
+steals [{"speed":"S","arm":"S","traits":[{"trait":"盗塁○","safeRate":0.6716,"runnerETA":3.5607770713065228},{"trait":"none","safeRate":0.603,"runnerETA":3.592786064390353},{"trait":"盗塁×","safeRate":0.3792,"runnerETA":3.6949087692716844}]},{"speed":"S","arm":"C","traits":[{"trait":"盗塁○","safeRate":0.8274,"runnerETA":3.5607770713065228},{"trait":"none","safeRate":0.777,"runnerETA":3.592786064390353},{"trait":"盗塁×","safeRate":0.5816,"runnerETA":3.6949087692716844}]},{"speed":"S","arm":"G","traits":[{"trait":"盗塁○","safeRate":0.9966,"runnerETA":3.5607770713065228},{"trait":"none","safeRate":0.9904,"runnerETA":3.592786064390353},{"trait":"盗塁×","safeRate":0.9462,"runnerETA":3.6949087692716844}]},{"speed":"C","arm":"S","traits":[{"trait":"盗塁○","safeRate":0.297,"runnerETA":3.7349277000954046},{"trait":"none","safeRate":0.2362,"runnerETA":3.7668805964757732},{"trait":"盗塁×","safeRate":0.0914,"runnerETA":3.868893088227226}]},{"speed":"C","arm":"C","traits":[{"trait":"盗塁○","safeRate":0.4958,"runnerETA":3.7349277000954046},{"trait":"none","safeRate":0.422,"runnerETA":3.7668805964757732},{"trait":"盗塁×","safeRate":0.222,"runnerETA":3.868893088227226}]},{"speed":"C","arm":"G","traits":[{"trait":"盗塁○","safeRate":0.913,"runnerETA":3.7349277000954046},{"trait":"none","safeRate":0.8792,"runnerETA":3.7668805964757732},{"trait":"盗塁×","safeRate":0.7236,"runnerETA":3.868893088227226}]},{"speed":"G","arm":"S","traits":[{"trait":"盗塁○","safeRate":0,"runnerETA":4.186162008455339},{"trait":"none","safeRate":0,"runnerETA":4.217958303359449},{"trait":"盗塁×","safeRate":0,"runnerETA":4.319660253216002}]},{"speed":"G","arm":"C","traits":[{"trait":"盗塁○","safeRate":0.0002,"runnerETA":4.186162008455339},{"trait":"none","safeRate":0,"runnerETA":4.217958303359449},{"trait":"盗塁×","safeRate":0,"runnerETA":4.319660253216002}]},{"speed":"G","arm":"G","traits":[{"trait":"盗塁○","safeRate":0.1084,"runnerETA":4.186162008455339},{"trait":"none","safeRate":0.0774,"runnerETA":4.217958303359449},{"trait":"盗塁×","safeRate":0.0152,"runnerETA":4.319660253216002}]}]
+bunts [
+  {
+    trait: 'バント○',
+    count: 5000,
+    sacrifices: 2370,
+    contact: 0,
+    quality: 2979.8693299431075,
+    inPlay: 4818,
+    meanQuality: 0.6184867849612096
+  },
+  {
+    trait: 'none',
+    count: 5000,
+    sacrifices: 2097,
+    contact: 0,
+    quality: 2350.0113792128113,
+    inPlay: 4713,
+    meanQuality: 0.4986232504164675
+  },
+  {
+    trait: 'バント×',
+    count: 5000,
+    sacrifices: 1918,
+    contact: 0,
+    quality: 1717.9955026192595,
+    inPlay: 4527,
+    meanQuality: 0.379499779681745
+  }
+]
+PASS diagnostics A-E, paired ability process, 135000 steal races, 15000 bunt PAs, JSON round trip

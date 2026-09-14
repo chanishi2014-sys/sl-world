@@ -82,7 +82,7 @@ function anomalies(e){const out=[],add=(severity,rule,detail)=>out.push({severit
  return out;
 }
 function trial(bundle,seed,{events=false}={}){const g=create(bundle,seed),initial=copy({inning:g.state.inning,half:g.state.half,outs:g.state.outs,score:g.state.score,bases:g.state.bases.map(p=>p?.key||null)}),off=initial.half==='top'?0:1,traces=[],flags=[],counts={},executions={},reasons={},all=[],operations=[],firstPA=g.state.paCompleted;let activeBunt=null,lastEvent=null;
- let guard=0;
+ g.retainEvents=events;let guard=0;
  do {if(++guard>3000)throw Error('scenario pitch guard exceeded: '+seed);const e=E.onePitch(g);if(!e)break;e.sequence=guard;lastEvent=e;if(events)all.push(e);flags.push(...anomalies(e));
   const t=e.tactics,add=(map,k)=>map[k]=(map[k]||0)+1;
   // Selection rates use initial count / PA opportunities plus legal steal attempts.

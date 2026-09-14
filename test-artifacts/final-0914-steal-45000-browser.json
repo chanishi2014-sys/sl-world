@@ -1,0 +1,109 @@
+{
+  "passed": true,
+  "version": "process-engine-20260914-v1",
+  "totalTrials": 45000,
+  "elapsedMs": 610124.3000000119,
+  "jsonBytes": 41828874,
+  "storage": {
+    "mode": "aggregate-and-thin-trials",
+    "details": "regenerate from bundle and seed"
+  },
+  "snapshots": [
+    {
+      "completed": 5000,
+      "elapsedMs": 68219,
+      "heap": 2847595
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 0
+    },
+    {
+      "completed": 10000,
+      "elapsedMs": 140257.10000002384,
+      "heap": 8686855
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 1
+    },
+    {
+      "completed": 15000,
+      "elapsedMs": 220267.5,
+      "heap": 12720920
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 2
+    },
+    {
+      "completed": 20000,
+      "elapsedMs": 299708.1999999881,
+      "heap": 18358692
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 3
+    },
+    {
+      "completed": 25000,
+      "elapsedMs": 386138.6999999881,
+      "heap": 21778890
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 4
+    },
+    {
+      "completed": 30000,
+      "elapsedMs": 433644.1999999881,
+      "heap": 26410279
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 5
+    },
+    {
+      "completed": 35000,
+      "elapsedMs": 503046.89999997616,
+      "heap": 30424431
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 6
+    },
+    {
+      "completed": 40000,
+      "elapsedMs": 545947.8000000119,
+      "heap": 35154463
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 7
+    },
+    {
+      "completed": 45000,
+      "elapsedMs": 610052,
+      "heap": 39082038
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 8
+    }
+  ],
+  "imported": {
+    "count": 45000,
+    "reasons": [
+      610,
+      591,
+      588,
+      606,
+      597,
+      601,
+      610,
+      613,
+      608
+    ]
+  },
+  "errors": []
+}
