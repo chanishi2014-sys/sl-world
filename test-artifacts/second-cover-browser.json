@@ -1,0 +1,93 @@
+{
+  "report": [
+    {
+      "entry": "engine-test.html",
+      "teams": [
+        "C",
+        "C"
+      ],
+      "layout": {
+        "canvas": {
+          "x": 8,
+          "y": 137,
+          "w": 519.4375,
+          "h": 223,
+          "right": 527.4375,
+          "bottom": 360
+        },
+        "side": {
+          "x": 530.4375,
+          "y": 137,
+          "w": 305.5625,
+          "h": 172,
+          "right": 836,
+          "bottom": 309
+        },
+        "controls": {
+          "x": 530.4375,
+          "y": 324,
+          "w": 305.5625,
+          "h": 58,
+          "right": 836,
+          "bottom": 382
+        },
+        "root": {
+          "x": 0,
+          "y": 0,
+          "w": 844,
+          "h": 390,
+          "right": 844,
+          "bottom": 390
+        },
+        "scroll": 390,
+        "viewport": 390
+      },
+      "pausedResult": "投球中"
+    },
+    {
+      "entry": "engine006.html",
+      "teams": [
+        "S",
+        "G"
+      ],
+      "layout": {
+        "canvas": {
+          "x": 8,
+          "y": 137,
+          "w": 519.4375,
+          "h": 223,
+          "right": 527.4375,
+          "bottom": 360
+        },
+        "side": {
+          "x": 530.4375,
+          "y": 137,
+          "w": 305.5625,
+          "h": 172,
+          "right": 836,
+          "bottom": 309
+        },
+        "controls": {
+          "x": 530.4375,
+          "y": 324,
+          "w": 305.5625,
+          "h": 58,
+          "right": 836,
+          "bottom": 382
+        },
+        "root": {
+          "x": 0,
+          "y": 0,
+          "w": 844,
+          "h": 390,
+          "right": 844,
+          "bottom": 390
+        },
+        "scroll": 390,
+        "viewport": 390
+      },
+      "pausedResult": "投球中"
+    }
+  ],
+  "errors": []
+}

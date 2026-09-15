@@ -1,0 +1,116 @@
+[
+  {
+    "seed": "emergency-night-C-C-0",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      0
+    ],
+    "flies": 32,
+    "pChases": 0,
+    "cOtherBase": 0,
+    "deepInfield": 1,
+    "catcherExamples": []
+  },
+  {
+    "seed": "emergency-night-C-C-1",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      2
+    ],
+    "flies": 27,
+    "pChases": 0,
+    "cOtherBase": 0,
+    "deepInfield": 1,
+    "catcherExamples": []
+  },
+  {
+    "seed": "emergency-night-C-C-2",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      3
+    ],
+    "flies": 25,
+    "pChases": 0,
+    "cOtherBase": 0,
+    "deepInfield": 3,
+    "catcherExamples": []
+  },
+  {
+    "seed": "emergency-night-C-C-3",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      6,
+      3
+    ],
+    "flies": 24,
+    "pChases": 0,
+    "cOtherBase": 0,
+    "deepInfield": 1,
+    "catcherExamples": []
+  },
+  {
+    "seed": "emergency-night-C-C-4",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      3,
+      2
+    ],
+    "flies": 27,
+    "pChases": 0,
+    "cOtherBase": 0,
+    "deepInfield": 1,
+    "catcherExamples": []
+  },
+  {
+    "seed": "emergency-night-C-C-5",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      3
+    ],
+    "flies": 28,
+    "pChases": 0,
+    "cOtherBase": 0,
+    "deepInfield": 1,
+    "catcherExamples": []
+  }
+]

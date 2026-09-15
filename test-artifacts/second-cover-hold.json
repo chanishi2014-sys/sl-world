@@ -1,0 +1,268 @@
+{
+  "fixtures": [
+    {
+      "name": "TEST-1",
+      "primary": 3,
+      "cover": 5,
+      "arrival": 2.2826397592520222,
+      "base": {
+        "base": 2,
+        "requiredState": "POTENTIAL",
+        "requiredReason": "possible tag up or uncaught ball advance",
+        "assignedFielder": 5,
+        "assignmentReason": "inherit needed second-base responsibility: possible tag up or uncaught ball advance"
+      }
+    },
+    {
+      "name": "TEST-2",
+      "primary": 5,
+      "cover": 3,
+      "arrival": 2.2609288344952647,
+      "base": {
+        "base": 2,
+        "requiredState": "POTENTIAL",
+        "requiredReason": "possible tag up or uncaught ball advance",
+        "assignedFielder": 3,
+        "assignmentReason": "inherit needed second-base responsibility: possible tag up or uncaught ball advance"
+      }
+    },
+    {
+      "name": "TEST-3",
+      "unnecessarySecondCover": false
+    },
+    {
+      "name": "batter/return second-base context",
+      "passed": true
+    },
+    {
+      "name": "successor follows current ETA and available responsibilities",
+      "cover": 0
+    },
+    {
+      "name": "stable target and real receive wake-up",
+      "passed": true
+    }
+  ],
+  "protected": [
+    "function naturalAt(",
+    "function interceptEstimate(",
+    "const qualifications=",
+    "function generate(",
+    "function classify(",
+    "function flyObservation("
+  ],
+  "hold": [
+    {
+      "name": "TEST-4",
+      "hang": 3,
+      "arrivedAt": 1.1100348248899452,
+      "expected": 1.11003482488994,
+      "legs": [
+        {
+          "from": [
+            400,
+            462
+          ],
+          "to": [
+            400,
+            430
+          ],
+          "goal": [
+            400,
+            430
+          ],
+          "start": 0.31263157894736837,
+          "end": 1.1100348248899452,
+          "role": "baseCover",
+          "movementState": "MOVING",
+          "base": 4
+        },
+        {
+          "from": [
+            400,
+            430
+          ],
+          "to": [
+            400,
+            430
+          ],
+          "goal": [
+            400,
+            430
+          ],
+          "start": 1.1100348248899452,
+          "end": 1.1100348248899452,
+          "role": "baseCover",
+          "movementState": "HOLD",
+          "base": 4
+        },
+        {
+          "from": [
+            400,
+            430
+          ],
+          "to": [
+            400,
+            430
+          ],
+          "start": 2.88,
+          "end": 2.88,
+          "role": "baseCover",
+          "movementState": "HOLD"
+        }
+      ]
+    },
+    {
+      "name": "TEST-5",
+      "hang": 3,
+      "arrivedAt": 0.770759088516112,
+      "expected": 0.7707590885161208,
+      "legs": [
+        {
+          "from": [
+            553,
+            302
+          ],
+          "to": [
+            540,
+            315
+          ],
+          "goal": [
+            540,
+            315
+          ],
+          "start": 0.31263157894736837,
+          "end": 0.770759088516112,
+          "role": "baseCover",
+          "movementState": "MOVING",
+          "base": 1
+        },
+        {
+          "from": [
+            540,
+            315
+          ],
+          "to": [
+            540,
+            315
+          ],
+          "goal": [
+            540,
+            315
+          ],
+          "start": 0.770759088516112,
+          "end": 0.770759088516112,
+          "role": "baseCover",
+          "movementState": "HOLD",
+          "base": 1
+        }
+      ]
+    },
+    {
+      "name": "TEST-4",
+      "hang": 6,
+      "arrivedAt": 1.1100348248899452,
+      "expected": 1.11003482488994,
+      "legs": [
+        {
+          "from": [
+            400,
+            462
+          ],
+          "to": [
+            400,
+            430
+          ],
+          "goal": [
+            400,
+            430
+          ],
+          "start": 0.31263157894736837,
+          "end": 1.1100348248899452,
+          "role": "baseCover",
+          "movementState": "MOVING",
+          "base": 4
+        },
+        {
+          "from": [
+            400,
+            430
+          ],
+          "to": [
+            400,
+            430
+          ],
+          "goal": [
+            400,
+            430
+          ],
+          "start": 1.1100348248899452,
+          "end": 1.1100348248899452,
+          "role": "baseCover",
+          "movementState": "HOLD",
+          "base": 4
+        },
+        {
+          "from": [
+            400,
+            430
+          ],
+          "to": [
+            400,
+            430
+          ],
+          "start": 5.96,
+          "end": 5.96,
+          "role": "baseCover",
+          "movementState": "HOLD"
+        }
+      ]
+    },
+    {
+      "name": "TEST-5",
+      "hang": 6,
+      "arrivedAt": 0.770759088516112,
+      "expected": 0.7707590885161208,
+      "legs": [
+        {
+          "from": [
+            553,
+            302
+          ],
+          "to": [
+            540,
+            315
+          ],
+          "goal": [
+            540,
+            315
+          ],
+          "start": 0.31263157894736837,
+          "end": 0.770759088516112,
+          "role": "baseCover",
+          "movementState": "MOVING",
+          "base": 1
+        },
+        {
+          "from": [
+            540,
+            315
+          ],
+          "to": [
+            540,
+            315
+          ],
+          "goal": [
+            540,
+            315
+          ],
+          "start": 0.770759088516112,
+          "end": 0.770759088516112,
+          "role": "baseCover",
+          "movementState": "HOLD",
+          "base": 1
+        }
+      ]
+    }
+  ]
+}
