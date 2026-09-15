@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "version": "process-engine-20260915-v1",
+  "totalTrials": 90,
+  "elapsedMs": 3476,
+  "jsonBytes": 1138170,
+  "storage": {
+    "mode": "aggregate-and-thin-trials",
+    "details": "regenerate from bundle and seed"
+  },
+  "snapshots": [
+    {
+      "phase": "aggregate",
+      "groupIndex": 0
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 1
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 2
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 3
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 4
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 5
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 6
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 7
+    },
+    {
+      "phase": "aggregate",
+      "groupIndex": 8
+    }
+  ],
+  "imported": {
+    "count": 90,
+    "reasons": [
+      27,
+      40,
+      40,
+      27,
+      37,
+      39,
+      29,
+      27,
+      40
+    ]
+  },
+  "errors": []
+}

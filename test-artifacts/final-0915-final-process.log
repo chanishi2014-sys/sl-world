@@ -1,0 +1,68 @@
+{
+  passed: true,
+  inspected: 693,
+  races: [
+    {
+      speed: 0.05263157894736842,
+      arm: 2,
+      runnerETA: 4.219434865231724,
+      tagAt: 3.9713500999171196,
+      safe: false
+    },
+    {
+      speed: 0.05263157894736842,
+      arm: 20,
+      runnerETA: 4.219434865231724,
+      tagAt: 3.637024081108342,
+      safe: false
+    },
+    {
+      speed: 1,
+      arm: 2,
+      runnerETA: 3.5942626262626263,
+      tagAt: 3.9713500999171196,
+      safe: true
+    },
+    {
+      speed: 1,
+      arm: 20,
+      runnerETA: 3.5942626262626263,
+      tagAt: 3.637024081108342,
+      safe: true
+    }
+  ],
+  results: {
+    flyout: 105,
+    calledStrike: 86,
+    groundout: 46,
+    swingingStrike: 31,
+    foul: 83,
+    ball: 237,
+    lineout: 28,
+    strikeout: 23,
+    walk: 30,
+    single: 17,
+    fieldersChoice: 6,
+    error: 1
+  },
+  batch: {
+    runCount: 10,
+    bytes: 363141,
+    ms: 9319.0133,
+    sceneCount: 20,
+    detailCount: 5,
+    averages: {
+      runs: 0.1,
+      allowed: 0.1,
+      hits: 3.3,
+      homeRuns: 0,
+      stealAttempts: 0,
+      stealSuccess: 0,
+      sacrifices: 0,
+      sacrificeAttempts: 0,
+      hitRun: 0.4,
+      squeeze: 0,
+      doublePlays: 0.4
+    }
+  }
+}

@@ -86,7 +86,7 @@
 <div class="sl-home-return"><a href="./index.html#home">← SL WORLD HOME</a></div>
 <header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #001</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p><p id="engineVersion" class="note engine-version"></p></header>
 <main><p><a href="./custom-match.html">CUSTOM MATCH TEST — 実戦バッチ / JSON / LAB</a></p>
-<section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
+<section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><select id="away"><option>デビルスターズ</option></select></div><div><label for="home">ホームチーム（後攻）</label><select id="home"><option>明道仁球会</option></select></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
 <div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
 <section class="card"><p id="matchTitle" class="note"></p><details><summary>投打者・投球数</summary><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></details>
@@ -132,7 +132,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"process-engine-20260912-night-v2", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
+ version:"process-engine-20260915-v1", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -175,7 +175,15 @@ function adaptPlayer(raw,key,cfg){
  return {key,id:raw.id??null,name:String(raw.name||"名称未設定"),isTest:raw.isTest===true,isPitcher:raw.isPitcher===true,effective,fallbacks,repertoire,
   specials:Array.isArray(raw.specials)?[...raw.specials]:[],pitcherRoles:Array.isArray(raw.pitcherRoles)?[...raw.pitcherRoles]:[],profile:clone(raw)};
 }
+// Diagnostic representatives reused from CUSTOM; these are not league rosters.
+const DIAGNOSTIC_RANKS={meet:[10,9,8,7,6,4,3,1],power:[195,182,162,142,122,84,55,20],speed:[20,18,16,14,12,8,5,2],velocity:[160,152,140,122,112,95,87,82]};
+const DIAGNOSTIC_LETTERS=['S','A','B','C','D','E','F','G'];
+function diagnosticRoster(name){const rank=DIAGNOSTIC_LETTERS.indexOf(name.replace('オール',''));if(!name.startsWith('オール')||rank<0)return null;
+ const value=k=>DIAGNOSTIC_RANKS[k][rank],batting={meet:value('meet'),power:value('power'),speed:value('speed'),arm:value('speed'),fielding:value('speed'),catching:value('speed')},pitching={velocity:value('velocity'),control:value('power'),stamina:value('power')};
+ return ['C','1B','2B','3B','SS','LF','CF','RF','P','P','P','P','C','IF','OF'].map((mainPosition,i)=>({id:'REFERENCE_'+rank+'_'+i,name:DIAGNOSTIC_LETTERS[rank]+' '+({'C':'捕手','1B':'一塁','2B':'二塁','3B':'三塁','SS':'遊撃','LF':'左翼','CF':'中堅','RF':'右翼','P':'投手','IF':'内野','OF':'外野'}[mainPosition])+(i>=9?' '+(i-8):''),team:name,isTest:true,isFielder:true,isPitcher:mainPosition==='P',mainPosition,batting:{...batting},pitching:{...pitching},specials:[],pitcherRoles:mainPosition==='P'?[i===8?'先発':i===11?'抑え':'中継ぎ']:[],pitchRepertoire:{}}));
+}
 function makeTeam(name,side,db,cfg){
+ const reference=diagnosticRoster(name);if(reference)db=reference;
  const roster=db.filter(p=>p.team===name);const starterIndex=roster.findIndex(p=>p.isPitcher===true);
  const selected=roster.filter((p,i)=>i!==starterIndex).slice(0,8);
  function test(index,pitcher=false){return {id:`TEST_${side}_${index}`,name:`TEST PLAYER ${side.toUpperCase()} ${index}`,team:name,isTest:true,isFielder:!pitcher,isPitcher:pitcher,batting:{meet:cfg.defaults.meet,power:cfg.defaults.power,speed:cfg.defaults.speed},pitching:pitcher?{velocity:cfg.defaults.velocity,control:cfg.defaults.control,stamina:cfg.defaults.stamina}:{},pitchRepertoire:{}};}
@@ -435,8 +443,9 @@ function teamTestSummary(test){
   largeMargins:test.largeMargins,shutouts:test.shutouts,scores:test.scores.map(score=>[...score])};
 }
 // Exposed core for deterministic tests and later extraction into modules.
-globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher,generatePitchQuality,judgePitch,resolveContact,generateBattedQuality,resolveFinalResult,specialModifiers,SPECIAL_EFFECT_HANDLERS,BALANCE_PROFILES,BALANCE_PRESETS,TEAM_BALANCE_PROFILES,TEAM_BALANCE_PRESETS,createDuelTest,stepDuelTest,duelTestSummary,createTeamTest,stepTeamTest,teamTestSummary};
+globalThis.SL_ENGINE={DIAGNOSTIC_RANKS,DIAGNOSTIC_LETTERS,diagnosticRoster,CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher,generatePitchQuality,judgePitch,resolveContact,generateBattedQuality,resolveFinalResult,specialModifiers,SPECIAL_EFFECT_HANDLERS,BALANCE_PROFILES,BALANCE_PRESETS,TEAM_BALANCE_PROFILES,TEAM_BALANCE_PRESETS,createDuelTest,stepDuelTest,duelTestSummary,createTeamTest,stepTeamTest,teamTestSummary};
 // ==================== UI ====================
+
 if(typeof document!=="undefined"){
  const $=id=>document.getElementById(id);let game,viewer,appearanceTeams=[];
  $("engineVersion").textContent=`ENGINE VERSION: ${CONFIG.version}`;
@@ -558,14 +567,17 @@ if(typeof document!=="undefined"){
  fillBalanceOptions("balancePreset",BALANCE_PRESETS);fillBalanceOptions("teamBalancePreset",TEAM_BALANCE_PRESETS);
  $("balanceRun").onclick=()=>runBalance("duel");$("teamBalanceRun").onclick=()=>runBalance("team");
  $("balanceCancel").onclick=()=>{if(balanceJob)balanceJob.cancelled=true;};
+ for(const id of ['away','home']){const old=$(id),select=document.createElement('select');select.id=id;for(const name of ['デビルスターズ','明道仁球会',...DIAGNOSTIC_LETTERS.map(r=>'オール'+r)]){const option=document.createElement('option');option.value=name;option.textContent=name;select.append(option);}select.value=old.value;old.replaceWith(select);}
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
   const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());SL_ABILITY_DISPLAY.render($("lineupOverview"),game.teams);viewer?.reset();
   $("source").textContent=db.message+" / "+teams.map(t=>`${t.name}：実選手${9-t.testCount}人、TEST PLAYER ${t.testCount}人、未設定能力補完 ${t.lineup.reduce((n,p)=>n+p.fallbacks.length,0)}項目`).join(" / ");$("status").textContent="";render();
  }
  ["pitch","atbat","inning","game"].forEach(id=>$(id).onclick=()=>{try{advance(game,id);$("status").textContent="";}catch(e){$("status").textContent=e.message;}render();});$("reset").onclick=reset;
- $("export").onclick=()=>{const blob=new Blob([JSON.stringify(exportGame(game),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="SL_WORLD_TEST_MATCH_001.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ $("export").onclick=()=>{const blob=new Blob([JSON.stringify(exportGame(game),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="SL_WORLD_TEST_MATCH_006.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
  viewer=SL_MATCH_VIEWER.create({root:$("matchViewer"),getGame:()=>game,step:mode=>{const start=game.state.events.length;advance(game,mode);return game.state.events.slice(start);},onChange:render});
  reset();
 }
+
+
 </script></body></html>

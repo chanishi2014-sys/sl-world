@@ -41,12 +41,13 @@
   return {...copy({inning,half,outs,balls,strikes,score,runners,finished,finishReason,hits,errors}),lines,innings,teams:g.teams.map(t=>({name:t.name,shortName:t.shortName||t.displayName||t.name}))};
  }
  function mountScoreboard(root){
+  if(root.id==='matchViewer'){for(const id of ['appearanceOverview','balancePanel','lineupOverview'])document.getElementById(id)?.classList.add('game-research');document.getElementById('statistics')?.closest('section')?.classList.add('game-research');}
   root.innerHTML=`<div class="sb-brand"><span>SL WORLD</span><span>LIVE SCOREBOARD</span></div><div class="sb-table-wrap"><table class="sb-table" aria-label="イニング別スコア"><colgroup></colgroup><thead></thead><tbody></tbody></table></div>
    <div class="sb-status"><div class="sb-counts" aria-label="ストライク・ボール・アウト"></div><div class="sb-phase"><strong></strong><span></span></div><div class="sb-runners"><span class="sb-base-map" aria-hidden="true"><i data-base="2"></i><i data-base="3"></i><i data-base="1"></i></span><span class="sb-runner-text"></span></div></div><p class="sb-note">未実施は — ／ 点灯中の回は進行中（得点は暫定）</p>`;
   const table=root.querySelector('table'),body=table.tBodies[0],head=table.tHead,cols=table.querySelector('colgroup');
   let columnCount=0;
   const make=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=String(text);if(className)node.className=className;return node};
-  const lamps=[['S','ストライク',2,'strikes'],['B','ボール',3,'balls'],['O','アウト',2,'outs']].map(([letter,label,max,key])=>{
+  const lamps=[['B','ボール',3,'balls'],['S','ストライク',2,'strikes'],['O','アウト',2,'outs']].map(([letter,label,max,key])=>{
    const row=make('div',undefined,'sb-lamp-row sb-'+letter.toLowerCase());row.append(make('b',letter));
    const lights=Array.from({length:max},()=>{const lamp=make('span',undefined,'sb-lamp');lamp.setAttribute('aria-hidden','true');row.append(lamp);return lamp});
    root.querySelector('.sb-counts').append(row);return {row,lights,label,key};
@@ -90,27 +91,28 @@
   return {update};
  }
 
- function create({root,getGame,step,onChange}){
-  root.innerHTML=`<div class="toolbar"><button data-action="log">LOG VIEW</button><button data-action="view" aria-pressed="false">2D VIEW</button></div>
+ function create({root,getGame,step,onChange,rendererFactory=null}){
+  if(!document.querySelector('link[data-game-view]')){const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('./game-view.css',document.baseURI).href;link.dataset.gameView='';document.head.append(link);}
+  root.innerHTML=`<div class="toolbar"><span style="font-size:10px;letter-spacing:.08em;margin-right:auto">SL WORLD — GAME VIEW</span><button data-action="log">LOG VIEW</button><button data-action="view" aria-pressed="false">2D VIEW</button></div>
    <section class="stadium-board" aria-label="SL WORLD 電光スコアボード"></section>
-   <div data-panel hidden><h2>SL WORLD / 2D MATCH VIEWER α0.2</h2>
-   <canvas width="800" height="500" role="img" aria-label="簡易球場。プレー内容は下のテキストでも表示します"></canvas>
-   <button data-action="debug" aria-pressed="false">DEBUG OFF</button><p data-debug hidden class="note" style="white-space:pre-wrap;padding:6px 10px;background:#071422cc;border-radius:6px;min-height:2em" aria-label="再生デバッグ"></p>
-   <p data-detail></p><p data-result role="status" aria-live="polite">待機中</p>
-   <div class="toolbar"><button data-action="advance">1球進める</button><button data-action="auto">自動再生</button><button data-action="pause">一時停止</button><label>再生速度<select data-speed><option value="1">NORMAL</option><option value="2">FAST</option></select></label></div>
-   <p class="note">結果は既存エンジンで確定済み。打球方向・走者経路はENGINEのeventを再生します。守備モーションは簡易表現です。通常の試合操作で進めた分は現在状態へ同期します。</p></div>`;
-  const el=s=>root.querySelector(s),panel=el('[data-panel]'),canvas=el('canvas');let ctx=canvas.getContext('2d');
-  const live=document.createElement('section');live.className='live-lineups';live.setAttribute('aria-label','ライブラインナップ');root.append(live);
+   <div data-panel hidden><h2>SL WORLD — GAME VIEW</h2>
+   <div class="game-field"><canvas width="800" height="500" role="img" aria-label="簡易球場。プレー内容は下のテキストでも表示します"></canvas></div><aside class="game-side"></aside>
+   <div class="game-information"><button data-action="debug" aria-pressed="false">DEBUG OFF</button><p data-debug hidden class="note" style="white-space:pre-wrap;padding:6px 10px;background:#071422cc;border-radius:6px;min-height:2em" aria-label="再生デバッグ"></p>
+   <p data-detail></p><p data-result role="status" aria-live="polite">待機中</p></div>
+   <div class="toolbar game-controls"><button data-action="advance">1球進める</button><button data-action="auto">▶ 再生</button><button data-action="pause">一時停止</button><button data-action="next-pa">次の打席まで</button><button data-action="finish">試合終了まで</button><button data-action="fullscreen">全画面</button><button data-action="menu">メニュー</button><label>再生速度<select data-speed><option value="1">NORMAL</option><option value="2">FAST</option></select></label></div>
+   </div>`;
+  const el=s=>root.querySelector(s),panel=el('[data-panel]'),canvas=el('canvas');let ctx=rendererFactory?null:canvas.getContext('2d');
+  const live=document.createElement('section');live.className='live-lineups';live.setAttribute('aria-label','ライブラインナップ');el('.game-side').append(live);
   live.style.cssText='display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px;margin-top:18px';
   let lineupSignature='';
-  function liveLineups(e,after){const g=getGame();if(!g||!globalThis.SL_ABILITY_DISPLAY)return;
+  function liveLineups(e,after){const g=getGame();if(!g)return;
    const active=e&&!after?e.batter?.key:g.state.finished?null:SL_ENGINE.currentBatter(g)?.key;
    const positions=['P','C','1B','2B','3B','SS','LF','CF','RF'];
    const models=g.teams.map((team,side)=>{const fielders=SL_FIELDING.defense({...g,state:{...g.state,half:side===0?'bottom':'top'}});return {name:team.name,rows:team.lineup.map((p,i)=>({p,i,pos:positions[fielders.findIndex(x=>x.key===p.key)]||'DH'}))};});
    const signature=JSON.stringify([active,models.map(m=>[m.name,m.rows.map(r=>[r.p.key,r.pos,r.p.profile.batting])])]);if(signature===lineupSignature)return;lineupSignature=signature;live.replaceChildren();
-   for(const m of models){const table=document.createElement('table');table.style.cssText='width:100%;table-layout:fixed;border-collapse:collapse;font-size:clamp(7px,2.2vw,11px)';const caption=table.createCaption();caption.textContent=m.name;caption.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
-    const head=table.createTHead().insertRow();for(const [i,label] of ['順','選手','守','ミ','パ','走','肩','守','捕'].entries()){const th=document.createElement('th');th.textContent=label;th.scope='col';th.style.width=i===1?'28%':i===0?'6%':i===2?'12%':'9%';head.append(th);}
-    const body=table.createTBody();for(const {p,i,pos} of m.rows){const row=body.insertRow();row.dataset.playerKey=p.key;row.classList.toggle('live-batter',p.key===active);if(p.key===active)row.style.outline='2px solid #389bff';const vals=[i+1,p.name,pos,...['meet','power','speed','arm','fielding','catching'].map(k=>SL_ABILITY_DISPLAY.getAbilityRank(k,p.profile.batting?.[k])||'—')];for(const [column,value] of vals.entries()){const cell=row.insertCell();cell.textContent=value;cell.title=String(value);cell.style.cssText='padding:4px 0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';if(column===1)cell.style.cssText+=';white-space:normal;word-break:break-all;line-height:1.3';}}live.append(table);
+   for(const m of models){const table=document.createElement('table');table.style.cssText='width:100%;table-layout:fixed;border-collapse:collapse;font-size:clamp(7px,2.2vw,11px)';const caption=table.createCaption();caption.textContent=(models.indexOf(m)===0?'VISITOR ':'HOME ')+m.name;caption.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    const head=table.createTHead().insertRow();for(const [i,label] of ['順','選手','守'].entries()){const th=document.createElement('th');th.textContent=label;th.scope='col';th.style.width=i===1?'66%':i===0?'12%':'22%';head.append(th);}
+    const body=table.createTBody();for(const {p,i,pos} of m.rows){const row=body.insertRow();row.dataset.playerKey=p.key;row.classList.toggle('live-batter',p.key===active);if(p.key===active)row.style.outline='2px solid #389bff';const vals=[i+1,p.name,({'P':'投','C':'捕','1B':'一','2B':'二','3B':'三','SS':'遊','LF':'左','CF':'中','RF':'右'})[pos]||pos];for(const [column,value] of vals.entries()){const cell=row.insertCell();cell.textContent=value;cell.title=String(value);cell.style.cssText='padding:4px 0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';if(column===1)cell.style.cssText+=';white-space:normal;word-break:break-all;line-height:1.3';}}live.append(table);
    }
   }
   const board=mountScoreboard(el('.stadium-board'));
@@ -207,7 +209,7 @@
    ctx.fillStyle='#071422ee';ctx.fillRect(238,62,324,67);ctx.fillStyle=color;ctx.fillRect(238,62,4,67);
    ctx.textAlign='center';ctx.font='900 28px system-ui';ctx.fillText(label,400,94);ctx.font='13px system-ui';ctx.fillText(resultLabel(e)+(e.runsScored?`  +${e.runsScored}得点`:''),400,116);
   }
-  function paint(e,time=0,settled=false){
+  function paint2D(e,time=0,settled=false){
    lastPaint={e,time,settled};
    const g=getGame(),p=e?animationPlan(e):null,change=e&&!settled?transition(e,p,time):null;
    const oldSide=(e?e.half:g.state.half)==='top'?0:1,side=settled&&e?(e.nextState.half==='top'?0:1):change?.entering?1-oldSide:oldSide;
@@ -237,16 +239,18 @@
    if(debugEnabled&&e?.tactics)el('[data-debug]').textContent+='\n\n'+decisionDebug(e)+'\n'+JSON.stringify(p?.runningDebug);
    if(e&&!settled&&!change)resultBanner(e,p,time);
   }
+  const renderer=rendererFactory?rendererFactory({canvas}):{render:frame=>paint2D(frame.event,frame.time,frame.settled)};
+  function paint(e,time=0,settled=false){renderer.render(rendererFactory?{event:e?copy(e):null,time,settled,state:scoreboardSnapshot(getGame(),e,settled)}:{event:e,time,settled});}
   function scoreboard(e,after=false){board.update(scoreboardSnapshot(getGame(),e,after));liveLineups(e,after);}
   function controls(){
-   root.querySelectorAll('[data-action="advance"],[data-action="auto"]').forEach(b=>b.disabled=busy||getGame().state.finished||selectedMode==='SKIP');
+   root.querySelectorAll('[data-action="advance"],[data-action="auto"],[data-action="next-pa"],[data-action="finish"]').forEach(b=>b.disabled=busy||getGame().state.finished||selectedMode==='SKIP');
    el('[data-action="advance"]').textContent=selectedMode==='FULL'?'1球進める':selectedMode==='MINI'?'1打席進める':'ハイライト開始';
    el('[data-action="pause"]').disabled=!busy;el('[data-action="pause"]').textContent=paused?'再開':'一時停止';
-   ['pitch','atbat','inning','game'].forEach(id=>document.getElementById(id).disabled=busy||getGame().state.finished);
+   ['pitch','atbat','inning','game'].forEach(id=>{const button=document.getElementById(id);if(button)button.disabled=busy||getGame().state.finished;});
    document.querySelectorAll('[data-watch-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.watchMode===selectedMode)));
   }
   function stop(){cancelAnimationFrame(frameId);busy=false;paused=false;mode=null;event=null;elapsed=0;last=0;scoreboardAfter=false;lastPaint=null;el('[data-debug]').textContent='';controls();}
-  function sync(){if(!busy&&getGame()){scoreboard(null);paint(null);controls();el('[data-detail]').textContent=modeNames[selectedMode]+' ／ '+(getGame().state.finished?'試合終了':'次のプレーを待っています');el('[data-result]').textContent=getGame().state.finished?'最終結果':'待機中';}}
+  function sync(){if(!busy&&getGame()){scoreboard(null);paint(null);controls();el('[data-detail]').textContent='投手：'+SL_ENGINE.currentPitcher(getGame()).name+' ／ 打者：'+SL_ENGINE.currentBatter(getGame()).name+' ／ 球数：'+getGame().state.pitching[SL_ENGINE.currentPitcher(getGame()).key].pitches;el('[data-result]').textContent=getGame().state.finished?'最終結果':'待機中';}}
   function next(){
    if(getGame().state.finished){stop();sync();return}
    try{
@@ -261,7 +265,7 @@
      if(selectedMode!=='HIGHLIGHT'||importance.score>=3){event=toReplayEvent(candidate);event.highlightImportance=importance;break;}
     }
     onChange();controls();elapsed=0;last=0;
-    if(event){scoreboard(event);el('[data-detail]').textContent=`${modeNames[selectedMode]} ／ 投手：${safeText(event.pitcher?.name,"投手")} ／ 打者：${safeText(event.batter?.name,"打者")} ／ ${safeText(event.pitchType,"投球")}${Number.isFinite(event.pitchSpeed)?` ${event.pitchSpeed}km/h`:""}`;
+    if(event){scoreboard(event);el('[data-detail]').textContent=`投手：${safeText(event.pitcher?.name,"投手")} ／ 打者：${safeText(event.batter?.name,"打者")} ／ 球数：${event.pitchCount??0} ／ ${safeText(event.pitchType,"投球")}${Number.isFinite(event.pitchSpeed)?` ${event.pitchSpeed}km/h`:""}`;
      el('[data-result]').textContent=selectedMode==='HIGHLIGHT'?event.highlightImportance.reasons.join('・'):'投球中';
     }else{el('[data-result]').textContent='重要場面を検索中';}
     frameId=requestAnimationFrame(tick);
@@ -275,11 +279,11 @@
    const plan=animationPlan(event),end=plan.end;
    paint(event,elapsed);if(elapsed>=plan.resultAt)el('[data-result]').textContent=resultLabel(event)+(event.runsScored?` ／ ${event.runsScored}得点`:'');
    if(elapsed>=plan.resultAt&&!scoreboardAfter){scoreboard(event,true);scoreboardAfter=true;}
-   if(elapsed>=end){paint(event,elapsed,true);scoreboard(event,true);const proceed=mode==='auto'||selectedMode==='HIGHLIGHT';
+   if(elapsed>=end){paint(event,elapsed,true);scoreboard(event,true);const proceed=mode==='auto'||mode==='next-pa'&&!event.plateAppearanceEnded||selectedMode==='HIGHLIGHT';
     if(proceed&&!getGame().state.finished){next();return}busy=false;paused=false;mode=null;controls();return}
    frameId=requestAnimationFrame(tick);
   }
-  function showView(value){active=value;panel.hidden=!active;el('[data-action="view"]').setAttribute('aria-pressed',String(active));document.getElementById('log').closest('section').hidden=active;}
+  function showView(value){active=value;panel.hidden=!active;el('[data-action="view"]').setAttribute('aria-pressed',String(active));document.getElementById('log')?.closest('section')?.toggleAttribute('hidden',active);root.classList.toggle('game-active',active);if(root.id==='matchViewer')document.body.classList.toggle('spectator-active',active);root.scrollTop=0;}
   document.querySelectorAll('[data-watch-mode]').forEach(button=>button.addEventListener('click',()=>{
    stop();selectedMode=button.dataset.watchMode;showView(selectedMode!=='SKIP');sync();
    if(selectedMode==='SKIP'){
@@ -287,12 +291,17 @@
    }else if(selectedMode==='HIGHLIGHT'&&!getGame().state.finished){busy=true;mode='auto';next();}
   }));
   root.addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(!action)return;
+   if(action==='fullscreen'){if(document.fullscreenElement){document.exitFullscreen?.();}else root.requestFullscreen?.().catch(()=>{el('[data-result]').textContent='この環境では全画面表示を利用できません';});return;}
+   if(action==='menu'){stop();showView(false);sync();return;}
+   if(action==='finish'){if(busy)return;stop();showView(true);busy=true;controls();const batch=()=>{if(!busy)return;if(paused){setTimeout(batch,50);return;}try{for(let n=0;n<12&&!getGame().state.finished;n++)step('pitch');onChange();if(getGame().state.finished){stop();sync();}else setTimeout(batch,0);}catch(error){stop();el('[data-result]').textContent=error.message;}};batch();return;}
    if(action==='debug'){debugEnabled=!debugEnabled;el('[data-debug]').hidden=!debugEnabled;el('[data-action="debug"]').textContent=debugEnabled?'DEBUG ON':'DEBUG OFF';el('[data-action="debug"]').setAttribute('aria-pressed',String(debugEnabled));if(lastPaint)paint(lastPaint.e,lastPaint.time,lastPaint.settled);return;}
    if(action==='log'||action==='view'){stop();showView(action==='view');sync();return}
    if(action==='pause'){paused=!paused;controls();return}
    if(busy||getGame().state.finished||selectedMode==='SKIP')return;busy=true;mode=action;next();
   });
+  document.addEventListener('fullscreenchange',()=>{el('[data-action="fullscreen"]').textContent=document.fullscreenElement?'全画面解除':'全画面';});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){paused=true;controls()}});
+  showView(true);
   return {sync,renderEvent(record,time){paint(toReplayEvent(record),time)},reset(){stop();sync()},get replayEvent(){return event?copy(event):null}};
  }
  globalThis.SL_MATCH_VIEWER={scoreboardSnapshot,mountScoreboard,toReplayEvent,animationPlan,ballAnimation,runnerAnimation,fieldingAnimation,batterVisible,transition,resultLabel,bannerLabel,highlightImportance,HIGHLIGHT_RULES,create};

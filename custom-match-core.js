@@ -1,7 +1,7 @@
 /* CUSTOM MATCH: bounded streaming aggregation; one event live at a time. */
 (()=>{'use strict';
 const E=SL_ENGINE,copy=x=>JSON.parse(JSON.stringify(x));
-const ranks={meet:[10,9,8,7,6,4,3,1],power:[195,182,162,142,122,84,55,20],speed:[20,18,16,14,12,8,5,2],velocity:[160,152,140,122,112,95,87,82]};
+const ranks=E.DIAGNOSTIC_RANKS;
 const letters=['S','A','B','C','D','E','F','G'];
 const stats=['meet','power','speed','arm','fielding','catching','velocity','control','stamina'];
 const grade=(stat,rank)=>ranks[stat==='control'||stat==='stamina'?'power':['arm','fielding','catching'].includes(stat)?'speed':stat][letters.indexOf(rank)];

@@ -86,7 +86,7 @@
 <div class="sl-home-return"><a href="./index.html#home">← SL WORLD HOME</a></div>
 <header><div class="logo">SUPER LEAGUE WORLD / BASEBALL ENGINE α</div><h1>TEST MATCH #006 / ENGINE LAB</h1><p class="note">1球から9イニングへ。能力・球種を読む骨格テストです。数値は仮設定で、最終バランスではありません。</p><p id="engineVersion" class="note engine-version"></p></header>
 <main><p><a href="./custom-match.html">CUSTOM MATCH TEST — 実戦バッチ / JSON / LAB</a></p><p><a href="engine-lab.html">SL WORLD ENGINE LAB</a> / <a href="engine-test.html">005 baseline</a></p>
-<section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><input id="away" value="デビルスターズ"></div><div><label for="home">ホームチーム（後攻）</label><input id="home" value="明道仁球会"></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
+<section class="card"><div class="setup"><div><label for="away">ビジターチーム（先攻）</label><select id="away"><option>デビルスターズ</option></select></div><div><label for="home">ホームチーム（後攻）</label><select id="home"><option>明道仁球会</option></select></div><div><label for="seed">seed（RESETで適用）</label><input id="seed" value="SL-WORLD-001"></div></div>
 <div class="toolbar"><button id="reset">RESET</button><button id="export">イベントJSONを保存</button></div><div id="source" class="note"></div><div id="status" role="status" aria-live="polite"></div>
 <p class="note">選手DBは読取専用。各チームの先発1人＋打順8人を採用し、先発が9番で打席に立ちます。不足枠は TEST PLAYER、未設定能力はCONFIGの仮値で補います。エディターと同じブラウザ・同じオリジンで開いてください。</p></section>
 <section class="card"><p id="matchTitle" class="note"></p><details><summary>投打者・投球数</summary><p id="pitcher"></p><p id="batter"></p><p id="pitchCount" class="note"></p></details>

@@ -19,7 +19,7 @@
   const sections=[e.tactics.offense,e.tactics.defense].filter(Boolean);
   return sections.map(d=>{const options=d.candidates?.filter(c=>c.toBase).map(c=>'- '+c.toBase+'B out chance: '+c.outChance.toFixed(2)+' / risk: '+c.errorRisk.toFixed(3)).join('\n');return 'Decision: '+d.decision.replaceAll('_',' ')+'\nReason:\n'+d.reasons.map(r=>'- '+r).join('\n')+(options?'\n'+options:'');}).join('\n\n')+'\n'+JSON.stringify({force:e.forceAtContact,trajectory:e.trajectory,return:e.returnDecision,running:e.runningDebug});
  }
- function resultLabel(e){return safeText(e.log,names[e.result]||'プレー終了');}
+ function resultLabel(e){if(e.doublePlay)return '併殺 / DOUBLE PLAY';return safeText(e.log,names[e.result]||'プレー終了');}
  function toReplayEvent(event){
   const e=copy(event),steal=e.eventType==='baserunning'||!!e.runningExecution||['stolenBase','caughtStealing'].includes(e.result);
   e.eventType=steal?'baserunning':e.eventType||'pitch';
@@ -121,5 +121,5 @@
   return {position,role,fielderKey:track.key,ballOwner:state.ballOwner,playPhase:state.phase,receiving:!!receiving,tagging:!!tagging,pose:{time,running,facing:target[0]<position[0]?-1:1,catch:!!(receiving||tagging||catchBall),glove:receiving||tagging||catchBall?[12,-6]:undefined,hand:throwing?[17,-38]:undefined}};
  }
  function transition(e,p,time){if(!p.halfChanged||time<p.returnAt)return null;const t=progress(time,p.returnAt,p.end),entering=t>=.5;return {entering,progress:entering?(t-.5)*2:t*2};}
- globalThis.SL_MATCH_REPLAY={toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,decisionDebug,bannerLabel:e=>banners[e.result]||'PLAY',safeText,names};
+ globalThis.SL_MATCH_REPLAY={toReplayEvent,animationPlan,ballAnimation,runnerAnimation,batterVisible,fieldingAnimation,transition,resultLabel,decisionDebug,bannerLabel:e=>e.doublePlay?'DOUBLE PLAY':banners[e.result]||'PLAY',safeText,names};
 })();

@@ -168,6 +168,7 @@
    }
   }
   e.runningDebug={ballType:e.ballType,catchPoint:e.fieldingPoint,batterSpeed:currentBatter(g)?.profile?.batting?.speed??null,outfielderArm:e.fielderIndex>=6?defense(g)[e.fielderIndex]?.profile?.batting?.arm:null,returnDecision:e.returnDecision||null,batterDestination:e.runnersAfter?.findIndex(r=>r?.key===e.batter?.key)+1,timingSource:stealProcess?'shared steal clock; designated receiver arrival and tag':e.physical?'shared process clock; observed-ball runner decisions':e.defenseDecision?.timing?'engine arrival-race; play timeline in seconds':'recorded result; return timeline only (advance result retains existing model)'};
+  e.runningDebug.rfFirstRace=e.rfFirstRace||null;
   e.coverage=e.transfers.map(t=>({fielderIndex:t.toIndex,toBase:t.toBase,role:'baseCover'}));
   if(e.eventType==='baserunning'){e.pitchType='盗塁中の投球';e.pitchSpeed=null;e.primaryFielder=fielders[1];e.receiver=e.transfers[0]?.receiver||null;if(e.receiver)e.tag={...e.tag,fielder:e.receiver,fielderIndex:e.transfers[0].toIndex};}
   if(e.runningExecution&&e.transfers[0]){e.receiver=e.transfers[0].receiver;e.tag={...e.runningExecution.tag,fielder:e.receiver,fielderIndex:e.transfers[0].toIndex};}
@@ -235,7 +236,7 @@
    if(ball.height<=11&&arrival<=t){candidates.push({index:i,time:t,point:ball.point,height:ball.height,arrival,airborne:t<x.hangTime&&!ball.bounced});break;}
   }
   candidates.sort((a,b)=>a.time-b.time);let first=candidates[0];
-  if(x.type!=='GROUND'){const pursuit=pursueAir(g,p);if(pursuit.first){first=pursuit.first;p.pursuit=pursuit;p.roleEvaluations=pursuit.history;}}
+  if(x.type!=='GROUND'||first?.index>=6){const pursuit=pursueAir(g,p);if(pursuit.first){first=pursuit.first;p.pursuit=pursuit;p.roleEvaluations=pursuit.history;}}
   const fenceTime=(180+(wall-180)/.55)/x.horizontalSpeed,overFence=x.hangTime>fenceTime&&ballAt(p,fenceTime).height>12;
   if(overFence&&(!first||first.time>fenceTime)){p.fenceCrossing={at:fenceTime,height:ballAt(p,fenceTime).height,wall};first={index:x.sprayAngle<-.24?6:x.sprayAngle>.24?8:7,time:fenceTime,point:ballAt(p,fenceTime).point,airborne:false};p.ballType='homer';}
   if(!first){const point=ballAt(p,14).point;first=[6,7,8].map(index=>({index,point,time:Math.max(x.hangTime,reaction(f[index])+dist(origins[index],point)/speed(f[index],index)),airborne:false})).sort((a,b)=>a.time-b.time)[0];}
@@ -249,39 +250,60 @@
   const secondary=near?.d<155?near.index:null,plausible=candidates.find(c=>c.index===secondary&&c.time<=first.time+.4),until=Math.min(first.time,plausible?Math.max(.35,first.time-.12):secondary==null?.35:reaction(f[secondary])+.35);
   p.chase={secondary:p.pursuit?p.pursuit.history[0]?.fielders.find(f=>f.assignedRole==='SECONDARY CHASE')?.index??null:secondary,until,point:ballAt(p,Math.min(first.time,Math.max(.9,x.hangTime*.8))).point,reason:plausible?'primary interception established':'interception window lost'};
  }
- // Air-ball assignments are reconsidered from moving positions on the contact clock.
+ // Allocate responsibilities as a complete set, with one defender per task.
+ function redistribute(g,current,fielders,primary,secondary,target,previous=[],at=0){
+  const assignments=current.map(point=>({role:'HOLD',point:[...point],responsibility:'BACKUP RESPONSIBILITY'}));
+  const used=new Set([primary,secondary].filter(i=>i!=null)),occupied=g.state.bases;
+  const tasks=[1,2,3,4].map(base=>({base,point:bases[base],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY',priority:base===1?(g.state.outs===2?6:4):occupied[base-2]?(g.state.outs===2?5:6):base===2?3:1}));
+  tasks.sort((a,b)=>b.priority-a.priority||a.base-b.base);
+  const assign=task=>{const candidates=fielders.map((f,index)=>({index,cost:dist(current[index],task.point)/speed(f,index)+Math.max(0,reaction(f)-at)-(task.base&&previous[index]?.base===task.base? .12:0)})).filter(x=>!used.has(x.index)).sort((a,b)=>a.cost-b.cost||a.index-b.index);const chosen=candidates[0];if(chosen){used.add(chosen.index);assignments[chosen.index]={...task,point:[...task.point]};}};
+  for(const task of tasks)assign(task);
+  if(primary>=6){const formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2);assign({point:formation.relayPoint,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'});}
+  const dx=target[0]-400,dy=target[1]-430,d=Math.max(1,Math.hypot(dx,dy));
+  assign({point:[target[0]+dx/d*25,target[1]+dy/d*25],role:'BACKUP',responsibility:'BACKUP RESPONSIBILITY'});
+  assignments[primary]={role:'PRIMARY FIELDING',point:target,responsibility:'BALL RESPONSIBILITY'};
+  if(secondary!=null)assignments[secondary]={role:'SECONDARY CHASE',point:target,responsibility:'BALL RESPONSIBILITY'};
+  return assignments;
+ }
+ // Earliest reachable low trajectory point, including the rising liner window.
+ function interceptEstimate(p,f,index,current,t,samples=null){
+  const route=1+.16*(1-F.ability(f,'fielding')),v=speed(f,index);let fallback=null;
+  for(let step=Math.ceil(t/.04);step<=350;step++){
+   const future=step*.04,ball=samples?samples[step]:ballAt(p,future);if(ball.height>11)continue;
+   const arrival=Math.max(t,reaction(f))+dist(current,ball.point)*route/v;
+   fallback={point:ball.point,time:future,arrival,airborne:future<p.physical.hangTime&&!ball.bounced};
+   if(arrival<=future+.001)return fallback;
+  }
+  return {...fallback,time:Math.max(14,fallback.arrival),airborne:false};
+ }
  function pursueAir(g,p) {
   const fielders=F.defense(g),origins=SL_TACTICS.alignment(g).positions;
   const current=origins.map(x=>[...x]),directions=origins.map(()=>[0,0]),tracks=origins.map(()=>[]),history=[];
-  let primary=null,secondary=null,lastRoles=Array(9).fill('HOLD'),first=null,assignments=[];
-  const landingTime=p.physical.hangTime,landing=ballAt(p,landingTime).point;
+  let primary=null,secondary=null,lastRoles=Array(9).fill('HOLD'),lastBases=Array(9).fill(null),first=null,assignments=[];
+  const landingTime=p.physical.hangTime,landing=ballAt(p,landingTime).point,samples=Array.from({length:351},(_,i)=>ballAt(p,i*.04));
   for(let step=1;step<=350;step++){
-   const t=step*.04,ball=ballAt(p,t),target=ballAt(p,Math.max(t,landingTime-.04)).point;
+   const t=step*.04,ball=ballAt(p,t);
    if(ball.depth>365+35*Math.cos(p.physical.sprayAngle*2)&&ball.height>12)break;
    if(step===1||step%3===0){
-    const estimates=fielders.map((f,index)=>{const d=dist(current[index],target),v=speed(f,index),route=1+.16*(1-F.ability(f,'fielding'));
-     const vector=[target[0]-current[index][0],target[1]-current[index][1]],dir=directions[index],cos=(dir[0]*vector[0]+dir[1]*vector[1])/Math.max(.001,Math.hypot(...dir)*d);
-     const turn=Math.hypot(...dir)>.001?.08*(1-clamp(cos,-1,1)):0;
-     const arrival=Math.max(t,reaction(f))+turn+d*route/v,remaining=Math.max(0,landingTime-t);
-     return {index,currentPosition:[...current[index]],movementDirection:[...dir],distanceToLanding:dist(current[index],landing),estimatedArrival:arrival,catchability:remaining>0?clamp(1-(arrival-landingTime)/Math.max(.12,remaining),0,1):0,route,movementSpeed:v,turnDelay:turn};
-    }).sort((a,b)=>a.estimatedArrival-b.estimatedArrival);
+    const estimates=fielders.map((f,index)=>{const intercept=interceptEstimate(p,f,index,current[index],t,samples);
+     return {index,currentPosition:[...current[index]],movementDirection:[...directions[index]],distanceToLanding:dist(current[index],landing),estimatedArrival:intercept.time,interceptPoint:intercept.point,interceptProbability:intercept.airborne?1:0,catchability:intercept.airborne?1:0,route:1+.16*(1-F.ability(f,'fielding')),movementSpeed:speed(f,index),turnDelay:0};
+    }).sort((a,b)=>a.estimatedArrival-b.estimatedArrival||a.index-b.index);
     const best=estimates[0],incumbent=estimates.find(x=>x.index===primary);
-    if(!incumbent||best.estimatedArrival+.12<incumbent.estimatedArrival)primary=best.index;
-    secondary=estimates.find(x=>x.index!==primary&&x.catchability>0&&x.estimatedArrival<=best.estimatedArrival+.6)?.index??null;
-    assignments=origins.map(point=>({role:'HOLD',point}));
-    const support=(index,point,role)=>{if(index!==primary&&index!==secondary)assignments[index]={point,role};};
-    support(primary===2?0:2,bases[1],'BASE COVER');support(primary===3?5:3,bases[2],'BASE COVER');support(primary===4?5:4,bases[3],'BASE COVER');support(primary===1?0:1,bases[4],'BASE COVER');
-    if(primary>=6){const formation=F.relayFormation(target,g.state.bases[1]||g.state.bases[2]?4:2);support(formation.relayIndex,formation.relayPoint,'CUTOFF');support(formation.coverIndex,bases[2],'BASE COVER');}
-    else {const backup=estimates.filter(x=>x.index>=6&&x.index!==secondary)[0];if(backup){const dx=target[0]-400,dy=target[1]-430,d=Math.max(1,Math.hypot(dx,dy));support(backup.index,[target[0]+dx/d*25,target[1]+dy/d*25],'BACKUP');}}
-    assignments[primary]={role:'PRIMARY FIELDING',point:target};if(secondary!=null)assignments[secondary]={role:'SECONDARY CHASE',point:target};
-    const rows=estimates.sort((a,b)=>a.index-b.index).map(x=>{const role=assignments[x.index].role,changed=lastRoles[x.index]!==role;lastRoles[x.index]=role;return {...x,assignedRole:role,roleChangeTime:changed?t:null,reasonForRoleChange:changed?(['PRIMARY FIELDING','SECONDARY CHASE'].includes(role)?'current arrival estimate with handoff hysteresis':'release to '+role+' for the next defensive play'):null};});
-    history.push({at:t,predictedLandingPoint:landing,predictedLandingTime:landingTime,remainingTime:Math.max(0,landingTime-t),initialBallSpeed:p.physical.horizontalSpeed,ballSpeed:dist(ballAt(p,Math.max(0,t-.04)).point,ball.point)/.04,trajectory:p.physical.type,fielders:rows});
+    if(!incumbent||best.estimatedArrival+.12<incumbent.estimatedArrival||best.catchability>incumbent.catchability)primary=best.index;
+    const owner=estimates.find(x=>x.index===primary);
+    secondary=estimates.find(x=>x.index!==primary&&x.catchability>0&&x.estimatedArrival<=owner.estimatedArrival+.12)?.index??null;
+    const previousAssignments=assignments;
+    assignments=redistribute(g,current,fielders,primary,secondary,owner.interceptPoint,assignments,t);
+    const vacatedResponsibilities=[1,2,3,4].flatMap(base=>{const from=previousAssignments.findIndex(a=>a.base===base),to=assignments.findIndex(a=>a.base===base);return from>=0&&from!==to?[{base,from,to,at:t,reason:'previous defender changed responsibility'}]:[];});
+    if(secondary!=null)assignments[secondary].point=estimates.find(x=>x.index===secondary).interceptPoint;
+    const rows=estimates.sort((a,b)=>a.index-b.index).map(x=>{const a=assignments[x.index],role=a.role,changed=lastRoles[x.index]!==role||lastBases[x.index]!==a.base;lastRoles[x.index]=role;lastBases[x.index]=a.base;return {...x,assignedRole:role,responsibility:a.responsibility,base:a.base??null,targetPoint:a.point,roleChangeTime:changed?t:null,reasonForRoleChange:changed?(['PRIMARY FIELDING','SECONDARY CHASE'].includes(role)?'earliest reachable intercept with ownership hysteresis':'vacated responsibility reassigned from current positions'):null};});
+    history.push({at:t,primary,secondary,vacatedResponsibilities,predictedLandingPoint:landing,predictedLandingTime:landingTime,remainingTime:Math.max(0,landingTime-t),initialBallSpeed:p.physical.horizontalSpeed,ballSpeed:dist(ballAt(p,Math.max(0,t-.04)).point,ball.point)/.04,trajectory:p.physical.type,fielders:rows});
    }
-   for(let index=0;index<9;index++){const assignment=assignments[index];if(t<reaction(fielders[index])||assignment.role==='HOLD')continue;const goal=index===primary||index===secondary?target:assignment.point,from=[...current[index]],d=dist(from,goal),route=1+.16*(1-F.ability(fielders[index],'fielding')),travel=Math.min(d,.04*speed(fielders[index],index)/route),ratio=travel/Math.max(.001,d);current[index]=[from[0]+(goal[0]-from[0])*ratio,from[1]+(goal[1]-from[1])*ratio];directions[index]=[current[index][0]-from[0],current[index][1]-from[1]];const role=({'PRIMARY FIELDING':'primary','SECONDARY CHASE':'secondary','BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup'})[assignment.role],last=tracks[index].at(-1);if(last&&last.role===role&&dist(last.goal,goal)<.001&&Math.abs(last.end-(t-.04))<.001){last.end=t;last.to=[...current[index]];}else tracks[index].push({from,to:[...current[index]],goal:[...goal],start:t-.04,end:t,role});}
+   for(let index=0;index<9;index++){const assignment=assignments[index];if(t<reaction(fielders[index])||assignment.role==='HOLD')continue;const goal=assignment.point,from=[...current[index]],d=dist(from,goal),route=1+.16*(1-F.ability(fielders[index],'fielding')),travel=Math.min(d,(t-Math.max(t-.04,reaction(fielders[index])))*speed(fielders[index],index)/route),ratio=travel/Math.max(.001,d);current[index]=[from[0]+(goal[0]-from[0])*ratio,from[1]+(goal[1]-from[1])*ratio];directions[index]=[current[index][0]-from[0],current[index][1]-from[1]];const role=({'PRIMARY FIELDING':'primary','SECONDARY CHASE':'secondary','BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup'})[assignment.role],last=tracks[index].at(-1);if(last&&last.role===role&&dist(last.goal,goal)<.001&&Math.abs(last.end-(t-.04))<.001){last.end=t;last.to=[...current[index]];}else tracks[index].push({from,to:[...current[index]],goal:[...goal],start:Math.max(t-.04,reaction(fielders[index])),end:t,role});}
    const owner=[primary,secondary].filter(i=>i!=null&&t>=reaction(fielders[i])&&dist(current[i],ball.point)<=1).sort((a,b)=>dist(current[a],ball.point)-dist(current[b],ball.point))[0];
    if(owner!=null&&ball.height<=11){first={index:owner,time:t,point:ball.point,height:ball.height,arrival:t,airborne:t<landingTime&&!ball.bounced};break;}
   }
-  return {first,tracks,history};
+  return {first,tracks,history,assignments};
  }
  function handlingAt(g,first){const f=F.defense(g)[first.index],origin=SL_TACTICS.alignment(g).positions[first.index],effort=clamp(dist(origin,first.point)/(Math.max(.1,first.time-reaction(f))*speed(f,first.index)),0,1);return {effort,pickupTime:.18+.25*(1-F.ability(f,'catching'))+.35*effort**3,throwRisk:.002+.016*(1-F.ability(f,'arm'))**2+.015*effort**4};}
  function turnDelay(p,index,to){if(index!==p.fielderIndex||!p.fieldingApproach)return 0;const {from, to:at}=p.fieldingApproach,dx=at[0]-from[0],dy=at[1]-from[1],tx=to[0]-at[0],ty=to[1]-at[1],cosine=(dx*tx+dy*ty)/Math.max(.01,Math.hypot(dx,dy)*Math.hypot(tx,ty));return .10*(1-clamp(cosine,-1,1))*(p.handling?.effort??0);}
@@ -315,10 +337,27 @@
   p.defensivePlan.handoff={primary,secondary,occupied:g.state.bases.map(Boolean),source:'vacated-base-and-next-play'};
   if(primary>=6){const formation=F.relayFormation(p.landingPoint,g.state.bases[1]||g.state.bases[2]?4:2),recognizedAt=.35;p.defensivePlan.anticipation={...formation,recognizedAt,source:'observed-trajectory-and-runners'};moveTrack(g,p,formation.relayIndex,formation.relayPoint,formation.relayIndex===secondary?p.chase.until:recognizedAt,'relay');cover(formation.coverIndex,2);p.defensivePlan.responsibilities.second=formation.coverIndex;}
   else if(secondary!=null&&secondary>=6){const dx=at[0]-400,dy=at[1]-430,d=Math.max(1,Math.hypot(dx,dy));moveTrack(g,p,secondary,[at[0]+dx/d*25,at[1]+dy/d*25],p.chase.until,'backup');}
-  if(p.pursuit){for(let i=0;i<9;i++){const legs=p.pursuit.tracks[i];if(!legs.length)continue;const release=legs.at(-1).end,support=p.defensivePlan.tracks[i].legs.filter(l=>!['primary','secondary'].includes(l.role));p.defensivePlan.tracks[i].legs=legs.map(l=>({...l}));for(const leg of support)moveTrack(g,p,i,leg.to,Math.max(release,leg.start),leg.role);}
-   p.defensivePlan.roleEvaluations=p.roleEvaluations;
+  if(p.pursuit){
+   p.defensivePlan.tracks=origins.map((origin,index)=>({index,key:fielders[index].key,origin:[...origin],initialRole:'HOLD',legs:p.pursuit.tracks[index].map(l=>({...l}))}));
+   const current=p.defensivePlan.tracks.map(track=>F.trackPosition(track,time));
+   const assignments=redistribute(g,current,fielders,primary,null,at,p.pursuit.assignments,time),responsibilities={};
+   assignments.forEach((a,i)=>{if(i!==primary&&a.role!=='HOLD')moveTrack(g,p,i,a.point,time,({'BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup'})[a.role]);if(a.base)responsibilities[['','first','second','third','home'][a.base]]=i;});
+   // Gather the sub-unit glove reach during pickup; do not teleport to the ball.
+   if(dist(current[primary],p.fieldingPoint)>.001)moveTrack(g,p,primary,p.fieldingPoint,time,'primary');
+   if(p.trajectory.fieldTime>time)moveTrack(g,p,primary,p.fieldingPoint,time,'primary',p.trajectory.fieldTime);
+   p.defensivePlan.responsibilities=responsibilities;p.defensivePlan.roleEvaluations=p.roleEvaluations;
+   const relay=assignments.findIndex(a=>a.role==='CUTOFF');
+   p.defensivePlan.anticipation=relay<0?null:{relayIndex:relay,relayPoint:assignments[relay].point,coverIndex:responsibilities.second,targetBase:2,recognizedAt:time,source:'current-responsibility-allocation'};
   }
   return p.defensivePlan;
+ }
+ function redistributeTransfer(g,p,owner,receiver,to,t){
+  if(!p.pursuit)return; // Existing ground/DP sequence is preserved.
+  const fielders=F.defense(g),current=p.defensivePlan.tracks.map(track=>F.trackPosition(track,t));
+  const assignments=redistribute(g,current,fielders,owner,receiver===owner?null:receiver,to,[],t);
+  // Receiving the throw fulfils this base's responsibility; release its spare.
+  for(let i=0;i<assignments.length;i++){const a=assignments[i];if(i===owner||i===receiver)continue;if(a.base&&dist(a.point,to)<.001){a.role='BACKUP';a.responsibility='BACKUP RESPONSIBILITY';a.point=[to[0],to[1]+24];a.base=null;}moveTrack(g,p,i,a.point,t,({'BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup',HOLD:'hold'})[a.role]);}
+  p.defensivePlan.transitions??=[];p.defensivePlan.transitions.push({at:t,reason:'throw receiver changes responsibility',owner,receiver,to,assignments});
  }
  function receiverFor(p,base,owner,point){const near=dist(point,bases[base]);if(near<12||near<45&&((base===1&&owner===2)||(base===3&&owner===4)||(base===4&&owner===1)))return owner;const cover=p.defensivePlan?.tracks.find(track=>track.index!==owner&&['baseCover','receive'].includes(track.legs.at(-1)?.role)&&dist(track.legs.at(-1).to,bases[base])<.001);return cover?.index??F.receiverIndex(base,owner,point);}
  function groundTracks(g,p){let owner=p.fielderIndex,point=p.fieldingPoint;const fielders=F.defense(g);for(const raw of p.throws||(p.throw?[p.throw]:[])){const toIndex=raw.toIndex??receiverFor(p,raw.toBase,owner,point),to=raw.toPoint||bases[raw.toBase],kind=raw.kind||'force',travel=dist(point,to)/(owner===toIndex?speed(fielders[owner],owner):throwSpeed(fielders[owner],owner)),tagAt=raw.timing.ballETA,end=tagAt-(kind==='tag'?.15:0),start=end-travel;Object.assign(raw,{fromIndex:owner,toIndex,toPoint:to,kind,start,end,tagAt});if(owner===toIndex)moveTrack(g,p,owner,to,start,'carry',end);else moveTrack(g,p,toIndex,to,raw.timing.fieldTime,'receive');owner=toIndex;point=to;}}
@@ -402,7 +441,7 @@
  function play(g,p,b,pitcher){
   geometry(g,p);const s=g.state,f=F.defense(g)[p.fielderIndex];
   if(p.fenceCrossing){defensePlan(g,p);advanceHit(g,b,pitcher,4,p);creditHit(g,b,pitcher,'homeRun');p.record={source:'completed-play-history',fenceCrossing:p.fenceCrossing};return 'homeRun';}
-  if(p.ballType==='ground'&&p.fielderIndex<6){p.fielder={...identity(f),position:F.defense(g)[p.fielderIndex].profile.mainPosition};defensePlan(g,p);const result=SL_TACTICS.groundPlay(g,p,b,pitcher);groundTracks(g,p);p.record={source:'completed-play-history',classification:result,classificationReason:result==='fieldersChoice'?'another runner targeted; batter remains safe':result==='groundout'?'batter retired at first':result,outs:s.outs,actions:clone(s.playActions),batterKey:b.key,batterBase:s.bases.findIndex(r=>r?.key===b.key)+1,fieldingIndex:p.fielderIndex,target:p.throw?.toBase??null,fieldingMistake:p.fieldingMistake,throws:p.throws||(p.throw?[p.throw]:[])};return result;}
+  if(p.ballType==='ground'&&p.fielderIndex<6){p.fielder={...identity(f),position:F.defense(g)[p.fielderIndex].profile.mainPosition};defensePlan(g,p);const result=SL_TACTICS.groundPlay(g,p,b,pitcher);groundTracks(g,p);p.record={source:'completed-play-history',classification:result,fieldingChoice:p.fieldingChoice||null,classificationReason:result==='fieldersChoice'?'another runner targeted; batter remains safe':result==='groundout'?'batter retired at first':result,outs:s.outs,actions:clone(s.playActions),batterKey:b.key,batterBase:s.bases.findIndex(r=>r?.key===b.key)+1,fieldingIndex:p.fielderIndex,target:p.throw?.toBase??null,fieldingMistake:p.fieldingMistake,throws:p.throws||(p.throw?[p.throw]:[])};return result;}
   const catchRisk=.002+.018*(1-F.ability(f,'catching'))**2+.012*p.handling.effort**4;
   if(p.interception.airborne&&g.rng()<catchRisk){p.fieldingMistake={type:'catching',costOut:null};p.errorType='catching';p.interception.airborne=false;p.misplayAt=p.trajectory.fieldTime;p.recoveryTime=.65;p.trajectory.fieldTime+=p.recoveryTime;}
   defensePlan(g,p);
@@ -427,13 +466,18 @@
    if(transfer&&t>=transfer.tagAt){
     owner=transfer.toIndex;ballPoint=transfer.toPoint||bases[transfer.toBase];ready=transfer.tagAt+.23;secured=!transfer.relay;transfer.arrived=true;
     retireOnTransfer(g,runners,transfer,pitcher);
+    if(s.outs<3)redistributeTransfer(g,p,owner,owner,ballPoint,transfer.tagAt);
     transfer=null;if(s.outs>=3)break;
    }
    if(!fieldResolved&&original.some(Boolean)&&outsAtContact<2&&t>=nextRead){observation=flyObservation(g,p,t);nextRead=t+.12;}
    for(const r of runners){if(r.out||r.lastSafe===4||t<r.start)continue;
     r.at=runnerAt(r,t);
     if(r.from>0&&!fieldResolved&&t<p.physical.hangTime&&(p.misplayAt==null||t<p.misplayAt)){
-     const read=flyRunningRead(g,p,r,outsAtContact,observation);
+     const proposed=flyRunningRead(g,p,r,outsAtContact,observation);
+     if(!r.flyRead){r.flyRead=proposed;r.readSince=t;r.pendingMode=proposed.mode;r.pendingSince=t;}
+     if(proposed.mode!==r.pendingMode){r.pendingMode=proposed.mode;r.pendingSince=t;}
+     if(proposed.mode!==r.flyRead.mode&&t-r.readSince>=.36&&t-r.pendingSince>=.24){r.flyRead=proposed;r.readSince=t;}
+     const read=r.flyRead;
      if(r.flyMode!==read.mode){r.decisions.push({at:t,decision:read.mode,inputs:read.inputs});r.flyMode=read.mode;}
      if(!['GO_ON_CONTACT','TWO_OUT_RUN'].includes(read.mode)){
       r.mandatory=false;r.target=r.from;const desired=r.from+read.lead;
@@ -460,13 +504,15 @@
    if(t>=ready&&!transfer&&fieldResolved){
     const targets=runningTargets(g,p,runners,owner,ballPoint,t);
     const chosen=targets[0];
+    if(!p.throws.length){const first=targets.find(a=>a.r.from===0&&a.toBase===1);p.firstBaseOpportunity=!!first&&first.tagAt<first.runnerETA;p.fieldingChoice={at:t,chosenBase:chosen?.toBase??null,chosenRunner:chosen?.r.runner.key??null,batterKey:b.key,firstBaseOpportunity:p.firstBaseOpportunity,firstBaseTiming:first?{ballETA:first.tagAt,runnerETA:first.runnerETA}:null,source:'current runner legs and receiver cover ETA before throw'};}
     if(chosen){
+     redistributeTransfer(g,p,owner,chosen.toIndex,bases[chosen.toBase],t);
      if(owner===chosen.toIndex)moveTrack(g,p,owner,bases[chosen.toBase],chosen.start,'carry',chosen.end);else moveTrack(g,p,chosen.toIndex,bases[chosen.toBase],t,'receive');
      transfer={fromIndex:owner,toBase:chosen.toBase,toIndex:chosen.toIndex,runnerKey:chosen.r.runner.key,kind:chosen.kind,start:chosen.start,end:chosen.end,tagAt:chosen.tagAt,result:'safe',timing:{ballETA:chosen.tagAt,runnerETA:chosen.runnerETA,pickupTime:p.handling.pickupTime}};p.throws.push(transfer);secured=false;
     }else if(caught||owner<6){secured=true;}
     else if(!secured){
-     const relay=owner>=6&&dist(ballPoint,bases[2])>100,formation=F.relayFormation(ballPoint,2),toIndex=relay?formation.relayIndex:receiverFor(p,2,owner,ballPoint),toPoint=relay?formation.relayPoint:bases[2],travel=dist(ballPoint,toPoint)/throwSpeed(fielders[owner],owner),cover=coverTime(g,p,toIndex,toPoint,t),end=Math.max(t+turnDelay(p,owner,toPoint)+travel,cover);
-     moveTrack(g,p,toIndex,toPoint,t,relay?'relay':'receive');transfer={fromIndex:owner,toIndex,toPoint,toBase:2,relay,kind:'return',result:'secured',start:end-travel,end,tagAt:end,runnerKey:null,timing:{ballETA:end,pickupTime:p.handling.pickupTime}};p.throws.push(transfer);
+     const relay=owner>=6&&dist(ballPoint,bases[2])>100,formation=p.defensivePlan.anticipation||F.relayFormation(ballPoint,2),toIndex=relay?formation.relayIndex:receiverFor(p,2,owner,ballPoint),toPoint=relay?formation.relayPoint:bases[2],travel=dist(ballPoint,toPoint)/throwSpeed(fielders[owner],owner),cover=coverTime(g,p,toIndex,toPoint,t),end=Math.max(t+turnDelay(p,owner,toPoint)+travel,cover);
+     redistributeTransfer(g,p,owner,toIndex,toPoint,t);moveTrack(g,p,toIndex,toPoint,t,relay?'relay':'receive');transfer={fromIndex:owner,toIndex,toPoint,toBase:2,relay,kind:'return',result:'secured',start:end-travel,end,tagAt:end,runnerKey:null,timing:{ballETA:end,pickupTime:p.handling.pickupTime}};p.throws.push(transfer);
     }
    }
    if(t>fieldTime&&secured&&!transfer&&runners.every(r=>r.out||!r.retreating&&r.target===r.lastSafe))break;
@@ -476,13 +522,14 @@
   s.bases=[null,null,null];
   const thirdAt=s.outs>=3?Math.max(...runners.filter(r=>r.out).map(r=>r.outAt)):Infinity,thirdThrow=p.throws.find(t=>t.result==='out'&&Math.abs(t.tagAt-thirdAt)<.001),cancelRuns=s.outs>=3&&(thirdThrow?.kind==='force'||caught&&outsAtContact===2);
   for(const r of runners.sort((a,b)=>b.from-a.from)){if(r.out)continue;if(r.lastSafe===4&&(!cancelRuns&&(r.legs.at(-1)?.end??Infinity)<thirdAt)){creditRun(g,r.runner,p.error?null:b,pitcher);if(walkOff(g)){finish(g,'walkoff');break;}}else if(s.outs<3&&r.lastSafe>0){s.bases[r.lastSafe-1]=r.runner;if(r.lastSafe!==r.from)F.move(g,r.runner,r.from,r.lastSafe);}}
+  if(p.fielderIndex===8){const throw1=p.throws.find(x=>x.fromIndex===8&&x.toBase===1&&x.kind!=='return'),runner=runners.find(r=>r.from===0),leg=runner.legs.find(l=>l.toBase===1);p.rfFirstRace={clock:'seconds since contact',fieldArrival:p.interception.arrival,pickupStart:fieldTime,pickupComplete:fieldTime+p.handling.pickupTime,throwInitiation:throw1?.start??null,releaseTime:throw1?.start??null,throwVelocity:throwSpeed(f,8),ballETA1B:throw1?.end??null,ballArrival1B:throw1?.arrived?throw1.end:null,runnerStart:leg?.start??null,acceleration:{model:'existing constant segment speed',value:0},currentSpeed:dist(bases[0],bases[1])/runTime(g,b,0),speedUnit:'field coordinates per second',runnerETA1B:leg?.end??null,runnerArrival1B:runner.lastSafe>=1?(leg?.end??null):null,raceMargin:throw1&&leg?leg.end-throw1.end:null,marginDefinition:'runnerETA1B - ballETA1B; positive means ball first',result:throw1?.result??'NO_THROW'};}
   p.runnerDecisions=runners.map(r=>({...r,runner:identity(r.runner)}));p.processEnd=end;
   const result=classify(p,s.playActions,b);
   if(['single','double','triple'].includes(result))creditHit(g,b,pitcher,result);
   p.infieldHit=result==='single'&&p.fielderIndex<6;
   if(caught&&s.playActions.some(a=>a.toBase===4&&a.result==='safe')){s.batting[b.key].AB--;s.batting[b.key].SF++;p.sacrificeFly=true;}
-  p.record={source:'completed-play-history',classification:p.sacrificeFly?'sacrificeFly':result,classificationReason:result==='fieldersChoice'?'another runner targeted; batter remains safe':caught?'airborne catch; subsequent runner outs use retouch/tag clock':result,runnerReads:runners.filter(r=>r.from>0).map(r=>({key:r.runner.key,from:r.from,retouchAt:r.retouchAt,decisions:r.decisions.filter(d=>['TAG_UP_PREP','TAG_UP_START','READ_HOLD','STAY','TWO_OUT_RUN','GO_ON_CONTACT','TAG_RETURN'].includes(d.decision)).slice(0,16)})),caught,fieldingMistake:p.fieldingMistake||null,firstBaseOpportunity:p.firstBaseOpportunity,actions:clone(s.playActions),throwTargets:p.throws.map(t=>({toBase:t.toBase,toPoint:t.toPoint,kind:t.kind,at:t.tagAt,runnerKey:t.runnerKey,result:t.result})),lastSafe:p.runnerDecisions.map(r=>[r.runner.key,r.lastSafe])};
+  p.record={source:'completed-play-history',classification:p.doublePlay?'doublePlay':p.sacrificeFly?'sacrificeFly':result,fieldingChoice:p.fieldingChoice||null,classificationReason:result==='fieldersChoice'?'another runner targeted; batter remains safe':caught?'airborne catch; subsequent runner outs use retouch/tag clock':result,runnerReads:runners.filter(r=>r.from>0).map(r=>({key:r.runner.key,from:r.from,retouchAt:r.retouchAt,decisions:r.decisions.filter(d=>['TAG_UP_PREP','TAG_UP_START','READ_HOLD','STAY','TWO_OUT_RUN','GO_ON_CONTACT','TAG_RETURN'].includes(d.decision)).slice(0,16)})),caught,fieldingMistake:p.fieldingMistake||null,firstBaseOpportunity:p.firstBaseOpportunity,rfFirstRace:p.rfFirstRace||null,actions:clone(s.playActions),throwTargets:p.throws.map(t=>({toBase:t.toBase,toPoint:t.toPoint,kind:t.kind,at:t.tagAt,runnerKey:t.runnerKey,result:t.result})),lastSafe:p.runnerDecisions.map(r=>[r.runner.key,r.lastSafe])};
   return p.sacrificeFly?'sacrificeFly':result;
  }
- F.process={handlingAt,pursueAir,generate,ballAt,geometry,play,classify,runTime,speed,reaction,throwSpeed,defensePlan,moveTrack,coverTime,turnDelay,receiverFor,flyObservation,flyRunningRead,runnerAt,retouchAfterCatch,runningTargets,outAtTransfer,retireOnTransfer};
+ F.process={redistributeTransfer,redistribute,interceptEstimate,handlingAt,pursueAir,generate,ballAt,geometry,play,classify,runTime,speed,reaction,throwSpeed,defensePlan,moveTrack,coverTime,turnDelay,receiverFor,flyObservation,flyRunningRead,runnerAt,retouchAfterCatch,runningTargets,outAtTransfer,retireOnTransfer};
 })();

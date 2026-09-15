@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "reports": [
+    {
+      "id": "A",
+      "trials": 300,
+      "bytes": 230706,
+      "elapsedMs": 1239.9000000357628
+    },
+    {
+      "id": "B",
+      "trials": 400,
+      "bytes": 305810,
+      "elapsedMs": 1296.699999988079
+    },
+    {
+      "id": "C",
+      "trials": 500,
+      "bytes": 42775,
+      "elapsedMs": 321.5
+    },
+    {
+      "id": "D",
+      "trials": 900,
+      "bytes": 124063,
+      "elapsedMs": 4645.800000011921
+    },
+    {
+      "id": "E",
+      "trials": 700,
+      "bytes": 7662902,
+      "elapsedMs": 7348
+    }
+  ],
+  "errors": []
+}

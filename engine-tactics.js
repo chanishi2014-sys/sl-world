@@ -88,6 +88,7 @@
   let d=defenseDecision(g,p,b);const ordinaryOut=d.candidates.some(c=>c.outChance>0);p.runnerIntents=F().forcePlan(s.bases,b);
   const catchError=g.rng()<(.003+.045*(1-(skill+catching)/2)**2)*.55;
   if(catchError){p.misplayAt=p.trajectory?.fieldTime??d.fieldTime??d.candidates[0].fieldTime;p.recoveryTime=.7+1.5*(1-catching)+g.rng()*.8;p.trajectory={...p.trajectory,fieldTime:p.misplayAt+p.recoveryTime};if(p.defensivePlan)F().process.moveTrack(g,p,p.fielderIndex,p.fieldingPoint,p.misplayAt,'primary',p.trajectory.fieldTime);d=defenseDecision(g,p,b);d.reasons.push('bobble recovered after '+p.recoveryTime.toFixed(2)+'s');}
+  p.firstBaseOpportunity=d.candidates.some(c=>c.toBase===1&&c.outChance>0);p.fieldingChoice={chosenBase:d.toBase??null,chosenRunner:d.runnerKey??null,batterKey:b.key,firstBaseOpportunity:p.firstBaseOpportunity,source:'defense candidates before throw'};
   p.defenseDecision=d;p.forceTrace={atContact:F().forcePlan(s.bases,b),advances:d.advances};
   const hold=d.decision==='HOLD_BALL',throwError=!hold&&d.receiverIndex!==p.fielderIndex&&g.rng()<d.errorRisk,error=catchError||throwError;
   let missPoint=null;
@@ -111,6 +112,7 @@
    if(p.bunt&&!p.safetyBunt&&advanced){s.batting[b.key].AB--;s.batting[b.key].SH++;p.sacrificeBunt=true;p.log='送りバント成功、打者アウト・走者進塁';return 'sacrificeBunt';}
    p.log=p.bunt?'バント、打者アウト':'一塁で打者アウト';return 'groundout';
   }
+  if(!success&&!p.firstBaseOpportunity){s.batting[b.key].H++;s.pitching[pitcher.key].H++;s.hits[offense(g)]++;p.infieldHit=true;p.log='一塁アウトの機会なし、安打';return 'single';}
   p.fieldersChoice=true;p.log=hold?'送球を見送り、野選で出塁':success?'先行走者アウト、野選で打者出塁':'送球は間に合わず、野選で全員セーフ';return 'fieldersChoice';
  }
  function resolveBunt(g,pitcher,batter){

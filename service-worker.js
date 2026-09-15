@@ -1,11 +1,12 @@
 'use strict';
 // Bump VERSION when changing worker/precache structure. HTML updates do not
 // require a bump: every online request bypasses the HTTP cache first.
-const VERSION = 'v23';
+const VERSION = 'v24';
 const BASE = new URL('./', self.location.href);
 const PREFIX = `sl-world-pwa:${BASE.pathname}:`;
 const CACHE = PREFIX + VERSION;
 const ASSETS = [
+  'game-view.css',
   'engine-diagnostic.html', 'engine-diagnostic-core.js', 'engine-diagnostic-worker.js', 'engine-diagnostic-ui.js',
   'custom-match.html', 'custom-match-core.js', 'custom-match-ui.js', 'custom-match-worker.js', 'engine006.html', 'engine006.js', 'engine006-fielding.js', 'engine006-tactics.js', 'engine006-replay.js', 'engine006-viewer.js', 'engine006-match-ui.js', 'engine-lab.html', 'engine-lab-core.js', 'engine-lab-worker.js', 'engine-lab-ui.js', 'engine-lab-presentation.js', 'engine-lab.css', './', 'index.html', 'player-editor.html', 'engine-test.html',
   'manifest.webmanifest', 'pwa-register.js', 'sl-home.css',

@@ -119,6 +119,7 @@ if(typeof document!=="undefined"){
  fillBalanceOptions("balancePreset",BALANCE_PRESETS);fillBalanceOptions("teamBalancePreset",TEAM_BALANCE_PRESETS);
  $("balanceRun").onclick=()=>runBalance("duel");$("teamBalanceRun").onclick=()=>runBalance("team");
  $("balanceCancel").onclick=()=>{if(balanceJob)balanceJob.cancelled=true;};
+ for(const id of ['away','home']){const old=$(id),select=document.createElement('select');select.id=id;for(const name of ['デビルスターズ','明道仁球会',...DIAGNOSTIC_LETTERS.map(r=>'オール'+r)]){const option=document.createElement('option');option.value=name;option.textContent=name;select.append(option);}select.value=old.value;old.replaceWith(select);}
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
   const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());SL_ABILITY_DISPLAY.render($("lineupOverview"),game.teams);viewer?.reset();

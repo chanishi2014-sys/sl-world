@@ -1,0 +1,956 @@
+{
+  "passed": true,
+  "version": "process-engine-20260914-v2",
+  "counts": {
+    "direct": 300,
+    "safe": 241,
+    "out": 59,
+    "lab": 27,
+    "custom": 5,
+    "normal": 13,
+    "hitRun": 1
+  },
+  "representative": {
+    "deliveredPitch": {
+      "outcome": "swingingStrike"
+    },
+    "stealExecution": {
+      "toBase": 2,
+      "coverIndex": 3,
+      "receiverIndex": 3,
+      "taggerIndex": 3,
+      "coverETA": 1.7193648390838605,
+      "assignedRoles": [
+        {
+          "index": 3,
+          "fielder": {
+            "key": "home_2",
+            "id": "LAB_BATTER",
+            "name": "BATTER C",
+            "isTest": true,
+            "position": "2B"
+          },
+          "assignedRole": "BASE COVER",
+          "point": [
+            400,
+            225
+          ],
+          "origin": [
+            473,
+            253
+          ],
+          "start": 0.25,
+          "moveSpeed": 53.21052631578947,
+          "arrival": 1.7193648390838605
+        },
+        {
+          "index": 5,
+          "fielder": {
+            "key": "home_4",
+            "id": "LAB_BATTER",
+            "name": "BATTER C",
+            "isTest": true,
+            "position": "SS"
+          },
+          "assignedRole": "BACKUP",
+          "point": [
+            400,
+            193
+          ],
+          "origin": [
+            325,
+            250
+          ],
+          "start": 0.25,
+          "moveSpeed": 53.21052631578947,
+          "arrival": 2.020362319845959
+        }
+      ],
+      "receivingFielder": {
+        "key": "home_2",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "position": "2B"
+      },
+      "tagger": {
+        "key": "home_2",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "position": "2B"
+      },
+      "trait": "盗塁○",
+      "technique": 1.15,
+      "speed": 1,
+      "recognition": 0.19130434782608696,
+      "leadDistance": 3.2,
+      "runDistance": 24.232,
+      "maximumSpeed": 9,
+      "accelerationRate": 6.637499999999999,
+      "accelerationTime": 1.3559322033898307,
+      "accelerationDistance": 6.101694915254238,
+      "startTime": 0.18820749963998148,
+      "runTime": 3.370410546139359,
+      "acceleration": 0,
+      "motion": 1.0359352015362275,
+      "pitchFlight": 0.5441311475409837,
+      "pitchArrival": 1.580066349077211,
+      "popup": 0.8646948283489204,
+      "throwStart": 2.4447611774261313,
+      "throwTime": 1.1696103896103895,
+      "ballETA": 3.614371567036521,
+      "tagAt": 3.764371567036521,
+      "runnerETA": 3.558618045779341,
+      "catcherArm": 0.6842105263157895,
+      "chance": 0.8117794970324231,
+      "transferTime": 0.5040800549040891,
+      "throwMotionTime": 0.36061477344483134,
+      "transferStart": 1.580066349077211,
+      "transferComplete": 2.0841464039813005,
+      "throwMotionStart": 2.0841464039813005,
+      "releaseTime": 2.4447611774261313,
+      "receiverCatchTime": 3.614371567036521,
+      "tagTime": 0.15,
+      "margin": 0.20575352125718016,
+      "marginDefinition": "tagAt - runnerETA; nonnegative = SAFE",
+      "source": "shared-motion-clock"
+    },
+    "stealAttempt": true,
+    "stealInterrupted": false,
+    "eventType": "baserunning",
+    "outcome": "steal",
+    "result": "stolenBase",
+    "stolenBase": true,
+    "caughtStealing": false,
+    "runner": {
+      "key": "away_7",
+      "id": "LAB_RUNNER",
+      "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+      "isTest": true
+    },
+    "runnerIntents": [
+      {
+        "runner": {
+          "key": "away_7",
+          "id": "LAB_RUNNER",
+          "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+          "isTest": true
+        },
+        "fromBase": 1,
+        "toBase": 2
+      }
+    ],
+    "fromBase": 1,
+    "toBase": 2,
+    "fielder": {
+      "key": "home_0",
+      "id": "LAB_CATCHER",
+      "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+      "isTest": true
+    },
+    "fielderIndex": 1,
+    "throw": {
+      "from": {
+        "key": "home_0",
+        "id": "LAB_CATCHER",
+        "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+        "isTest": true
+      },
+      "fromIndex": 1,
+      "toBase": 2,
+      "toIndex": 3,
+      "target": {
+        "key": "home_2",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "position": "2B"
+      },
+      "runnerKey": "away_7",
+      "kind": "tag"
+    },
+    "tag": {
+      "toBase": 2,
+      "fielderIndex": 3,
+      "fielder": {
+        "key": "home_2",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 3,
+        "position": "2B",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      "result": "safe"
+    },
+    "log": "1塁走者RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142、2塁盗塁成功",
+    "pitchType": "盗塁中の投球",
+    "pitchSpeed": null,
+    "outsBefore": 1,
+    "outsAfter": 1,
+    "runnersBefore": [
+      {
+        "key": "away_7",
+        "id": "LAB_RUNNER",
+        "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+        "isTest": true,
+        "isPitcher": false,
+        "effective": {
+          "meet": 7,
+          "power": 142,
+          "speed": 20,
+          "velocity": 122,
+          "control": 142,
+          "stamina": 142
+        },
+        "fallbacks": [],
+        "repertoire": [
+          {
+            "name": "ストレート",
+            "family": "standard",
+            "breakAmount": null,
+            "kind": "straight"
+          },
+          {
+            "name": "スローボール",
+            "family": "standard",
+            "breakAmount": null,
+            "kind": "slow"
+          }
+        ],
+        "specials": [
+          "盗塁○"
+        ],
+        "pitcherRoles": [],
+        "profile": {
+          "id": "LAB_RUNNER",
+          "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+          "isTest": true,
+          "isFielder": true,
+          "isPitcher": false,
+          "batting": {
+            "meet": 7,
+            "power": 142,
+            "speed": 20,
+            "arm": 14,
+            "fielding": 14,
+            "catching": 14
+          },
+          "pitching": {
+            "velocity": 122,
+            "control": 142,
+            "stamina": 142
+          },
+          "specials": [
+            "盗塁○"
+          ],
+          "mainPosition": "OF"
+        }
+      },
+      null,
+      null
+    ],
+    "runnersAfter": [
+      null,
+      {
+        "key": "away_7",
+        "id": "LAB_RUNNER",
+        "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+        "isTest": true,
+        "isPitcher": false,
+        "effective": {
+          "meet": 7,
+          "power": 142,
+          "speed": 20,
+          "velocity": 122,
+          "control": 142,
+          "stamina": 142
+        },
+        "fallbacks": [],
+        "repertoire": [
+          {
+            "name": "ストレート",
+            "family": "standard",
+            "breakAmount": null,
+            "kind": "straight"
+          },
+          {
+            "name": "スローボール",
+            "family": "standard",
+            "breakAmount": null,
+            "kind": "slow"
+          }
+        ],
+        "specials": [
+          "盗塁○"
+        ],
+        "pitcherRoles": [],
+        "profile": {
+          "id": "LAB_RUNNER",
+          "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+          "isTest": true,
+          "isFielder": true,
+          "isPitcher": false,
+          "batting": {
+            "meet": 7,
+            "power": 142,
+            "speed": 20,
+            "arm": 14,
+            "fielding": 14,
+            "catching": 14
+          },
+          "pitching": {
+            "velocity": 122,
+            "control": 142,
+            "stamina": 142
+          },
+          "specials": [
+            "盗塁○"
+          ],
+          "mainPosition": "OF"
+        }
+      },
+      null
+    ],
+    "actions": [
+      {
+        "type": "stolenBase",
+        "runner": {
+          "key": "away_7",
+          "id": "LAB_RUNNER",
+          "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+          "isTest": true
+        },
+        "fromBase": 1,
+        "toBase": 2,
+        "result": "safe"
+      }
+    ],
+    "batter": {
+      "key": "away_0"
+    },
+    "defensivePositions": [
+      [
+        400,
+        332
+      ],
+      [
+        400,
+        462
+      ],
+      [
+        553,
+        302
+      ],
+      [
+        473,
+        253
+      ],
+      [
+        249,
+        302
+      ],
+      [
+        325,
+        250
+      ],
+      [
+        200,
+        155
+      ],
+      [
+        400,
+        104
+      ],
+      [
+        600,
+        155
+      ]
+    ],
+    "eventVersion": 3,
+    "coordinateSpace": "field-800x500-v1",
+    "defense": [
+      {
+        "key": "home_8",
+        "id": "LAB_PITCHER",
+        "name": "PITCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+        "isTest": true,
+        "index": 0,
+        "position": "P",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_0",
+        "id": "LAB_CATCHER",
+        "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+        "isTest": true,
+        "index": 1,
+        "position": "C",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_1",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 2,
+        "position": "1B",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_2",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 3,
+        "position": "2B",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_3",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 4,
+        "position": "3B",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_4",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 5,
+        "position": "SS",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 202.63157894736844,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_5",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 6,
+        "position": "LF",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 128.94736842105263,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_6",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 7,
+        "position": "CF",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 128.94736842105263,
+        "reaction": 0.32894736842105265
+      },
+      {
+        "key": "home_7",
+        "id": "LAB_BATTER",
+        "name": "BATTER C",
+        "isTest": true,
+        "index": 8,
+        "position": "RF",
+        "moveSpeed": 53.21052631578947,
+        "throwSpeed": 128.94736842105263,
+        "reaction": 0.32894736842105265
+      }
+    ],
+    "playType": "steal",
+    "primaryFielder": {
+      "key": "home_0",
+      "id": "LAB_CATCHER",
+      "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+      "isTest": true,
+      "index": 1,
+      "position": "C",
+      "moveSpeed": 53.21052631578947,
+      "throwSpeed": 202.63157894736844,
+      "reaction": 0.32894736842105265
+    },
+    "playDescription": "",
+    "forceAtContact": [],
+    "landingPosition": null,
+    "fieldingPoint": null,
+    "assignedRoles": [
+      {
+        "index": 3,
+        "fielder": {
+          "key": "home_2",
+          "id": "LAB_BATTER",
+          "name": "BATTER C",
+          "isTest": true,
+          "position": "2B"
+        },
+        "assignedRole": "BASE COVER",
+        "point": [
+          400,
+          225
+        ],
+        "origin": [
+          473,
+          253
+        ],
+        "start": 0.25,
+        "moveSpeed": 53.21052631578947,
+        "arrival": 1.7193648390838605
+      },
+      {
+        "index": 5,
+        "fielder": {
+          "key": "home_4",
+          "id": "LAB_BATTER",
+          "name": "BATTER C",
+          "isTest": true,
+          "position": "SS"
+        },
+        "assignedRole": "BACKUP",
+        "point": [
+          400,
+          193
+        ],
+        "origin": [
+          325,
+          250
+        ],
+        "start": 0.25,
+        "moveSpeed": 53.21052631578947,
+        "arrival": 2.020362319845959
+      }
+    ],
+    "transfers": [
+      {
+        "start": 0.8646948283489204,
+        "end": 2.03430521795931,
+        "tagAt": 2.18430521795931,
+        "timing": null,
+        "toPoint": [
+          400,
+          225
+        ],
+        "relay": false,
+        "fromIndex": 1,
+        "toIndex": 3,
+        "toBase": 2,
+        "from": {
+          "key": "home_0",
+          "id": "LAB_CATCHER",
+          "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+          "isTest": true,
+          "index": 1,
+          "position": "C",
+          "moveSpeed": 53.21052631578947,
+          "throwSpeed": 202.63157894736844,
+          "reaction": 0.32894736842105265
+        },
+        "receiver": {
+          "key": "home_2",
+          "id": "LAB_BATTER",
+          "name": "BATTER C",
+          "isTest": true,
+          "index": 3,
+          "position": "2B",
+          "moveSpeed": 53.21052631578947,
+          "throwSpeed": 202.63157894736844,
+          "reaction": 0.32894736842105265
+        },
+        "kind": "tag",
+        "runnerKey": "away_7",
+        "result": "safe",
+        "fromPoint": [
+          400,
+          462
+        ],
+        "carried": false,
+        "throwerKey": "home_0",
+        "receiverKey": "home_2"
+      }
+    ],
+    "runningDebug": {
+      "catchPoint": null,
+      "batterSpeed": 14,
+      "outfielderArm": null,
+      "returnDecision": null,
+      "batterDestination": 0,
+      "timingSource": "shared steal clock; designated receiver arrival and tag"
+    },
+    "coverage": [
+      {
+        "fielderIndex": 3,
+        "toBase": 2,
+        "role": "baseCover"
+      }
+    ],
+    "receiver": {
+      "key": "home_2",
+      "id": "LAB_BATTER",
+      "name": "BATTER C",
+      "isTest": true,
+      "index": 3,
+      "position": "2B",
+      "moveSpeed": 53.21052631578947,
+      "throwSpeed": 202.63157894736844,
+      "reaction": 0.32894736842105265
+    },
+    "actualFielder": {
+      "key": "home_0",
+      "id": "LAB_CATCHER",
+      "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+      "isTest": true,
+      "index": 1,
+      "position": "C",
+      "moveSpeed": 53.21052631578947,
+      "throwSpeed": 202.63157894736844,
+      "reaction": 0.32894736842105265
+    },
+    "runnerSpeedByKey": {
+      "away_0": 0.6842105263157895,
+      "away_1": 0.6842105263157895,
+      "away_2": 0.6842105263157895,
+      "away_3": 0.6842105263157895,
+      "away_4": 0.6842105263157895,
+      "away_5": 0.6842105263157895,
+      "away_6": 0.6842105263157895,
+      "away_7": 1,
+      "away_8": 0.6842105263157895,
+      "home_0": 0.6842105263157895,
+      "home_1": 0.6842105263157895,
+      "home_2": 0.6842105263157895,
+      "home_3": 0.6842105263157895,
+      "home_4": 0.6842105263157895,
+      "home_5": 0.6842105263157895,
+      "home_6": 0.6842105263157895,
+      "home_7": 0.6842105263157895,
+      "home_8": 0.6842105263157895
+    },
+    "play": {
+      "schemaVersion": 2,
+      "clock": "seconds-since-contact",
+      "outsBefore": 1,
+      "primaryFielder": "home_0",
+      "actualFielder": "home_0",
+      "actualIndex": 1,
+      "catchPoint": [
+        400,
+        462
+      ],
+      "flight": 0,
+      "landingAt": 0,
+      "caught": 0,
+      "anticipation": null,
+      "tracks": [
+        {
+          "index": 0,
+          "key": "home_8",
+          "origin": [
+            400,
+            332
+          ],
+          "legs": []
+        },
+        {
+          "index": 1,
+          "key": "home_0",
+          "origin": [
+            400,
+            462
+          ],
+          "legs": [
+            {
+              "from": [
+                400,
+                462
+              ],
+              "to": [
+                400,
+                462
+              ],
+              "start": 0,
+              "end": 0.001,
+              "role": "primary",
+              "roleCode": "PRIMARY FIELDING"
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "key": "home_1",
+          "origin": [
+            553,
+            302
+          ],
+          "legs": []
+        },
+        {
+          "index": 3,
+          "key": "home_2",
+          "origin": [
+            473,
+            253
+          ],
+          "legs": [
+            {
+              "from": [
+                473,
+                253
+              ],
+              "to": [
+                400,
+                225
+              ],
+              "start": -1.330066349077211,
+              "end": 0.1392984900066494,
+              "role": "baseCover",
+              "roleCode": "BASE COVER"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "key": "home_3",
+          "origin": [
+            249,
+            302
+          ],
+          "legs": []
+        },
+        {
+          "index": 5,
+          "key": "home_4",
+          "origin": [
+            325,
+            250
+          ],
+          "legs": [
+            {
+              "from": [
+                325,
+                250
+              ],
+              "to": [
+                400,
+                193
+              ],
+              "start": -1.330066349077211,
+              "end": 0.44029597076874794,
+              "role": "backup",
+              "roleCode": "BACKUP"
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "key": "home_5",
+          "origin": [
+            200,
+            155
+          ],
+          "legs": []
+        },
+        {
+          "index": 7,
+          "key": "home_6",
+          "origin": [
+            400,
+            104
+          ],
+          "legs": []
+        },
+        {
+          "index": 8,
+          "key": "home_7",
+          "origin": [
+            600,
+            155
+          ],
+          "legs": []
+        }
+      ],
+      "transfers": [
+        {
+          "start": 0.8646948283489204,
+          "end": 2.03430521795931,
+          "tagAt": 2.18430521795931,
+          "timing": null,
+          "toPoint": [
+            400,
+            225
+          ],
+          "relay": false,
+          "fromIndex": 1,
+          "toIndex": 3,
+          "toBase": 2,
+          "from": {
+            "key": "home_0",
+            "id": "LAB_CATCHER",
+            "name": "CATCHER meet=7 / power=142 / speed=14 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+            "isTest": true,
+            "index": 1,
+            "position": "C",
+            "moveSpeed": 53.21052631578947,
+            "throwSpeed": 202.63157894736844,
+            "reaction": 0.32894736842105265
+          },
+          "receiver": {
+            "key": "home_2",
+            "id": "LAB_BATTER",
+            "name": "BATTER C",
+            "isTest": true,
+            "index": 3,
+            "position": "2B",
+            "moveSpeed": 53.21052631578947,
+            "throwSpeed": 202.63157894736844,
+            "reaction": 0.32894736842105265
+          },
+          "kind": "tag",
+          "runnerKey": "away_7",
+          "result": "safe",
+          "fromPoint": [
+            400,
+            462
+          ],
+          "carried": false,
+          "throwerKey": "home_0",
+          "receiverKey": "home_2"
+        }
+      ],
+      "runners": [
+        {
+          "runner": {
+            "key": "away_7",
+            "id": "LAB_RUNNER",
+            "name": "RUNNER meet=7 / power=142 / speed=20 / arm=14 / fielding=14 / catching=14 / velocity=122 / control=142 / stamina=142",
+            "isTest": true
+          },
+          "fromBase": 1,
+          "toBase": 2,
+          "start": -1.3918588494372297,
+          "arrivalAt": 1.9785516967021297,
+          "end": 1.9785516967021297,
+          "outAt": null,
+          "state": "safe"
+        }
+      ],
+      "outs": [],
+      "timeline": [
+        {
+          "type": "PITCHER_MOTION",
+          "at": -1.580066349077211
+        },
+        {
+          "type": "PLAY_ACTIVE",
+          "at": -1.580066349077211,
+          "ballOwner": null
+        },
+        {
+          "type": "RUNNER_START",
+          "at": -1.3918588494372297
+        },
+        {
+          "type": "PITCH_RELEASE",
+          "at": -0.5441311475409836
+        },
+        {
+          "type": "PITCH_RECEIVE",
+          "at": 0
+        },
+        {
+          "type": "FIELD",
+          "at": 0,
+          "actorIndex": 1,
+          "actorKey": "home_0",
+          "point": [
+            400,
+            462
+          ],
+          "ballOwner": "home_0"
+        },
+        {
+          "type": "THROW_START",
+          "at": 0.8646948283489204,
+          "actorIndex": 1,
+          "actorKey": "home_0",
+          "thrower": "home_0",
+          "origin": [
+            400,
+            462
+          ],
+          "ballOwner": null
+        },
+        {
+          "type": "RECEIVE",
+          "at": 2.03430521795931,
+          "actorIndex": 3,
+          "actorKey": "home_2",
+          "point": [
+            400,
+            225
+          ],
+          "ballOwner": "home_2"
+        },
+        {
+          "type": "TAG",
+          "at": 2.18430521795931,
+          "actorIndex": 3,
+          "actorKey": "home_2",
+          "runnerKey": "away_7",
+          "toBase": 2,
+          "result": "safe",
+          "point": [
+            400,
+            225
+          ],
+          "ballOwner": "home_2"
+        },
+        {
+          "type": "PLAY_COMPLETE",
+          "at": 2.1853052179593098,
+          "ballOwner": "home_2",
+          "outCount": 1
+        },
+        {
+          "type": "POSITION_RESET",
+          "at": 2.78530521795931,
+          "ballOwner": "home_2"
+        }
+      ],
+      "completeAt": 2.1853052179593098,
+      "resetAt": 2.78530521795931,
+      "resetEnd": 3.63530521795931
+    },
+    "fieldEvent": {
+      "type": "FIELD",
+      "at": 0,
+      "actorIndex": 1,
+      "actorKey": "home_0",
+      "point": [
+        400,
+        462
+      ],
+      "ballOwner": "home_0"
+    },
+    "ballOwnerAtCatch": "home_0",
+    "ballOwner": "home_2",
+    "throwOrigin": [
+      400,
+      462
+    ]
+  }
+}

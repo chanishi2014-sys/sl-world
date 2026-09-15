@@ -1,7 +1,7 @@
 "use strict";
 // ==================== CONFIG (all provisional balance values) ====================
 const CONFIG = {
- version:"process-engine-20260914-v2", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
+ version:"process-engine-20260915-v1", tactics:{enabled:true}, innings:9, maxPitchesPerAction:20000,
  defaults:{meet:5,power:100,speed:10,velocity:140,control:100,stamina:100},
  ranges:{meet:[1,10],power:[1,200],speed:[1,20],velocity:[80,165],control:[1,200],stamina:[1,200]},
  // Per-family profiles can later be overridden by pitch.name, without changing the player DB.
@@ -44,7 +44,15 @@ function adaptPlayer(raw,key,cfg){
  return {key,id:raw.id??null,name:String(raw.name||"名称未設定"),isTest:raw.isTest===true,isPitcher:raw.isPitcher===true,effective,fallbacks,repertoire,
   specials:Array.isArray(raw.specials)?[...raw.specials]:[],pitcherRoles:Array.isArray(raw.pitcherRoles)?[...raw.pitcherRoles]:[],profile:clone(raw)};
 }
+// Diagnostic representatives reused from CUSTOM; these are not league rosters.
+const DIAGNOSTIC_RANKS={meet:[10,9,8,7,6,4,3,1],power:[195,182,162,142,122,84,55,20],speed:[20,18,16,14,12,8,5,2],velocity:[160,152,140,122,112,95,87,82]};
+const DIAGNOSTIC_LETTERS=['S','A','B','C','D','E','F','G'];
+function diagnosticRoster(name){const rank=DIAGNOSTIC_LETTERS.indexOf(name.replace('オール',''));if(!name.startsWith('オール')||rank<0)return null;
+ const value=k=>DIAGNOSTIC_RANKS[k][rank],batting={meet:value('meet'),power:value('power'),speed:value('speed'),arm:value('speed'),fielding:value('speed'),catching:value('speed')},pitching={velocity:value('velocity'),control:value('power'),stamina:value('power')};
+ return ['C','1B','2B','3B','SS','LF','CF','RF','P','P','P','P','C','IF','OF'].map((mainPosition,i)=>({id:'REFERENCE_'+rank+'_'+i,name:DIAGNOSTIC_LETTERS[rank]+' '+({'C':'捕手','1B':'一塁','2B':'二塁','3B':'三塁','SS':'遊撃','LF':'左翼','CF':'中堅','RF':'右翼','P':'投手','IF':'内野','OF':'外野'}[mainPosition])+(i>=9?' '+(i-8):''),team:name,isTest:true,isFielder:true,isPitcher:mainPosition==='P',mainPosition,batting:{...batting},pitching:{...pitching},specials:[],pitcherRoles:mainPosition==='P'?[i===8?'先発':i===11?'抑え':'中継ぎ']:[],pitchRepertoire:{}}));
+}
 function makeTeam(name,side,db,cfg){
+ const reference=diagnosticRoster(name);if(reference)db=reference;
  const roster=db.filter(p=>p.team===name);const starterIndex=roster.findIndex(p=>p.isPitcher===true);
  const selected=roster.filter((p,i)=>i!==starterIndex).slice(0,8);
  function test(index,pitcher=false){return {id:`TEST_${side}_${index}`,name:`TEST PLAYER ${side.toUpperCase()} ${index}`,team:name,isTest:true,isFielder:!pitcher,isPitcher:pitcher,batting:{meet:cfg.defaults.meet,power:cfg.defaults.power,speed:cfg.defaults.speed},pitching:pitcher?{velocity:cfg.defaults.velocity,control:cfg.defaults.control,stamina:cfg.defaults.stamina}:{},pitchRepertoire:{}};}
@@ -304,5 +312,5 @@ function teamTestSummary(test){
   largeMargins:test.largeMargins,shutouts:test.shutouts,scores:test.scores.map(score=>[...score])};
 }
 // Exposed core for deterministic tests and later extraction into modules.
-globalThis.SL_ENGINE={CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher,generatePitchQuality,judgePitch,resolveContact,generateBattedQuality,resolveFinalResult,specialModifiers,SPECIAL_EFFECT_HANDLERS,BALANCE_PROFILES,BALANCE_PRESETS,TEAM_BALANCE_PROFILES,TEAM_BALANCE_PRESETS,createDuelTest,stepDuelTest,duelTestSummary,createTeamTest,stepTeamTest,teamTestSummary};
+globalThis.SL_ENGINE={DIAGNOSTIC_RANKS,DIAGNOSTIC_LETTERS,diagnosticRoster,CONFIG,PITCH_CATALOG,readDB,adaptPlayer,makeTeam,createRNG,newGame,resolvePitch,resolveBattedBall,applyPitch,advanceHit,advanceWalk,completePA,switchHalf,onePitch,advance,exportGame,currentBatter,currentPitcher,generatePitchQuality,judgePitch,resolveContact,generateBattedQuality,resolveFinalResult,specialModifiers,SPECIAL_EFFECT_HANDLERS,BALANCE_PROFILES,BALANCE_PRESETS,TEAM_BALANCE_PROFILES,TEAM_BALANCE_PRESETS,createDuelTest,stepDuelTest,duelTestSummary,createTeamTest,stepTeamTest,teamTestSummary};
 // ==================== UI ====================

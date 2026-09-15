@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "count": 45,
+  "priorBytes": 45362,
+  "thinBytes": 171410,
+  "note": "small sample keeps all five representative processes; high-N keeps at most twelve per condition",
+  "summaryPreserved": true,
+  "importPreserved": true
+}
