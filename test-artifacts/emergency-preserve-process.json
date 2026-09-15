@@ -1,0 +1,151 @@
+{
+  "checks": [
+    "protected ability, ball generation, steal and DP formulas unchanged",
+    "relevant base tasks are unique; catcher preserves home",
+    "LAB-E role reasons and base necessity diagnostics",
+    "same-team independent players; S-G official ranges and CUSTOM representatives",
+    "G20 diagnostic rank",
+    "liner intercept seeks catch point before landing",
+    "RF-first retains safe/out races and full process timestamps",
+    "physical DP preserves two transfers and display handles catch DP",
+    "FC classifier uses preceding runner attempt and first-base opportunity, including two outs",
+    "fly runner intent has minimum state duration; physical tracks remain continuous",
+    "forced sacrifice bunt reaches physical defense and vacated bases"
+  ],
+  "diagnostics": [
+    {
+      "direction": "SS",
+      "fielder": "SS",
+      "result": "flyout",
+      "evaluations": 19
+    },
+    {
+      "direction": "2B",
+      "fielder": "2B",
+      "result": "flyout",
+      "evaluations": 19
+    },
+    {
+      "direction": "3B",
+      "fielder": "3B",
+      "result": "flyout",
+      "evaluations": 19
+    },
+    {
+      "direction": "1B",
+      "fielder": "1B",
+      "result": "flyout",
+      "evaluations": 19
+    },
+    {
+      "direction": "CF",
+      "fielder": "2B",
+      "result": "single",
+      "evaluations": 22
+    },
+    {
+      "direction": "LF",
+      "fielder": "SS",
+      "result": "flyout",
+      "evaluations": 19
+    },
+    {
+      "direction": "RF",
+      "fielder": "2B",
+      "result": "flyout",
+      "evaluations": 19
+    }
+  ],
+  "matches": [
+    {
+      "teams": [
+        "C",
+        "C"
+      ],
+      "score": [
+        1,
+        0
+      ],
+      "events": 162,
+      "finished": true
+    },
+    {
+      "teams": [
+        "S",
+        "G"
+      ],
+      "score": [
+        74,
+        0
+      ],
+      "events": 361,
+      "finished": true
+    },
+    {
+      "teams": [
+        "G",
+        "S"
+      ],
+      "score": [
+        0,
+        46
+      ],
+      "events": 306,
+      "finished": true
+    }
+  ],
+  "races": [
+    {
+      "v": 40,
+      "clock": "seconds since contact",
+      "fieldArrival": 2.4,
+      "pickupStart": 2.4,
+      "pickupComplete": 2.9051584415408405,
+      "throwInitiation": 2.9212042477719,
+      "releaseTime": 2.9212042477719,
+      "throwVelocity": 140,
+      "ballETA1B": 4.037133527084597,
+      "ballArrival1B": 4.037133527084597,
+      "runnerStart": 0.16,
+      "acceleration": {
+        "model": "existing constant segment speed",
+        "value": 0
+      },
+      "currentSpeed": 48.96667819457686,
+      "speedUnit": "field coordinates per second",
+      "runnerETA1B": 3.86,
+      "runnerArrival1B": 3.86,
+      "raceMargin": -0.1771335270845973,
+      "marginDefinition": "runnerETA1B - ballETA1B; positive means ball first",
+      "result": "single"
+    },
+    {
+      "v": 45,
+      "clock": "seconds since contact",
+      "fieldArrival": 2.04,
+      "pickupStart": 2.04,
+      "pickupComplete": 2.5529972962608296,
+      "throwInitiation": 2.560621035813998,
+      "releaseTime": 2.560621035813998,
+      "throwVelocity": 140,
+      "ballETA1B": 3.7255884681263782,
+      "ballArrival1B": 3.7255884681263782,
+      "runnerStart": 0.16,
+      "acceleration": {
+        "model": "existing constant segment speed",
+        "value": 0
+      },
+      "currentSpeed": 48.96667819457686,
+      "speedUnit": "field coordinates per second",
+      "runnerETA1B": 3.86,
+      "runnerArrival1B": null,
+      "raceMargin": 0.13441153187362165,
+      "marginDefinition": "runnerETA1B - ballETA1B; positive means ball first",
+      "result": "groundout"
+    }
+  ],
+  "bunts": {
+    "inPlay": 40,
+    "sacrifices": 17
+  }
+}

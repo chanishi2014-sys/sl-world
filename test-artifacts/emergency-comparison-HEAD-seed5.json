@@ -1,0 +1,186 @@
+[
+  {
+    "seed": "emergency-night-C-C-5",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      2
+    ],
+    "flies": 28,
+    "pChases": 12,
+    "cOtherBase": 1,
+    "deepInfield": 14,
+    "catcherExamples": [
+      {
+        "sequence": 94,
+        "physical": {
+          "exitVelocity": 38.05901440722361,
+          "launchAngle": 60.18672574777156,
+          "sprayAngle": -0.5738985646530783,
+          "type": "FLY",
+          "hangTime": 6.73229662439763,
+          "horizontalSpeed": 61.89833305962655,
+          "deceleration": 62,
+          "height": 277.8916581246068
+        },
+        "at": 0.36,
+        "catcher": {
+          "index": 1,
+          "currentPosition": [
+            400,
+            461.70430334352915
+          ],
+          "movementDirection": [
+            0,
+            -0.2956966564708523
+          ],
+          "distanceToLanding": 337.2593711064844,
+          "estimatedArrival": 8.84,
+          "interceptPoint": [
+            230.39633364282457,
+            167.6516194287521
+          ],
+          "interceptProbability": 0,
+          "catchability": 0,
+          "route": 1.0505263157894738,
+          "movementSpeed": 42.1578947368421,
+          "turnDelay": 0,
+          "assignedRole": "BASE COVER",
+          "responsibility": "BASE RESPONSIBILITY",
+          "base": 3,
+          "targetPoint": [
+            260,
+            315
+          ],
+          "roleChangeTime": 0.36,
+          "reasonForRoleChange": "vacated responsibility reassigned from current positions"
+        },
+        "roles": [
+          {
+            "index": 0,
+            "role": "PRIMARY FIELDING",
+            "base": null,
+            "point": [
+              399.7868535616799,
+              331.79504852164604
+            ],
+            "target": [
+              232.55865232140167,
+              170.99636318216255
+            ]
+          },
+          {
+            "index": 1,
+            "role": "BASE COVER",
+            "base": 3,
+            "point": [
+              400,
+              461.70430334352915
+            ],
+            "target": [
+              260,
+              315
+            ]
+          },
+          {
+            "index": 2,
+            "role": "BASE COVER",
+            "base": 1,
+            "point": [
+              552.7909108890353,
+              302.2090891109647
+            ],
+            "target": [
+              540,
+              315
+            ]
+          },
+          {
+            "index": 3,
+            "role": "BASE COVER",
+            "base": 4,
+            "point": [
+              472.72013254513604,
+              252.90454990646418
+            ],
+            "target": [
+              400,
+              430
+            ]
+          },
+          {
+            "index": 4,
+            "role": "SECONDARY CHASE",
+            "base": null,
+            "point": [
+              249.19100296107482,
+              302.22573077217936
+            ],
+            "target": [
+              232.55865232140167,
+              170.99636318216255
+            ]
+          },
+          {
+            "index": 5,
+            "role": "BASE COVER",
+            "base": 2,
+            "point": [
+              325.28052247928326,
+              249.90649250690558
+            ],
+            "target": [
+              400,
+              225
+            ]
+          },
+          {
+            "index": 6,
+            "role": "BACKUP",
+            "base": null,
+            "point": [
+              200.15886269808453,
+              154.9581763089256
+            ],
+            "target": [
+              218.98589869823775,
+              150.00159337906896
+            ]
+          },
+          {
+            "index": 7,
+            "role": "HOLD",
+            "base": null,
+            "point": [
+              400,
+              104
+            ],
+            "target": [
+              400,
+              104
+            ]
+          },
+          {
+            "index": 8,
+            "role": "HOLD",
+            "base": null,
+            "point": [
+              600,
+              155
+            ],
+            "target": [
+              600,
+              155
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "seed": "emergency-night-C-C-0",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      0
+    ],
+    "flies": 32,
+    "pChases": 18,
+    "cOtherBase": 0,
+    "deepInfield": 19
+  },
+  {
+    "seed": "emergency-night-C-C-1",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      1
+    ],
+    "flies": 27,
+    "pChases": 11,
+    "cOtherBase": 0,
+    "deepInfield": 14
+  },
+  {
+    "seed": "emergency-night-C-C-2",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      1,
+      4
+    ],
+    "flies": 22,
+    "pChases": 5,
+    "cOtherBase": 0,
+    "deepInfield": 12
+  },
+  {
+    "seed": "emergency-night-C-C-3",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      6,
+      3
+    ],
+    "flies": 24,
+    "pChases": 4,
+    "cOtherBase": 0,
+    "deepInfield": 15
+  },
+  {
+    "seed": "emergency-night-C-C-4",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      5
+    ],
+    "flies": 30,
+    "pChases": 7,
+    "cOtherBase": 0,
+    "deepInfield": 18
+  },
+  {
+    "seed": "emergency-night-C-C-5",
+    "finished": true,
+    "finishReason": "draw",
+    "inning": 9,
+    "score": [
+      0,
+      0
+    ],
+    "hits": [
+      2,
+      2
+    ],
+    "flies": 28,
+    "pChases": 12,
+    "cOtherBase": 1,
+    "deepInfield": 14
+  }
+]
