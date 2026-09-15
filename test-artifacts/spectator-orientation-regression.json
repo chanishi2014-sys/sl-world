@@ -1,0 +1,223 @@
+{
+  "reports": [
+    {
+      "entry": "engine-test.html",
+      "scenario": "missing",
+      "calls": [],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "safari",
+      "calls": [],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "reject",
+      "calls": [
+        "fullscreen",
+        "lock:landscape"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "auto-landscape",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "unlock",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "lock",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "unlock",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "portrait-native",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "unlock"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "no-orientation",
+      "calls": [
+        "fullscreen",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "lock-reject",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "late-lock",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "exit",
+        "unlock"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "late-fullscreen",
+      "calls": [
+        "fullscreen",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "reenter-lock",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "exit",
+        "fullscreen",
+        "lock:landscape",
+        "unlock",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "missing",
+      "calls": [],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "safari",
+      "calls": [],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "reject",
+      "calls": [
+        "fullscreen",
+        "lock:landscape"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "auto-landscape",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "unlock",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "lock",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "unlock",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "portrait-native",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "unlock"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "no-orientation",
+      "calls": [
+        "fullscreen",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "lock-reject",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "late-lock",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "exit",
+        "unlock"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "late-fullscreen",
+      "calls": [
+        "fullscreen",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine006.html",
+      "scenario": "reenter-lock",
+      "calls": [
+        "fullscreen",
+        "lock:landscape",
+        "exit",
+        "fullscreen",
+        "lock:landscape",
+        "unlock",
+        "exit"
+      ],
+      "passed": true
+    },
+    {
+      "entry": "engine-test.html",
+      "scenario": "native-fullscreen-external-exit",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "realIPhone": false
+}

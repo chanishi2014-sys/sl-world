@@ -91,6 +91,88 @@
   return {update};
  }
 
+ // Presentation-only mode. Native fullscreen, viewport orientation and user
+ // intent are independent; a successful API call is not a landscape viewport.
+ function spectatorFullscreen(root){
+  const button=root.querySelector('[data-action="fullscreen"]');
+  const hint=document.createElement('div');hint.className='game-rotate-hint';hint.hidden=true;
+  hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
+  const message=document.createElement('p');message.textContent='端末を横向きにしてください';
+  const cancel=document.createElement('button');cancel.type='button';cancel.textContent='全画面解除';
+  hint.append(message,cancel);root.append(hint);
+  const orientation=window.screen?.orientation,landscapeMedia=window.matchMedia?.('(orientation: landscape)'),standaloneMedia=window.matchMedia?.('(display-mode: standalone)');
+  const state={isFullscreen:false,isLandscape:false,isSpectatorFullscreenMode:false,orientationLocked:false,isStandalone:!!navigator.standalone||!!standaloneMedia?.matches};
+  let generation=0,disposed=false,resizeFrame=0;
+  const fullscreenElement=()=>document.fullscreenElement||document.webkitFullscreenElement||null;
+  const request=root.requestFullscreen||root.webkitRequestFullscreen;
+  const nativeExit=document.exitFullscreen||document.webkitExitFullscreen;
+  function unlock(){if(state.orientationLocked){state.orientationLocked=false;try{orientation?.unlock?.();}catch{ /* Platform may already have released it. */ }}}
+  function render(){
+   const viewport=window.visualViewport;
+   // Visual viewport accounts for Safari chrome; layout dimensions determine
+   // orientation so zoom/keyboard changes do not impersonate device rotation.
+   const width=window.innerWidth||document.documentElement.clientWidth,height=window.innerHeight||document.documentElement.clientHeight;
+   state.isLandscape=width&&height?width>height:!!landscapeMedia?.matches;
+   state.isStandalone=!!navigator.standalone||!!standaloneMedia?.matches;
+   const expanded=state.isSpectatorFullscreenMode;
+   root.classList.toggle('spectator-fullscreen-mode',expanded);
+   root.classList.toggle('spectator-landscape',expanded&&state.isLandscape);
+   root.classList.toggle('spectator-compact',expanded&&state.isLandscape&&(viewport?.height||height)<420);
+   if(root.id==='matchViewer')document.body.classList.toggle('spectator-fullscreen-mode',expanded);
+   root.style.setProperty('--spectator-width',(viewport?.width||width)+'px');
+   root.style.setProperty('--spectator-height',(viewport?.height||height)+'px');
+   root.style.setProperty('--spectator-top',(viewport?.offsetTop||0)+'px');
+   root.style.setProperty('--spectator-left',(viewport?.offsetLeft||0)+'px');
+   root.dataset.isFullscreen=String(state.isFullscreen);root.dataset.isLandscape=String(state.isLandscape);
+   root.dataset.isSpectatorFullscreenMode=String(expanded);root.dataset.isStandalone=String(state.isStandalone);
+   const wasHidden=hint.hidden;hint.hidden=!(expanded&&!state.isLandscape);
+   for(const child of root.children)if(child!==hint)child.inert=!hint.hidden;
+   if(wasHidden&&!hint.hidden)cancel.focus({preventScroll:true});else if(!wasHidden&&hint.hidden)button.focus({preventScroll:true});
+   button.textContent=expanded?'全画面解除':'全画面';button.setAttribute('aria-pressed',String(expanded));
+  }
+  async function exitNative(){if(fullscreenElement()===root&&nativeExit){try{await nativeExit.call(document);}catch{ /* Keep the in-app exit usable. */ }}}
+  function leave(){generation++;state.isSpectatorFullscreenMode=false;unlock();render();void exitNative();}
+  function sync(){if(disposed)return;const wasFullscreen=state.isFullscreen;state.isFullscreen=fullscreenElement()===root;
+   if(wasFullscreen&&!state.isFullscreen&&state.isSpectatorFullscreenMode){generation++;state.isSpectatorFullscreenMode=false;unlock();}
+   render();
+  }
+  function viewportChanged(){sync();cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(sync);}
+  async function enter(){
+   if(disposed||state.isSpectatorFullscreenMode)return;
+   const ticket=++generation;state.isSpectatorFullscreenMode=true;sync();
+   // Show the rotate fallback immediately, including while an API is pending.
+   if(fullscreenElement()!==root&&request&&document.fullscreenEnabled!==false){
+    try{await request.call(root);}catch{ /* Native fullscreen is optional. */ }
+   }
+   if(ticket!==generation||disposed){if(!state.isSpectatorFullscreenMode)await exitNative();return;}
+   sync();if(!state.isSpectatorFullscreenMode)return;
+   // Standalone apps may permit lock without the native fullscreen API.
+   // Capability detection + rejection handling also covers iOS Safari/PWA.
+   if(typeof orientation?.lock==='function'){
+    try{await orientation.lock('landscape');
+     if(ticket!==generation||disposed){if(!state.isSpectatorFullscreenMode){try{orientation.unlock?.();}catch{}}else state.orientationLocked=true;return;}
+     state.orientationLocked=true;
+    }catch{ /* Physical rotation remains the supported fallback. */ }
+   }
+   if(ticket===generation)sync();
+  }
+  cancel.addEventListener('click',leave);
+  document.addEventListener('fullscreenchange',sync);document.addEventListener('webkitfullscreenchange',sync);
+  window.addEventListener('resize',viewportChanged);window.addEventListener('orientationchange',viewportChanged);
+  window.addEventListener('pageshow',viewportChanged);
+  document.addEventListener('visibilitychange',sync);
+  orientation?.addEventListener?.('change',viewportChanged);
+  window.visualViewport?.addEventListener('resize',viewportChanged);window.visualViewport?.addEventListener('scroll',viewportChanged);
+  const listen=media=>{if(media?.addEventListener)media.addEventListener('change',viewportChanged);else media?.addListener?.(viewportChanged);};
+  listen(landscapeMedia);listen(standaloneMedia);sync();
+  return {enter,leave,toggle(){if(state.isSpectatorFullscreenMode)leave();else void enter();},get state(){return {...state};},destroy(){leave();disposed=true;cancelAnimationFrame(resizeFrame);
+   document.removeEventListener('fullscreenchange',sync);document.removeEventListener('webkitfullscreenchange',sync);document.removeEventListener('visibilitychange',sync);
+   window.removeEventListener('resize',viewportChanged);window.removeEventListener('orientationchange',viewportChanged);window.removeEventListener('pageshow',viewportChanged);
+   orientation?.removeEventListener?.('change',viewportChanged);window.visualViewport?.removeEventListener('resize',viewportChanged);window.visualViewport?.removeEventListener('scroll',viewportChanged);
+   for(const media of [landscapeMedia,standaloneMedia]){if(media?.removeEventListener)media.removeEventListener('change',viewportChanged);else media?.removeListener?.(viewportChanged);}hint.remove();
+  }};
+ }
+
  function create({root,getGame,step,onChange,rendererFactory=null}){
   if(!document.querySelector('link[data-game-view]')){const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('./game-view.css',document.baseURI).href;link.dataset.gameView='';document.head.append(link);}
   root.innerHTML=`<div class="toolbar"><span style="font-size:10px;letter-spacing:.08em;margin-right:auto">SL WORLD — GAME VIEW</span><button data-action="log">LOG VIEW</button><button data-action="view" aria-pressed="false">2D VIEW</button></div>
@@ -116,6 +198,7 @@
    }
   }
   const board=mountScoreboard(el('.stadium-board'));
+  const spectator=spectatorFullscreen(root);
   let scoreboardAfter=false,debugEnabled=false,lastPaint=null;
   let selectedMode='FULL';
   const modeNames={FULL:'フル観戦',MINI:'ミニ観戦',HIGHLIGHT:'ハイライト',SKIP:'スキップ'};
@@ -283,7 +366,7 @@
     if(proceed&&!getGame().state.finished){next();return}busy=false;paused=false;mode=null;controls();return}
    frameId=requestAnimationFrame(tick);
   }
-  function showView(value){active=value;panel.hidden=!active;el('[data-action="view"]').setAttribute('aria-pressed',String(active));document.getElementById('log')?.closest('section')?.toggleAttribute('hidden',active);root.classList.toggle('game-active',active);if(root.id==='matchViewer')document.body.classList.toggle('spectator-active',active);root.scrollTop=0;}
+  function showView(value){if(!value)spectator.leave();active=value;panel.hidden=!active;el('[data-action="view"]').setAttribute('aria-pressed',String(active));document.getElementById('log')?.closest('section')?.toggleAttribute('hidden',active);root.classList.toggle('game-active',active);if(root.id==='matchViewer')document.body.classList.toggle('spectator-active',active);root.scrollTop=0;}
   document.querySelectorAll('[data-watch-mode]').forEach(button=>button.addEventListener('click',()=>{
    stop();selectedMode=button.dataset.watchMode;showView(selectedMode!=='SKIP');sync();
    if(selectedMode==='SKIP'){
@@ -291,7 +374,7 @@
    }else if(selectedMode==='HIGHLIGHT'&&!getGame().state.finished){busy=true;mode='auto';next();}
   }));
   root.addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(!action)return;
-   if(action==='fullscreen'){if(document.fullscreenElement){document.exitFullscreen?.();}else root.requestFullscreen?.().catch(()=>{el('[data-result]').textContent='この環境では全画面表示を利用できません';});return;}
+   if(action==='fullscreen'){spectator.toggle();return;}
    if(action==='menu'){stop();showView(false);sync();return;}
    if(action==='finish'){if(busy)return;stop();showView(true);busy=true;controls();const batch=()=>{if(!busy)return;if(paused){setTimeout(batch,50);return;}try{for(let n=0;n<12&&!getGame().state.finished;n++)step('pitch');onChange();if(getGame().state.finished){stop();sync();}else setTimeout(batch,0);}catch(error){stop();el('[data-result]').textContent=error.message;}};batch();return;}
    if(action==='debug'){debugEnabled=!debugEnabled;el('[data-debug]').hidden=!debugEnabled;el('[data-action="debug"]').textContent=debugEnabled?'DEBUG ON':'DEBUG OFF';el('[data-action="debug"]').setAttribute('aria-pressed',String(debugEnabled));if(lastPaint)paint(lastPaint.e,lastPaint.time,lastPaint.settled);return;}
@@ -299,10 +382,9 @@
    if(action==='pause'){paused=!paused;controls();return}
    if(busy||getGame().state.finished||selectedMode==='SKIP')return;busy=true;mode=action;next();
   });
-  document.addEventListener('fullscreenchange',()=>{el('[data-action="fullscreen"]').textContent=document.fullscreenElement?'全画面解除':'全画面';});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){paused=true;controls()}});
   showView(true);
-  return {sync,renderEvent(record,time){paint(toReplayEvent(record),time)},reset(){stop();sync()},get replayEvent(){return event?copy(event):null}};
+  return {sync,destroy(){stop();spectator.destroy();},get spectatorState(){return spectator.state;},renderEvent(record,time){paint(toReplayEvent(record),time)},reset(){stop();sync()},get replayEvent(){return event?copy(event):null}};
  }
  globalThis.SL_MATCH_VIEWER={scoreboardSnapshot,mountScoreboard,toReplayEvent,animationPlan,ballAnimation,runnerAnimation,fieldingAnimation,batterVisible,transition,resultLabel,bannerLabel,highlightImportance,HIGHLIGHT_RULES,create};
 })();
