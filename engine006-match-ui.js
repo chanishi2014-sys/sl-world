@@ -31,6 +31,7 @@ if(typeof document!=="undefined"){
   });
  }
  function render(){const s=game.state;$("matchTitle").textContent=`試合seed：${game.seed}`;
+  globalThis.SL_TRACE_UI?.refresh(game);
   const pitcher=currentPitcher(game),batter=currentBatter(game);
   $("pitcher").textContent=`投手：${pitcher.name}`;$("batter").textContent=s.finished?"打者：—":`打者：${s.order[offense(game)]+1}番 ${batter.name}`;
   $("pitchCount").textContent=game.teams.map(t=>`${t.pitcher.name} ${s.pitching[t.pitcher.key].pitches}球`).join(" / ");
@@ -122,7 +123,7 @@ if(typeof document!=="undefined"){
  for(const id of ['away','home']){const old=$(id),select=document.createElement('select');select.id=id;for(const name of ['デビルスターズ','明道仁球会',...DIAGNOSTIC_LETTERS.map(r=>'オール'+r)]){const option=document.createElement('option');option.value=name;option.textContent=name;select.append(option);}select.value=old.value;old.replaceWith(select);}
  function reset(){let db;try{db=readDB(localStorage);}catch{db={players:[],message:"保存領域にアクセスできないためTEST PLAYERを使用"};}
   const names=[$("away").value.trim()||"デビルスターズ",$("home").value.trim()||"明道仁球会"];
-  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());SL_ABILITY_DISPLAY.render($("lineupOverview"),game.teams);viewer?.reset();
+  const teams=names.map((name,i)=>makeTeam(name,i===0?"away":"home",db.players,CONFIG));game=newGame(teams,$("seed").value,CONFIG);appearanceTeams=teams.map(()=>new Map());globalThis.SL_TRACE_UI?.setup(game);SL_ABILITY_DISPLAY.render($("lineupOverview"),game.teams);viewer?.reset();
   $("source").textContent=db.message+" / "+teams.map(t=>`${t.name}：実選手${9-t.testCount}人、TEST PLAYER ${t.testCount}人、未設定能力補完 ${t.lineup.reduce((n,p)=>n+p.fallbacks.length,0)}項目`).join(" / ");$("status").textContent="";render();
  }
  ["pitch","atbat","inning","game"].forEach(id=>$(id).onclick=()=>{try{advance(game,id);$("status").textContent="";}catch(e){$("status").textContent=e.message;}render();});$("reset").onclick=reset;
