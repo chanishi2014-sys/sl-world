@@ -1,7 +1,7 @@
 'use strict';
 // Bump VERSION when changing worker/precache structure. HTML updates do not
 // require a bump: every online request bypasses the HTTP cache first.
-const VERSION = 'v29';
+const VERSION = 'v30';
 const BASE = new URL('./', self.location.href);
 const PREFIX = `sl-world-pwa:${BASE.pathname}:`;
 const CACHE = PREFIX + VERSION;
