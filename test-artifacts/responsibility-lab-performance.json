@@ -1,18 +1,18 @@
 {
   "hundred": {
-    "ms": 1084.3152,
-    "bytes": 5058
+    "ms": 1510.7772999999997,
+    "bytes": 5056
   },
   "thousand": {
-    "ms": 7873.251,
-    "bytes": 5101
+    "ms": 11245.8342,
+    "bytes": 5098
   },
   "sample": {
     "engineVersion": "process-engine-20260915-v1",
     "gameId": "lab-fixture:A",
     "playId": "LAB-0001",
     "seed": "fixture:A",
-    "createdAt": "2026-09-16T13:06:18.166Z",
+    "createdAt": "2026-09-16T13:40:37.341Z",
     "reproducibility": "same settings + seed + engine version"
   }
 }
