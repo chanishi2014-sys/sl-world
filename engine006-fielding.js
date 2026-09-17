@@ -292,20 +292,32 @@
   const used=new Set([primary,secondary].filter(i=>i!=null)),occupied=g.state.bases,needs=baseNeeds(g,context),origins=SL_TACTICS.alignment(g).positions;
   // Catcher retains home unless actually handling the ball. Never an idle spare.
   if(!used.has(1)){used.add(1);assignments[1]={role:'BASE COVER',point:[...bases[4]],base:4,responsibility:'HOME PLATE RESPONSIBILITY',roleReason:'protect home plate'};}
-  const assign=(task,allowed)=>{const candidates=fielders.map((f,index)=>({index,cost:dist(current[index],task.point)/speed(f,index)+Math.max(0,reaction(f)-at)+(task.base===2?.2*dist(origins[index],task.point)/speed(f,index):0)-(task.base&&previous[index]?.base===task.base? .12:0)})).filter(x=>!used.has(x.index)&&x.index!==1&&(!allowed||allowed(x.index))).sort((a,b)=>a.cost-b.cost||a.index-b.index);const chosen=candidates[0];if(chosen){used.add(chosen.index);assignments[chosen.index]={...task,point:[...task.point],roleReason:task.base===2?'inherit needed second-base responsibility: '+task.requiredReason:task.requiredReason||'support next plausible throw'};}};
+  const cost=(task,index)=>dist(current[index],task.point)/speed(fielders[index],index)+Math.max(0,reaction(fielders[index])-at)+(task.base===2?.2*dist(origins[index],task.point)/speed(fielders[index],index):0)-(task.base&&previous[index]?.base===task.base? .12:0);
+  const assign=(task,allowed)=>{const candidates=fielders.map((f,index)=>({index,cost:cost(task,index)})).filter(x=>!used.has(x.index)&&x.index!==1&&(!allowed||allowed(x.index))).sort((a,b)=>a.cost-b.cost||a.index-b.index);const chosen=candidates[0];if(chosen){used.add(chosen.index);assignments[chosen.index]={...task,point:[...task.point],roleReason:task.base===2?'inherit needed second-base responsibility: '+task.requiredReason:task.requiredReason||'support next plausible throw'};}};
   for(const need of needs.filter(n=>n.requiredState==='REQUIRED').sort((a,b)=>b.base-a.base)){
    if(assignments.some(a=>a.base===need.base))continue;
    assign({...need,point:bases[need.base],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY'});
   }
+  const secondNeed=needs.find(n=>n.base===2&&n.requiredState==='POTENTIAL');
+  const needsCutoff=primary>=6&&(!context.airborne||occupied.some(Boolean));
+  let pairedMiddle=false;
+  if(secondNeed&&needsCutoff&&!used.has(3)&&!used.has(5)){
+   const baseTask={...secondNeed,point:bases[2],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY'},formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2),cutoffTask={point:formation.relayPoint,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'};
+   const twoBRelay=cost(cutoffTask,3)+cost(baseTask,5),ssRelay=cost(cutoffTask,5)+cost(baseTask,3),relay=twoBRelay<=ssRelay?3:5,cover=relay===3?5:3;
+   used.add(relay);used.add(cover);
+   assignments[relay]={...cutoffTask,point:[...cutoffTask.point],roleReason:'support next plausible throw'};
+   assignments[cover]={...baseTask,point:[...baseTask.point],roleReason:'inherit needed second-base responsibility: '+baseTask.requiredReason};
+   pairedMiddle=true;
+  }
   // Potential bases retain their nearby defender; they do not trigger a chain of holes.
-  for(const need of needs.filter(n=>n.requiredState==='POTENTIAL')){
+  for(const need of needs.filter(n=>n.requiredState==='POTENTIAL'&&!(pairedMiddle&&n.base===2))){
    if(need.base===2||occupied[need.base-1]||need.base>1&&occupied[need.base-2]){assign({...need,point:bases[need.base],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY'},i=>i>=2&&i<6);continue;}
    const resident=need.base===1?2:need.base===3?4:null;
    if(resident!=null&&!used.has(resident)&&dist(current[resident],bases[need.base])<=dist(current[resident],target)){
     used.add(resident);assignments[resident]={...need,point:[...bases[need.base]],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY',roleReason:'resident prepares for possible next play'};
    }
   }
-  if(primary>=6&&(!context.airborne||occupied.some(Boolean))){const formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2);assign({point:formation.relayPoint,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'},i=>i>=2&&i<6);}
+  if(needsCutoff&&!pairedMiddle){const formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2);assign({point:formation.relayPoint,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'},i=>i>=2&&i<6);}
   // Outfield backup is another outfielder, never a pitcher sent behind a fly.
   const dx=target[0]-400,dy=target[1]-430,d=Math.max(1,Math.hypot(dx,dy));
   if(primary>=2)assign({point:[target[0]+dx/d*25,target[1]+dy/d*25],role:'BACKUP',responsibility:'BACKUP RESPONSIBILITY'},i=>i>=6);
