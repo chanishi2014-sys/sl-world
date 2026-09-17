@@ -423,9 +423,10 @@
  function redistributeTransfer(g,p,owner,receiver,to,t){
   if(!p.pursuit)return; // Existing ground/DP sequence is preserved.
   const fielders=F.defense(g),current=p.defensivePlan.tracks.map(track=>F.trackPosition(track,t));
+  const existingRelay=p.defensivePlan.anticipation,returningToExistingRelay=owner>=6&&existingRelay?.relayIndex===receiver&&dist(to,existingRelay.relayPoint)<.001;
   const assignments=redistribute(g,current,fielders,owner,receiver===owner?null:receiver,to,[],t,{nextThrowBase:dist(to,bases[2])<.001||p.defensivePlan.anticipation&&dist(to,p.defensivePlan.anticipation.relayPoint)<.001?2:null});
   // Receiving the throw fulfils this base's responsibility; release its spare.
-  for(let i=0;i<assignments.length;i++){const a=assignments[i];if(i===owner||i===receiver)continue;if(a.base&&dist(a.point,to)<.001){a.role='BACKUP';a.responsibility='BACKUP RESPONSIBILITY';a.point=[to[0],to[1]+24];a.base=null;}moveTrack(g,p,i,a.point,t,({'BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup',HOLD:'hold'})[a.role]);}
+  for(let i=0;i<assignments.length;i++){const a=assignments[i];if(i===owner||i===receiver)continue;if(returningToExistingRelay&&a.role==='CUTOFF'){a.role='HOLD';a.point=[...current[i]];a.responsibility='BACKUP RESPONSIBILITY';a.roleReason='existing cutoff receives outfield return; no second cutoff';continue;}if(a.base&&dist(a.point,to)<.001){a.role='BACKUP';a.responsibility='BACKUP RESPONSIBILITY';a.point=[to[0],to[1]+24];a.base=null;}moveTrack(g,p,i,a.point,t,({'BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup',HOLD:'hold'})[a.role]);}
   p.defensivePlan.transitions??=[];p.defensivePlan.transitions.push({at:t,reason:'throw receiver changes responsibility',owner,receiver,to,assignments});
  }
  function receiverFor(p,base,owner,point){const near=dist(point,bases[base]);if(near<12||near<45&&((base===1&&owner===2)||(base===3&&owner===4)||(base===4&&owner===1)))return owner;const cover=p.defensivePlan?.tracks.find(track=>track.index!==owner&&['baseCover','receive'].includes(track.legs.at(-1)?.role)&&dist(track.legs.at(-1).to,bases[base])<.001);return cover?.index??F.receiverIndex(base,owner,point);}
