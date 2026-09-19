@@ -582,20 +582,29 @@
      }
     }
     if(!r.retreating&&transfer?.runnerKey===r.runner.key&&transfer.kind!=='appeal'&&!r.mandatory&&r.target>r.lastSafe&&r.at-r.lastSafe<.4&&transfer.tagAt<(r.legs.at(-1)?.end??0)&&(!r.tagReleased||t>=transfer.start+.18&&transfer.tagAt+.25<(r.legs.at(-1)?.end??0))){
-     runnerLeg(g,r,r.lastSafe,t);r.target=r.lastSafe;r.retreating=true;r.decisions.push({at:t,base:r.lastSafe,decision:'RETURN',ballState:'throw',ballPoint:[...ballPoint]});
+     runnerLeg(g,r,r.lastSafe,t);r.target=r.lastSafe;r.retreating=true;if(r.from===0)r.continueTo=null;r.decisions.push({at:t,base:r.lastSafe,decision:'RETURN',ballState:'throw',ballPoint:[...ballPoint]});
     }
     if(!r.retreating&&r.target===r.lastSafe){
      const next=r.lastSafe+1,eta=t+runTime(g,r.runner,r.lastSafe),returnETA=Math.max(t,ready)+dist(ballPoint,bases[next])/throwSpeed(fielders[owner],owner)+.15;
      const loose=!fieldResolved,observedBall=loose?ballAt(p,t):{point:ballPoint,height:0},fielderNow=F.trackPosition(p.defensivePlan.tracks[p.fielderIndex],t),remaining=loose?Math.max(observedBall.height>11?Math.max(0,p.physical.hangTime-t):0,dist(fielderNow,observedBall.point)/speed(f,p.fielderIndex)):0,margin=loose?t+remaining+p.handling.pickupTime+dist(observedBall.point,bases[next])/throwSpeed(f,p.fielderIndex)-eta:returnETA-eta;
      if(!(fieldResolved&&caught)&&forced.some(a=>a.runner.key===r.runner.key&&a.force)&&r.lastSafe===r.from)r.mandatory=true;
      const ahead=runners.some(a=>a!==r&&!a.out&&a.from>r.from&&a.lastSafe<4&&a.at<next+.2);
-     const go=!ahead&&!r.retouchRequired&&(r.mandatory&&r.lastSafe===r.from||margin>.12&&!secured&&(loose||fieldResolved));
+     const go=!ahead&&!r.retouchRequired&&(r.mandatory&&r.lastSafe===r.from||margin>(secured&&r.from===0?.35:.12)&&(!secured||r.from===0)&&(loose||fieldResolved));
      if(!r.decisions.length||r.decisions.at(-1).decision!==(go?'ADVANCE':'HOLD'))r.decisions.push({at:t,base:r.lastSafe,decision:go?'ADVANCE':'HOLD',ballState:loose?'loose':transfer?'throw':'held',ballPoint:[...observedBall.point],margin,remaining});
      if(go){r.target=next;if(fieldResolved&&caught)r.tagReleased=true;runnerLeg(g,r,next,t);}else continue;
     }
     const leg=r.legs.at(-1);if(!leg){runnerLeg(g,r,r.target,t);continue;}
+    // The batter reads the following base while completing the current leg, but still touches each base.
+    if(r.from===0&&r.target>r.lastSafe&&r.target<3&&!r.retreating&&t<leg.end){
+     const next=r.target+1,eta=leg.end+runTime(g,r.runner,r.target),loose=!fieldResolved,observedBall=loose?ballAt(p,t):{point:ballPoint,height:0};
+     const fielderNow=F.trackPosition(p.defensivePlan.tracks[p.fielderIndex],t),remaining=loose?Math.max(observedBall.height>11?Math.max(0,p.physical.hangTime-t):0,dist(fielderNow,observedBall.point)/speed(f,p.fielderIndex)):0;
+     const throwFrom=transfer?.toPoint||(transfer?bases[transfer.toBase]:ballPoint),thrower=transfer?transfer.toIndex:owner,throwReady=transfer?transfer.tagAt+.23:Math.max(t,ready);
+     const returnETA=loose?t+remaining+p.handling.pickupTime+dist(observedBall.point,bases[next])/throwSpeed(f,p.fielderIndex)+.15:throwReady+dist(throwFrom,bases[next])/throwSpeed(fielders[thrower],thrower)+.15;
+     const margin=returnETA-eta,ahead=runners.some(a=>a!==r&&!a.out&&a.from>r.from&&a.lastSafe<4&&a.at<next+.2),go=!ahead&&margin>(secured?.35:.12);
+     const intent=go?next:null;if(r.continueTo!==intent){r.continueTo=intent;r.decisions.push({at:t,base:r.target,decision:go?'PREP_ADVANCE':'PREP_HOLD',nextBase:next,runnerETA:eta,returnETA,margin,secured,ballState:loose?'loose':transfer?'throw':'held'});}
+    }
     r.at=runnerAt(r,t);
-    if(t>=leg.end){r.lastSafe=r.target;r.at=r.lastSafe;r.mandatory=false;r.retreating=false;if(r.retouchRequired&&r.lastSafe===r.from){r.retouchAt=leg.end;r.retouchRequired=false;}}
+    if(t>=leg.end){r.lastSafe=r.target;r.at=r.lastSafe;r.mandatory=false;r.retreating=false;if(r.retouchRequired&&r.lastSafe===r.from){r.retouchAt=leg.end;r.retouchRequired=false;}if(r.from===0&&r.continueTo===r.lastSafe+1){r.target=r.continueTo;r.continueTo=null;runnerLeg(g,r,r.target,leg.end);r.at=runnerAt(r,t);}}
    }
    if(t>=ready&&!transfer&&fieldResolved){
     const targets=runningTargets(g,p,runners,owner,ballPoint,t);
