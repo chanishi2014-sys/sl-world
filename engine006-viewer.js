@@ -323,7 +323,7 @@
    if(e&&!settled&&!change)resultBanner(e,p,time);
   }
   const renderer=rendererFactory?rendererFactory({canvas}):{render:frame=>paint2D(frame.event,frame.time,frame.settled)};
-  function paint(e,time=0,settled=false){renderer.render(rendererFactory?{event:e?copy(e):null,time,settled,state:scoreboardSnapshot(getGame(),e,settled)}:{event:e,time,settled});}
+  function paint(e,time=0,settled=false){if(e&&e.coordinateSpace!==SL_FIELDING.layout.coordinateSpace)throw Error("unsupported coordinateSpace");renderer.render(rendererFactory?{event:e?copy(e):null,time,settled,state:scoreboardSnapshot(getGame(),e,settled)}:{event:e,time,settled});}
   function scoreboard(e,after=false){board.update(scoreboardSnapshot(getGame(),e,after));liveLineups(e,after);}
   function controls(){
    root.querySelectorAll('[data-action="advance"],[data-action="auto"],[data-action="next-pa"],[data-action="finish"]').forEach(b=>b.disabled=busy||getGame().state.finished||selectedMode==='SKIP');
@@ -384,7 +384,7 @@
   });
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){paused=true;controls()}});
   showView(true);
-  return {sync,destroy(){stop();spectator.destroy();},get spectatorState(){return spectator.state;},renderEvent(record,time){paint(toReplayEvent(record),time)},reset(){stop();sync()},get replayEvent(){return event?copy(event):null}};
+  return {sync,destroy(){stop();spectator.destroy();},get spectatorState(){return spectator.state;},renderEvent(record,time){try{paint(toReplayEvent(record),time)}catch(error){stop();el('[data-result]').textContent=`再生停止：${error.message}`;}},reset(){stop();sync()},get replayEvent(){return event?copy(event):null}};
  }
  globalThis.SL_MATCH_VIEWER={scoreboardSnapshot,mountScoreboard,toReplayEvent,animationPlan,ballAnimation,runnerAnimation,fieldingAnimation,batterVisible,transition,resultLabel,bannerLabel,highlightImportance,HIGHLIGHT_RULES,create};
 })();

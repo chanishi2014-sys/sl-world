@@ -135,7 +135,8 @@
  // Add replay facts without drawing RNG or modifying the game's result/state.
  function annotate(g,e){
   const fielders=defense(g).map((p,index)=>({...identity(p),index,position:positions[index],moveSpeed:e.physical?SL_FIELDING.process.speed(p,index):45+12*ability(p,'speed'),throwSpeed:(index>=6?105:165)+(index>=6?35:55)*ability(p,'arm'),reaction:e.physical?SL_FIELDING.process.reaction(p):.25+.25*(1-ability(p,'fielding'))}));
-  e.defensivePositions??=SL_TACTICS.alignment(g).positions;e.eventVersion=3;e.coordinateSpace=layout.coordinateSpace;e.defense=fielders;
+  if(g.coordinateSpace!==layout.coordinateSpace||(e.coordinateSpace!=null&&e.coordinateSpace!==g.coordinateSpace))throw Error("coordinateSpace mismatch in fielding event");
+  e.defensivePositions??=SL_TACTICS.alignment(g).positions;e.eventVersion=3;e.coordinateSpace=g.coordinateSpace;e.defense=fielders;
   if(e.runningExecution){e.fielderIndex=1;e.log='ヒットエンドラン空振り / '+e.runningExecution.log;} e.playType=e.hitAndRun?'hitAndRun':e.bunt?'bunt':e.eventType==='baserunning'?'steal':e.ballType||e.outcome;
   e.primaryFielder=fielders[e.fielderIndex]||null;
   e.playDescription=e.bunt?(e.buntPop?'バント小飛球':'送りバント'):e.primaryFielder&&e.outcome==='inPlay'?labels[e.fielderIndex]+'の'+({ground:'ゴロ',line:'ライナー',fly:'フライ',homer:'本塁打の打球'}[e.ballType]||'打球'):'';

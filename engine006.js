@@ -69,7 +69,9 @@ function newGame(teams,seed,cfg=CONFIG){
  const state={inning:1,half:"top",outs:0,balls:0,strikes:0,bases:[null,null,null],score:[0,0],hits:[0,0],errors:[0,0],virtualOuts:0,unearned:{},playActions:[],lines:[Array(9).fill(null),Array(9).fill(null)],order:[0,0],paCompleted:0,finished:false,finishReason:null,events:[],batting:{},pitching:{}};
  state.lines[0][0]=0;
  teams.forEach(t=>{[...t.lineup,...(t.bench||[])].forEach(p=>state.batting[p.key]={AB:0,H:0,doubles:0,triples:0,HR:0,RBI:0,BB:0,K:0,R:0,SB:0,CS:0,SF:0,SH:0});state.pitching[t.pitcher.key]={outs:0,pitches:0,H:0,HR:0,R:0,ER:0,BB:0,K:0};});
- return {teams:clone(teams),seed:String(seed),config:clone(cfg),rng:createRNG(seed),tacticalRng:createRNG(String(seed)+"|tactics-alpha1"),state};
+ const game={teams:clone(teams),seed:String(seed),config:clone(cfg),rng:createRNG(seed),tacticalRng:createRNG(String(seed)+"|tactics-alpha1"),state};
+ Object.defineProperty(game,'coordinateSpace',{value:SL_FIELDING.layout.coordinateSpace,enumerable:true});
+ return game;
 }
 const offense=g=>g.state.half==="top"?0:1;
 const currentBatter=g=>g.teams[offense(g)].lineup[g.state.order[offense(g)]];
@@ -195,7 +197,7 @@ function switchHalf(g){const s=g.state;if(s.outs<3||s.finished)return;
 // ==================== event log (one immutable record per pitch) ====================
 function onePitch(g){if(g.state.finished)return null;const operations=SL_TACTICS.prepare(g);const s=g.state,pitcher=currentPitcher(g),batter=currentBatter(g);
  s.playActions=[];s.playBefore=runners(s);
- const event={defensivePositions:SL_TACTICS.alignment(g).positions,outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:(s.eventCount||0)+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
+ const event={coordinateSpace:g.coordinateSpace,defensivePositions:SL_TACTICS.alignment(g).positions,outsBefore:s.outs,hitsBefore:[...s.hits],errorsBefore:[...s.errors],sequence:(s.eventCount||0)+1,inning:s.inning,half:s.half,outs:s.outs,balls:s.balls,strikes:s.strikes,pitcher:identity(pitcher),batter:identity(batter),battingOrder:s.order[offense(g)]+1,runnersBefore:runners(s),scoreBefore:[...s.score],pitcherSpecials:[...pitcher.specials],batterSpecials:[...batter.specials]};
  const tactical=SL_TACTICS.enabled(g),decision=tactical?SL_TACTICS.offenseDecision(g,batter,pitcher):null;
  const steal=tactical?(decision.decision.startsWith("STEAL_")?SL_FIELDING.steal(g,pitcher,decision):null):SL_FIELDING.steal(g,pitcher);
  const pitch=steal||SL_TACTICS.execute(g,pitcher,batter,decision);if(!pitch.intentionalWalk)s.pitching[pitcher.key].pitches++;

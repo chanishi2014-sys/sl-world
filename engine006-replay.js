@@ -21,7 +21,11 @@
  }
  function resultLabel(e){if(e.doublePlay)return '併殺 / DOUBLE PLAY';return safeText(e.log,names[e.result]||'プレー終了');}
  function toReplayEvent(event){
-  const e=copy(event),steal=e.eventType==='baserunning'||!!e.runningExecution||['stolenBase','caughtStealing'].includes(e.result);
+  const legacy=event?.eventVersion===3||event?.play?.schemaVersion===2||Number.isInteger(event?.sequence)&&Number.isInteger(event?.inning)&&["top","bottom"].includes(event?.half)&&Array.isArray(event?.runnersBefore)&&Array.isArray(event?.runnersAfter);
+  const coordinateSpace=event?.coordinateSpace??(legacy?layout.coordinateSpace:null);
+  if(coordinateSpace!==layout.coordinateSpace)throw Error("unsupported or unidentified coordinateSpace");
+  const e=copy(event);e.coordinateSpace=coordinateSpace;
+  const steal=e.eventType==='baserunning'||!!e.runningExecution||['stolenBase','caughtStealing'].includes(e.result);
   e.eventType=steal?'baserunning':e.eventType||'pitch';
   e.runnersBefore=e.runnersBefore||[null,null,null];e.runnersAfter=e.runnersAfter||[null,null,null];e.scoreBefore=e.scoreBefore||[0,0];e.scoreAfter=e.scoreAfter||e.scoreBefore;
   e.outsBefore=e.outsBefore??e.outs??0;e.batter=e.batter||{key:'legacy-batter',name:'打者'};e.pitcher=e.pitcher||{key:'legacy-pitcher',name:'投手'};
