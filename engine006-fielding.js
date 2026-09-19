@@ -12,6 +12,10 @@
   // +X points to first base/right field; +Y points to center. Spray angle 0 is +Y,
   // positive angles turn toward right field and negative angles toward left field.
   bases:Object.freeze([[0,0],[metricBaseOffset,metricBaseOffset],[0,2*metricBaseOffset],[-metricBaseOffset,metricBaseOffset]].map(point=>Object.freeze(point)))});
+ // Unused STANDARD park definition; angles and distances are the source of the fence geometry.
+ const standardFenceControls=Object.freeze([[-45,100],[-33.75,108.5],[-22.5,115],[-11.25,119.5],[0,122],[11.25,119.5],[22.5,115],[33.75,108.5],[45,100]].map(([angleDeg,distanceM])=>Object.freeze({angleDeg,distanceM})));
+ const standardPark=Object.freeze({parkId:'STANDARD',coordinateSpace:metricLayout.coordinateSpace,fenceControlPoints:standardFenceControls,
+  fencePolyline:Object.freeze(standardFenceControls.map(({angleDeg,distanceM})=>{const radians=angleDeg*Math.PI/180;return Object.freeze([distanceM*Math.sin(radians),distanceM*Math.cos(radians)]);} ))});
  // Force follows the uninterrupted occupied chain behind a runner, never the result.
  function forcePlan(bases,batter){let forced=true;return [{runner:identity(batter),fromBase:0,toBase:1,force:true},...bases.flatMap((r,i)=>{forced=forced&&!!r;return r?[{runner:identity(r),fromBase:i+1,toBase:forced?i+2:i+1,force:forced}]:[];})];}
  function receiverIndex(base,from,point){return base===1?(from===2&&Math.hypot(point[0]-540,point[1]-315)>45?0:2):base===2?(from===5?3:5):base===3?4:1;}
@@ -205,7 +209,7 @@
   return {deliveredPitch,stealExecution:execution,stealAttempt:true,stealInterrupted:interrupted,eventType:'baserunning',outcome:'steal',result,stolenBase:!interrupted&&safe,caughtStealing:!interrupted&&!safe,runner:identity(runner),runnerIntents:[{runner:identity(runner),fromBase:from,toBase:from+1}],fromBase:from,toBase:from+1,fielder:identity(catcher),fielderIndex:1,...(interrupted?{}:{throw:{from:identity(catcher),fromIndex:1,toBase:from+1,toIndex:execution.receiverIndex,target:execution.receivingFielder,runnerKey:runner.key,kind:'tag'},tag:{toBase:from+1,fielderIndex:execution.taggerIndex,fielder:execution.tagger,result:safe?'safe':'out'}}),log:interrupted?'盗塁開始後、投球の判定でプレー終了':from+'塁走者'+runner.name+'、'+(from+1)+'塁盗塁'+(safe?'成功':'失敗'),pitchType:deliveredPitch.pitchType||'盗塁中の投球',pitchSpeed:deliveredPitch.pitchSpeed||pitcher.effective.velocity};
  }
 
- globalThis.SL_FIELDING={buildPlay,samplePlay,trackPosition,relayFormation,groundTiming,stealCoverage,stealExecution,forcePlan,receiverIndex,geometry,field,steal,move,defense,ability,layout,metricLayout,canSteal,annotate};
+ globalThis.SL_FIELDING={buildPlay,samplePlay,trackPosition,relayFormation,groundTiming,stealCoverage,stealExecution,forcePlan,receiverIndex,geometry,field,steal,move,defense,ability,layout,metricLayout,standardPark,canSteal,annotate};
 })();
 
 /* Process-first play resolver. No DOM; seconds and field-800x500 coordinates.
