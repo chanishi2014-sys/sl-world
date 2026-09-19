@@ -270,11 +270,13 @@
   });
  }
  function baseNeeds(g,context={}){
-  const occupied=g.state.bases,air=context.airborne,secured=context.secured;
+  const occupied=context.runners? [1,2,3].map(base=>context.runners.some(r=>!r.out&&r.lastSafe===base&&r.at<4)):g.state.bases;
+  const advancing=context.runners? [1,2,3].map(base=>context.runners.some(r=>!r.out&&!r.retreating&&r.target===base&&r.target>r.lastSafe&&r.at<base)):[];
+  const air=context.airborne,secured=context.secured;
   return [1,2,3,4].map(base=>{
    let requiredState='NOT_CURRENTLY_REQUIRED',requiredReason='no runner or next play at this base';
    if(base===4){requiredState='REQUIRED';requiredReason='HOME PLATE RESPONSIBILITY';}
-   else if(occupied[base-1]){requiredState=air?'POTENTIAL':'REQUIRED';requiredReason=air?'occupied base: return or appeal':'runner holds this base';}
+   else if(occupied[base-1]||advancing[base-1]){requiredState=air?'POTENTIAL':'REQUIRED';requiredReason=advancing[base-1]?'runner advancing toward this base':air?'occupied base: return or appeal':'runner holds this base';}
    else if(base>1&&occupied[base-2]){requiredState=air&&g.state.outs<2?'POTENTIAL':'REQUIRED';requiredReason=air?'possible tag up or uncaught ball advance':'next runner destination';}
    else if(base===2&&(context.nextThrowBase===2||context.batterMayAdvanceSecond)){requiredState='POTENTIAL';requiredReason=context.nextThrowBase===2?'next throw or return targets second':'batter can reach first before fielding; prepare for second';}
    else if(base===1&&!secured){requiredState=air?'POTENTIAL':'REQUIRED';requiredReason=air?'first only if ball is not caught':'batter runner first-base race';}
@@ -289,7 +291,7 @@
  }
  function redistribute(g,current,fielders,primary,secondary,target,previous=[],at=0,context={}){
   const assignments=current.map(point=>({role:'HOLD',point:[...point],responsibility:'BACKUP RESPONSIBILITY',roleReason:'maintain defensive structure'}));
-  const used=new Set([primary,secondary].filter(i=>i!=null)),occupied=g.state.bases,needs=baseNeeds(g,context),origins=SL_TACTICS.alignment(g).positions;
+  const used=new Set([primary,secondary].filter(i=>i!=null)),occupied=context.runners? [1,2,3].map(base=>context.runners.some(r=>!r.out&&r.lastSafe===base&&r.at<4)):g.state.bases,needs=baseNeeds(g,context),origins=SL_TACTICS.alignment(g).positions;
   // Catcher retains home unless actually handling the ball. Never an idle spare.
   if(!used.has(1)){used.add(1);assignments[1]={role:'BASE COVER',point:[...bases[4]],base:4,responsibility:'HOME PLATE RESPONSIBILITY',roleReason:'protect home plate'};}
   const cost=(task,index)=>dist(current[index],task.point)/speed(fielders[index],index)+Math.max(0,reaction(fielders[index])-at)+(task.base===2?.2*dist(origins[index],task.point)/speed(fielders[index],index):0)-(task.base&&previous[index]?.base===task.base? .12:0);
@@ -432,11 +434,11 @@
   }
   return p.defensivePlan;
  }
- function redistributeTransfer(g,p,owner,receiver,to,t){
+ function redistributeTransfer(g,p,owner,receiver,to,t,runners){
   if(!p.pursuit)return; // Existing ground/DP sequence is preserved.
   const fielders=F.defense(g),current=p.defensivePlan.tracks.map(track=>F.trackPosition(track,t));
   const existingRelay=p.defensivePlan.anticipation,returningToExistingRelay=owner>=6&&existingRelay?.relayIndex===receiver&&dist(to,existingRelay.relayPoint)<.001;
-  const assignments=redistribute(g,current,fielders,owner,receiver===owner?null:receiver,to,[],t,{nextThrowBase:dist(to,bases[2])<.001||p.defensivePlan.anticipation&&dist(to,p.defensivePlan.anticipation.relayPoint)<.001?2:null});
+  const assignments=redistribute(g,current,fielders,owner,receiver===owner?null:receiver,to,[],t,{runners,nextThrowBase:dist(to,bases[2])<.001||p.defensivePlan.anticipation&&dist(to,p.defensivePlan.anticipation.relayPoint)<.001?2:null});
   // Receiving the throw fulfils this base's responsibility; release its spare.
   for(let i=0;i<assignments.length;i++){const a=assignments[i];if(i===owner||i===receiver)continue;if(returningToExistingRelay&&a.role==='CUTOFF'){a.role='HOLD';a.point=[...current[i]];a.responsibility='BACKUP RESPONSIBILITY';a.roleReason='existing cutoff receives outfield return; no second cutoff';moveTrack(g,p,i,a.point,t,'hold',t);continue;}if(a.base&&dist(a.point,to)<.001){a.role='BACKUP';a.responsibility='BACKUP RESPONSIBILITY';a.point=[to[0],to[1]+24];a.base=null;}moveTrack(g,p,i,a.point,t,({'BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup',HOLD:'hold'})[a.role]);}
   p.defensivePlan.transitions??=[];p.defensivePlan.transitions.push({at:t,reason:'throw receiver changes responsibility',owner,receiver,to,assignments});
@@ -548,7 +550,7 @@
    if(transfer&&t>=transfer.tagAt){
     owner=transfer.toIndex;ballPoint=transfer.toPoint||bases[transfer.toBase];ready=transfer.tagAt+.23;secured=!transfer.relay;transfer.arrived=true;
     retireOnTransfer(g,runners,transfer,pitcher);
-    if(s.outs<3)redistributeTransfer(g,p,owner,owner,ballPoint,transfer.tagAt);
+    if(s.outs<3)redistributeTransfer(g,p,owner,owner,ballPoint,transfer.tagAt,runners);
     transfer=null;if(s.outs>=3)break;
    }
    if(!fieldResolved&&original.some(Boolean)&&outsAtContact<2&&t>=nextRead){observation=flyObservation(g,p,t);nextRead=t+.12;}
@@ -588,13 +590,13 @@
     const chosen=targets[0];
     if(!p.throws.length){const first=targets.find(a=>a.r.from===0&&a.toBase===1);p.firstBaseOpportunity=!!first&&first.tagAt<first.runnerETA;p.fieldingChoice={at:t,chosenBase:chosen?.toBase??null,chosenRunner:chosen?.r.runner.key??null,batterKey:b.key,firstBaseOpportunity:p.firstBaseOpportunity,firstBaseTiming:first?{ballETA:first.tagAt,runnerETA:first.runnerETA}:null,source:'current runner legs and receiver cover ETA before throw'};}
     if(chosen){
-     redistributeTransfer(g,p,owner,chosen.toIndex,bases[chosen.toBase],t);
+     redistributeTransfer(g,p,owner,chosen.toIndex,bases[chosen.toBase],t,runners);
      if(owner===chosen.toIndex)moveTrack(g,p,owner,bases[chosen.toBase],chosen.start,'carry',chosen.end);else moveTrack(g,p,chosen.toIndex,bases[chosen.toBase],t,'receive');
      transfer={fromIndex:owner,toBase:chosen.toBase,toIndex:chosen.toIndex,runnerKey:chosen.r.runner.key,kind:chosen.kind,start:chosen.start,end:chosen.end,tagAt:chosen.tagAt,result:'safe',timing:{ballETA:chosen.tagAt,runnerETA:chosen.runnerETA,pickupTime:p.handling.pickupTime}};p.throws.push(transfer);secured=false;
     }else if(caught||owner<6){secured=true;}
     else if(!secured){
      const relay=owner>=6&&dist(ballPoint,bases[2])>100,formation=p.defensivePlan.anticipation||F.relayFormation(ballPoint,2),toIndex=relay?formation.relayIndex:receiverFor(p,2,owner,ballPoint),toPoint=relay?formation.relayPoint:bases[2],travel=dist(ballPoint,toPoint)/throwSpeed(fielders[owner],owner),cover=coverTime(g,p,toIndex,toPoint,t),end=Math.max(t+turnDelay(p,owner,toPoint)+travel,cover);
-     redistributeTransfer(g,p,owner,toIndex,toPoint,t);moveTrack(g,p,toIndex,toPoint,t,relay?'relay':'receive');transfer={fromIndex:owner,toIndex,toPoint,toBase:2,relay,kind:'return',result:'secured',start:end-travel,end,tagAt:end,runnerKey:null,timing:{ballETA:end,pickupTime:p.handling.pickupTime}};p.throws.push(transfer);
+     redistributeTransfer(g,p,owner,toIndex,toPoint,t,runners);moveTrack(g,p,toIndex,toPoint,t,relay?'relay':'receive');transfer={fromIndex:owner,toIndex,toPoint,toBase:2,relay,kind:'return',result:'secured',start:end-travel,end,tagAt:end,runnerKey:null,timing:{ballETA:end,pickupTime:p.handling.pickupTime}};p.throws.push(transfer);
     }
    }
    if(t>fieldTime&&secured&&!transfer&&runners.every(r=>r.out||!r.retreating&&r.target===r.lastSafe))break;
