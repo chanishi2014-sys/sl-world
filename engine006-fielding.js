@@ -6,6 +6,12 @@
  const ability=(p,k)=>clamp((Number(p.profile.batting?.[k]??10)-1)/19,0,1);
  function move(g,p,from,to,result='safe',type='runnerAdvance'){g.state.playActions.push({type,runner:identity(p),fromBase:from,toBase:to,result});}
  const layout=Object.freeze({coordinateSpace:'field-800x500-v1',bases:[[400,430],[540,315],[400,225],[260,315],[400,430]],positions:[[400,332],[400,462],[553,302],[473,253],[249,302],[325,250],[200,155],[400,104],[600,155]]});
+ // Definition only: no 006 play, replay, or viewer uses these meter coordinates yet.
+ const metricBaseDistance=27.432,metricBaseOffset=metricBaseDistance/Math.SQRT2;
+ const metricLayout=Object.freeze({coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second',baseDistance:metricBaseDistance,
+  // +X points to first base/right field; +Y points to center. Spray angle 0 is +Y,
+  // positive angles turn toward right field and negative angles toward left field.
+  bases:Object.freeze([[0,0],[metricBaseOffset,metricBaseOffset],[0,2*metricBaseOffset],[-metricBaseOffset,metricBaseOffset]].map(point=>Object.freeze(point)))});
  // Force follows the uninterrupted occupied chain behind a runner, never the result.
  function forcePlan(bases,batter){let forced=true;return [{runner:identity(batter),fromBase:0,toBase:1,force:true},...bases.flatMap((r,i)=>{forced=forced&&!!r;return r?[{runner:identity(r),fromBase:i+1,toBase:forced?i+2:i+1,force:forced}]:[];})];}
  function receiverIndex(base,from,point){return base===1?(from===2&&Math.hypot(point[0]-540,point[1]-315)>45?0:2):base===2?(from===5?3:5):base===3?4:1;}
@@ -199,7 +205,7 @@
   return {deliveredPitch,stealExecution:execution,stealAttempt:true,stealInterrupted:interrupted,eventType:'baserunning',outcome:'steal',result,stolenBase:!interrupted&&safe,caughtStealing:!interrupted&&!safe,runner:identity(runner),runnerIntents:[{runner:identity(runner),fromBase:from,toBase:from+1}],fromBase:from,toBase:from+1,fielder:identity(catcher),fielderIndex:1,...(interrupted?{}:{throw:{from:identity(catcher),fromIndex:1,toBase:from+1,toIndex:execution.receiverIndex,target:execution.receivingFielder,runnerKey:runner.key,kind:'tag'},tag:{toBase:from+1,fielderIndex:execution.taggerIndex,fielder:execution.tagger,result:safe?'safe':'out'}}),log:interrupted?'盗塁開始後、投球の判定でプレー終了':from+'塁走者'+runner.name+'、'+(from+1)+'塁盗塁'+(safe?'成功':'失敗'),pitchType:deliveredPitch.pitchType||'盗塁中の投球',pitchSpeed:deliveredPitch.pitchSpeed||pitcher.effective.velocity};
  }
 
- globalThis.SL_FIELDING={buildPlay,samplePlay,trackPosition,relayFormation,groundTiming,stealCoverage,stealExecution,forcePlan,receiverIndex,geometry,field,steal,move,defense,ability,layout,canSteal,annotate};
+ globalThis.SL_FIELDING={buildPlay,samplePlay,trackPosition,relayFormation,groundTiming,stealCoverage,stealExecution,forcePlan,receiverIndex,geometry,field,steal,move,defense,ability,layout,metricLayout,canSteal,annotate};
 })();
 
 /* Process-first play resolver. No DOM; seconds and field-800x500 coordinates.
