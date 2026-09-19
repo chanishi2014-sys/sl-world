@@ -376,6 +376,12 @@
     const batterMayAdvanceSecond=owner.catchability===0&&owner.estimatedArrival>=runTime(g,currentBatter(g),0);
     const nextKey=JSON.stringify([primary,secondary,airborne,batterMayAdvanceSecond,g.state.outs,g.state.bases.map(r=>r?.key)]),responsibilityReevaluated=nextKey!==assignmentKey;
     if(nextKey!==assignmentKey){assignments=redistribute(g,current,fielders,primary,secondary,owner.interceptPoint,assignments,t,{airborne,batterMayAdvanceSecond});assignmentKey=nextKey;}
+    // Keep the selected support roles; only their ball-dependent destinations follow the latest intercept.
+    if(!responsibilityReevaluated){
+     const point=owner.interceptPoint,occupied=g.state.bases,relay=F.relayFormation(point,occupied[1]||occupied[2]?4:2).relayPoint;
+     const dx=point[0]-400,dy=point[1]-430,d=Math.max(1,Math.hypot(dx,dy)),backup=[point[0]+dx/d*25,point[1]+dy/d*25];
+     for(const a of assignments){const goal=a.role==='CUTOFF'?relay:a.role==='BACKUP'?backup:null;if(goal&&dist(a.point,goal)>1)a.point=[...goal];}
+    }
     assignments[primary].point=owner.interceptPoint;
     const vacatedResponsibilities=[1,2,3,4].flatMap(base=>{const from=previousAssignments.findIndex(a=>a.base===base),to=assignments.findIndex(a=>a.base===base);return from>=0&&from!==to?[{base,from,to,at:t,reason:'previous defender changed responsibility'}]:[];});
     if(secondary!=null)assignments[secondary].point=estimates.find(x=>x.index===secondary).interceptPoint;
