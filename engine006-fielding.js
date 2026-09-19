@@ -304,7 +304,7 @@
   const needsCutoff=primary>=6&&(!context.airborne||occupied.some(Boolean));
   let pairedMiddle=false;
   if(secondNeed&&needsCutoff&&!used.has(3)&&!used.has(5)){
-   const baseTask={...secondNeed,point:bases[2],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY'},formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2),cutoffTask={point:formation.relayPoint,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'};
+   const baseTask={...secondNeed,point:bases[2],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY'},formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2),cutoffTask={point:formation.relayPoint,targetBase:formation.targetBase,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'};
    const twoBRelay=cost(cutoffTask,3)+cost(baseTask,5),ssRelay=cost(cutoffTask,5)+cost(baseTask,3),relay=twoBRelay<=ssRelay?3:5,cover=relay===3?5:3;
    used.add(relay);used.add(cover);
    assignments[relay]={...cutoffTask,point:[...cutoffTask.point],roleReason:'support next plausible throw'};
@@ -319,7 +319,7 @@
     used.add(resident);assignments[resident]={...need,point:[...bases[need.base]],role:'BASE COVER',responsibility:'BASE RESPONSIBILITY',roleReason:'resident prepares for possible next play'};
    }
   }
-  if(needsCutoff&&!pairedMiddle){const formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2);assign({point:formation.relayPoint,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'},i=>i>=2&&i<6);}
+  if(needsCutoff&&!pairedMiddle){const formation=F.relayFormation(target,occupied[1]||occupied[2]?4:2);assign({point:formation.relayPoint,targetBase:formation.targetBase,role:'CUTOFF',responsibility:'THROW RESPONSIBILITY'},i=>i>=2&&i<6);}
   // Outfield backup is another outfielder, never a pitcher sent behind a fly.
   const dx=target[0]-400,dy=target[1]-430,d=Math.max(1,Math.hypot(dx,dy));
   if(primary>=2)assign({point:[target[0]+dx/d*25,target[1]+dy/d*25],role:'BACKUP',responsibility:'BACKUP RESPONSIBILITY'},i=>i>=6);
@@ -436,7 +436,7 @@
    if(p.trajectory.fieldTime>time)moveTrack(g,p,primary,p.fieldingPoint,time,'primary',p.trajectory.fieldTime);
    p.defensivePlan.responsibilities=responsibilities;p.defensivePlan.roleEvaluations=p.roleEvaluations;
    const relay=assignments.findIndex(a=>a.role==='CUTOFF');
-   p.defensivePlan.anticipation=relay<0?null:{relayIndex:relay,relayPoint:assignments[relay].point,coverIndex:responsibilities.second,targetBase:2,recognizedAt:time,source:'current-responsibility-allocation'};
+   p.defensivePlan.anticipation=relay<0?null:{relayIndex:relay,relayPoint:assignments[relay].point,coverIndex:responsibilities.second,targetBase:assignments[relay].targetBase,recognizedAt:time,source:'current-responsibility-allocation'};
   }
   return p.defensivePlan;
  }
@@ -444,7 +444,7 @@
   if(!p.pursuit)return; // Existing ground/DP sequence is preserved.
   const fielders=F.defense(g),current=p.defensivePlan.tracks.map(track=>F.trackPosition(track,t));
   const existingRelay=p.defensivePlan.anticipation,returningToExistingRelay=owner>=6&&existingRelay?.relayIndex===receiver&&dist(to,existingRelay.relayPoint)<.001;
-  const assignments=redistribute(g,current,fielders,owner,receiver===owner?null:receiver,to,[],t,{runners,nextThrowBase:dist(to,bases[2])<.001||p.defensivePlan.anticipation&&dist(to,p.defensivePlan.anticipation.relayPoint)<.001?2:null});
+  const assignments=redistribute(g,current,fielders,owner,receiver===owner?null:receiver,to,[],t,{runners,nextThrowBase:[1,2,3,4].find(base=>dist(to,bases[base])<.001)??(p.defensivePlan.anticipation&&dist(to,p.defensivePlan.anticipation.relayPoint)<.001?p.defensivePlan.anticipation.targetBase:null)});
   // Receiving the throw fulfils this base's responsibility; release its spare.
   for(let i=0;i<assignments.length;i++){const a=assignments[i];if(i===owner||i===receiver)continue;if(returningToExistingRelay&&a.role==='CUTOFF'){a.role='HOLD';a.point=[...current[i]];a.responsibility='BACKUP RESPONSIBILITY';a.roleReason='existing cutoff receives outfield return; no second cutoff';moveTrack(g,p,i,a.point,t,'hold',t);continue;}if(a.base&&dist(a.point,to)<.001){a.role='BACKUP';a.responsibility='BACKUP RESPONSIBILITY';a.point=[to[0],to[1]+24];a.base=null;}moveTrack(g,p,i,a.point,t,({'BASE COVER':'baseCover',CUTOFF:'relay',BACKUP:'backup',HOLD:'hold'})[a.role]);}
   p.defensivePlan.transitions??=[];p.defensivePlan.transitions.push({at:t,reason:'throw receiver changes responsibility',owner,receiver,to,assignments});
