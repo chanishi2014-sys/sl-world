@@ -221,8 +221,14 @@
   return {battedResult:null,battedQuality:q,battedGrade:quality.grade,infieldHit:false,
    physical:{exitVelocity,launchAngle,sprayAngle,type,hangTime,horizontalSpeed,deceleration:type==='GROUND'?48:62,height:Math.max(0,(exitVelocity*Math.sin(rad))**2/19.62*5)}};
  }
- function ballAt(p,t){if(p.misplayAt!=null&&t>=p.misplayAt&&t<=p.trajectory.fieldTime)return {point:[...p.fieldingPoint],height:Math.abs(Math.sin((t-p.misplayAt)*12))*3,depth:dist(bases[0],p.fieldingPoint),bounced:true};const x=p.physical,air=Math.min(t,x.hangTime),roll=Math.max(0,t-x.hangTime),v=x.horizontalSpeed*(x.type==='GROUND'?1:.36),r=Math.min(roll,v/x.deceleration);
-  const raw=x.horizontalSpeed*air+v*r-x.deceleration*r*r/2,projected=raw<=180?raw:180+(raw-180)*.55,height=t<x.hangTime?Math.max(0,5*(x.exitVelocity*Math.sin(x.launchAngle*Math.PI/180)*t-4.905*t*t)):0,wall=365+35*Math.cos(x.sprayAngle*2),bounced=projected>wall&&height<=12,d=bounced?wall-Math.min(35,(projected-wall)*.45):projected;
+ function ballAt(p,t){if(p.misplayAt!=null&&t>=p.misplayAt&&t<=p.trajectory.fieldTime)return {point:[...p.fieldingPoint],height:Math.abs(Math.sin((t-p.misplayAt)*12))*3,depth:dist(bases[0],p.fieldingPoint),bounced:true};
+  const x=p.physical,air=Math.min(t,x.hangTime),roll=Math.max(0,t-x.hangTime),retained=x.type==='GROUND'?1:clamp(.72-.011*Math.max(0,x.launchAngle-10),.28,.72),v=x.horizontalSpeed*retained,drag=x.type==='LINER'?48:x.deceleration,r=Math.min(roll,v/drag);
+  const raw=x.horizontalSpeed*air+v*r-drag*r*r/2,projected=raw<=180?raw:180+(raw-180)*.55,height=t<x.hangTime?Math.max(0,5*(x.exitVelocity*Math.sin(x.launchAngle*Math.PI/180)*t-4.905*t*t)):0,wall=365+35*Math.cos(x.sprayAngle*2),wallRaw=180+(wall-180)/.55;
+  const airHit=wallRaw/x.horizontalSpeed,landingRaw=x.horizontalSpeed*x.hangTime,remaining=wallRaw-landingRaw;
+  const groundHit=remaining>0&&remaining<=v*v/(2*drag)?x.hangTime+(v-Math.sqrt(Math.max(0,v*v-2*drag*remaining)))/drag:Infinity;
+  const hit=airHit<=x.hangTime?airHit:groundHit,hitHeight=hit<x.hangTime?Math.max(0,5*(x.exitVelocity*Math.sin(x.launchAngle*Math.PI/180)*hit-4.905*hit*hit)):0;
+  const bounced=t>=hit&&hitHeight<=12,incoming=hit<x.hangTime?x.horizontalSpeed:Math.max(0,v-drag*(hit-x.hangTime)),backSpeed=incoming*.55*.22,backTime=bounced?Math.min(t-hit,backSpeed/drag):0;
+  const d=bounced?wall-backSpeed*backTime+drag*backTime*backTime/2:projected;
   return {point:[400+Math.sin(x.sprayAngle)*d,430-Math.cos(x.sprayAngle)*d],height:bounced?0:height,depth:d,bounced};
  }
  function geometry(g,p){
