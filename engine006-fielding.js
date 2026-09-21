@@ -749,3 +749,171 @@
  }
  SL_FIELDING.metricThrow=Object.freeze({...metadata,profile,plan,sample});
 })();
+
+/* Unconnected metric ball physics. Generation, fielding, scoring and presentation do not call this API. */
+(() => {
+ 'use strict';
+ const metadata=Object.freeze({modelId:'metric-ball-v1',coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second',speedUnit:'meter/second',accelerationUnit:'meter/second^2',angleUnit:'degree'});
+ const constants=Object.freeze({...metadata,initialHeight:1,gravity:9.81,linearDrag:.18,rollingDeceleration:4,wallRestitution:.25});
+ const EPS=1e-9,MAX_COLLISIONS=32;
+ function number(value,name){if(!Number.isFinite(value))throw new TypeError(name+' must be a finite number');return value;}
+ function object(value,name){if(!value||typeof value!=='object'||Array.isArray(value))throw new TypeError(name+' must be an object');return value;}
+ function vector(value,name){if(!Array.isArray(value)||value.length!==2)throw new TypeError(name+' must be a two-number vector');return [number(value[0],name+'[0]'),number(value[1],name+'[1]')];}
+ function freeze(value){if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}return value;}
+ function same(actual,expected){if(expected&&typeof expected==='object'){return actual&&typeof actual==='object'&&Array.isArray(actual)===Array.isArray(expected)&&Object.keys(actual).length===Object.keys(expected).length&&Object.keys(expected).every(key=>Object.hasOwn(actual,key)&&same(actual[key],expected[key]));}return actual===expected;}
+ function profile(){return constants;}
+ function cross(a,b){return number(a[0]*b[1]-a[1]*b[0],'cross product');}
+ function delta(a,b){return [number(a[0]-b[0],'deltaX'),number(a[1]-b[1],'deltaY')];}
+ function norm(v){return number(Math.hypot(...v),'vector magnitude');}
+ function pointAt(origin,velocity,q){
+  const point=origin.map((v,i)=>number(v+velocity[i]*q,'position'));
+  return point;
+ }
+ function endTime(start,duration){
+  number(duration,'duration');const end=number(start+duration,'time');
+  if(duration<0||duration>0&&end<=start)throw new RangeError('time interval is not representable');
+  return end;
+ }
+ function boundary(input,origin){
+  if(input===undefined)return null;
+  object(input,'parkBoundary');
+  if(typeof input.parkId!=='string'||!input.parkId.trim())throw new TypeError('parkId must be a nonempty string');
+  const wallHeight=number(input.wallHeight,'wallHeight');
+  if(wallHeight<0)throw new RangeError('wallHeight must be nonnegative');
+  if(!Array.isArray(input.fencePolyline)||input.fencePolyline.length<2)throw new TypeError('fencePolyline requires at least two points');
+  const points=input.fencePolyline.map(p=>vector(p,'fence point')),edges=[];
+  for(let i=0;i<points.length;i++)for(let j=0;j<i;j++)if(points[i].every((x,k)=>x===points[j][k]))throw new RangeError('duplicate fence vertex');
+  for(let i=0;i<points.length-1;i++){
+   const d=delta(points[i+1],points[i]),length=norm(d);
+   if(length<=EPS)throw new RangeError('fence segment is too short');
+   const tangent=d.map(x=>x/length),offset=delta(origin,points[i]),along=offset[0]*tangent[0]+offset[1]*tangent[1];
+   if(Math.abs(cross(offset,tangent))<=EPS&&along>=-EPS&&along<=length+EPS)throw new RangeError('origin must not lie on the fence');
+   edges.push({a:points[i],b:points[i+1],d,length,tangent});
+  }
+  // An open, simple polyline is required; crossing or overlapping walls have ambiguous contact normals.
+  for(let i=0;i<edges.length;i++)for(let j=i+1;j<edges.length;j++){
+   const a=edges[i],b=edges[j],offset=delta(b.a,a.a),den=cross(a.d,b.d);
+   if(den===0){
+    if(cross(offset,a.d)===0){const x=(offset[0]*a.tangent[0]+offset[1]*a.tangent[1])/a.length,y=x+(b.d[0]*a.tangent[0]+b.d[1]*a.tangent[1])/a.length;
+     if(Math.min(1,Math.max(x,y))-Math.max(0,Math.min(x,y))>0)throw new RangeError('overlapping fence segments');}
+   }else if(j>i+1){const t=cross(offset,b.d)/den,u=cross(offset,a.d)/den;if(t>=0&&t<=1&&u>=0&&u<=1)throw new RangeError('self-intersecting fence');}
+  }
+  return {parkId:input.parkId,fencePolyline:points,wallHeight};
+ }
+ function rayHit(park,origin,velocity,previousPoint){
+  const speed=norm(velocity);if(!park||speed===0)return null;
+  const direction=velocity.map(x=>x/speed),hits=[];
+  for(let index=0;index<park.fencePolyline.length-1;index++){
+   const a=park.fencePolyline[index],b=park.fencePolyline[index+1],edge=delta(b,a),length=norm(edge),tangent=edge.map(x=>x/length),offset=delta(a,origin),den=cross(direction,tangent);
+   if(Math.abs(den)<Number.EPSILON*8)continue;
+   const distance=cross(offset,tangent)/den,along=cross(offset,direction)/den;
+   if(!Number.isFinite(distance)||!Number.isFinite(along))throw new RangeError('fence intersection is not representable');
+   if(distance<0||along< -EPS||along>length+EPS)continue;
+   const point=along<=EPS?[...a]:along>=length-EPS?[...b]:a.map((x,i)=>number(x+tangent[i]*along,'fence intersection'));
+   // Skip only the just-resolved contact, including the other segment at a shared vertex.
+   if(previousPoint&&norm(delta(point,previousPoint))<=EPS)continue;
+   if(distance===0)throw new RangeError('unresolved zero-distance fence contact');
+   hits.push({distance,point,segmentIndex:index,tangent,normal:[-tangent[1],tangent[0]]});
+  }
+  hits.sort((a,b)=>a.distance-b.distance||a.segmentIndex-b.segmentIndex);
+  if(!hits.length)return null;
+  const first=hits[0],ties=hits.filter(h=>Math.abs(h.distance-first.distance)<=EPS&&norm(delta(h.point,first.point))<=EPS).sort((a,b)=>a.segmentIndex-b.segmentIndex);
+  return {...ties[0],segmentIndices:ties.map(h=>h.segmentIndex)};
+ }
+ function airState(origin,height,velocity,elapsed){
+  const k=constants.linearDrag,g=constants.gravity,decay=Math.exp(-k*elapsed),q=-Math.expm1(-k*elapsed)/k;
+  return {position:pointAt(origin,velocity.slice(0,2),q),height:number(height+(velocity[2]+g/k)*q-g/k*elapsed,'height'),velocity:[velocity[0]*decay,velocity[1]*decay,number((velocity[2]+g/k)*decay-g/k,'vertical velocity')]};
+ }
+ function landingDuration(origin,height,velocity){
+  if(height===0&&velocity[2]<=0)return 0;
+  let high=1,low=0,found=false;
+  for(let i=0;i<128;i++){if(airState(origin,height,velocity,high).height<=0){found=true;break;}high=number(high*2,'root bracket');}
+  if(!found)throw new RangeError('unable to bracket landing');
+  for(let i=0;i<64;i++){const mid=low+(high-low)/2;if(airState(origin,height,velocity,mid).height>0)low=mid;else high=mid;}
+  if(high<=0)throw new RangeError('landing is not representable');
+  return high;
+ }
+ function create(input,request){
+  object(input,'profile');for(const [key,value] of Object.entries(constants))if(input[key]!==value)throw new TypeError('invalid metric ball profile '+key);
+  object(request,'request');if(request.coordinateSpace!==metadata.coordinateSpace)throw new TypeError('unsupported coordinateSpace');
+  const origin=vector(request.origin,'origin'),startTime=number(request.startTime,'startTime'),exitVelocity=number(request.exitVelocity,'exitVelocity'),launchAngle=number(request.launchAngle,'launchAngle'),sprayAngle=number(request.sprayAngle,'sprayAngle');
+  if(exitVelocity<0||launchAngle< -90||launchAngle>90||sprayAngle< -180||sprayAngle>180)throw new RangeError('invalid speed or angle');
+  const parkBoundary=boundary(request.parkBoundary,origin),alpha=launchAngle*Math.PI/180,theta=sprayAngle*Math.PI/180;
+  const horizontal=exitVelocity*(Math.abs(launchAngle)===90?0:Math.cos(alpha)),initialVelocity=[horizontal*Math.sin(theta),horizontal*Math.cos(theta),exitVelocity*Math.sin(alpha)];
+  norm(initialVelocity);
+  const initialHeight=input.initialHeight,freeDuration=landingDuration(origin,initialHeight,initialVelocity),freeLandingTime=endTime(startTime,freeDuration),freeState=airState(origin,initialHeight,initialVelocity,freeDuration),freeLandingPoint=freeState.position;
+  const apexDuration=initialVelocity[2]>0?Math.log1p(input.linearDrag*initialVelocity[2]/input.gravity)/input.linearDrag:0,maximumHeight=airState(origin,initialHeight,initialVelocity,apexDuration).height;
+  const segments=[],fenceEvents=[];let currentPoint=[...origin],currentTime=startTime,currentHeight=initialHeight,currentVelocity=[...initialVelocity],previousPoint=null,overFence=false,collisions=0;
+  function fenceEvent(hit,state,time,grounded){
+   const kind=!grounded&&state.height>parkBoundary.wallHeight?'OVER_FENCE':'WALL',incomingVelocity=[...state.velocity],outgoingVelocity=[...incomingVelocity];
+   if(kind==='WALL'){
+    if(++collisions>MAX_COLLISIONS)throw new RangeError('too many wall collisions');
+    const dot=incomingVelocity[0]*hit.normal[0]+incomingVelocity[1]*hit.normal[1];
+    for(let i=0;i<2;i++)outgoingVelocity[i]=number(input.wallRestitution*(incomingVelocity[i]-2*dot*hit.normal[i]),'reflected velocity');
+   }else overFence=true;
+   const event={kind,time,position:[...hit.point],height:Math.max(0,state.height),segmentIndex:hit.segmentIndex,segmentIndices:hit.segmentIndices,tangent:hit.tangent,normal:hit.normal,incomingVelocity,outgoingVelocity,hasGroundContact:grounded};
+   fenceEvents.push(event);previousPoint=[...hit.point];return event;
+  }
+  let landingTime,landingPoint,landingVelocity,landingHit=null;
+  for(;;){
+   const duration=landingDuration(currentPoint,currentHeight,currentVelocity),end=endTime(currentTime,duration),landing=airState(currentPoint,currentHeight,currentVelocity,duration),h=norm(currentVelocity.slice(0,2)),reach=h*(-Math.expm1(-input.linearDrag*duration))/input.linearDrag;
+   const hit=overFence?null:rayHit(parkBoundary,currentPoint,currentVelocity.slice(0,2),previousPoint);
+   // A contact exactly at landing belongs to the ground phase, never OVER_FENCE.
+   if(hit&&hit.distance<reach-EPS){
+    const fraction=input.linearDrag*hit.distance/h,tau=-Math.log1p(-fraction)/input.linearDrag,time=endTime(currentTime,tau);
+    if(!(tau>0&&tau<duration&&time<end))throw new RangeError('wall time is not distinguishable from landing');
+    const state=airState(currentPoint,currentHeight,currentVelocity,tau);state.position=[...hit.point];
+    const event=fenceEvent(hit,state,time,false);
+    // Crossing the fence is metadata only; retain the original free-flight segment unchanged.
+    if(event.kind==='OVER_FENCE')continue;
+    segments.push({phase:'AIRBORNE',startTime:currentTime,endTime:time,origin:currentPoint,height:currentHeight,velocity:currentVelocity,endPoint:[...hit.point],endHeight:state.height});
+    currentPoint=[...hit.point];currentTime=time;currentHeight=state.height;currentVelocity=[...event.outgoingVelocity];
+   }else{
+    if(hit&&Math.abs(hit.distance-reach)<=EPS){landing.position=[...hit.point];landingHit=hit;}
+    segments.push({phase:'AIRBORNE',startTime:currentTime,endTime:end,origin:currentPoint,height:currentHeight,velocity:currentVelocity,endPoint:landing.position,endHeight:0});
+    landingTime=end;landingPoint=landing.position;landingVelocity=landing.velocity;break;
+   }
+  }
+  const h=norm(landingVelocity.slice(0,2)),magnitude=norm(landingVelocity),impactSin=magnitude===0?0:Math.abs(landingVelocity[2])/magnitude,landingRetention=Math.max(.25,Math.min(.70,.70-.45*impactSin)),rollingInitialSpeed=number(h*landingRetention,'rollingInitialSpeed'),rollingDirection=h?landingVelocity.slice(0,2).map(v=>v/h):[0,0];
+  currentPoint=[...landingPoint];currentTime=landingTime;let rollingSpeed=rollingInitialSpeed,rollingVector=[...rollingDirection],rollingDistance=0;
+  if(landingHit){const event=fenceEvent(landingHit,{height:0,velocity:[rollingDirection[0]*rollingSpeed,rollingDirection[1]*rollingSpeed,0]},landingTime,true);rollingSpeed=norm(event.outgoingVelocity.slice(0,2));rollingVector=rollingSpeed?event.outgoingVelocity.slice(0,2).map(v=>v/rollingSpeed):[0,0];}
+  for(;;){
+   const duration=rollingSpeed/input.rollingDeceleration,distance=number(rollingSpeed*rollingSpeed/(2*input.rollingDeceleration),'stopping distance'),end=endTime(currentTime,duration);
+   const hit=overFence?null:rayHit(parkBoundary,currentPoint,rollingVector.map(v=>v*rollingSpeed),previousPoint);
+   if(hit&&hit.distance<=distance&&rollingSpeed>0){
+    const remaining=Math.sqrt(Math.max(0,rollingSpeed*rollingSpeed-2*input.rollingDeceleration*hit.distance)),tau=2*hit.distance/(rollingSpeed+remaining),time=endTime(currentTime,tau),state={position:hit.point,height:0,velocity:[rollingVector[0]*remaining,rollingVector[1]*remaining,0]};
+    const event=fenceEvent(hit,state,time,true);
+    segments.push({phase:'ROLLING',startTime:currentTime,endTime:time,origin:currentPoint,direction:rollingVector,speed:rollingSpeed,distance:hit.distance,endPoint:[...hit.point]});
+    rollingDistance=number(rollingDistance+hit.distance,'rolling distance');currentPoint=[...hit.point];currentTime=time;rollingSpeed=norm(event.outgoingVelocity.slice(0,2));rollingVector=rollingSpeed?event.outgoingVelocity.slice(0,2).map(v=>v/rollingSpeed):[0,0];
+   }else{
+    const stopPoint=pointAt(currentPoint,rollingVector,distance);
+    segments.push({phase:'ROLLING',startTime:currentTime,endTime:end,origin:currentPoint,direction:rollingVector,speed:rollingSpeed,distance,endPoint:stopPoint});
+    rollingDistance=number(rollingDistance+distance,'rolling distance');currentPoint=stopPoint;currentTime=end;break;
+   }
+  }
+  return freeze({...metadata,profile:{...constants},coordinateSpace:request.coordinateSpace,startTime,origin,exitVelocity,launchAngle,sprayAngle,parkBoundary:parkBoundary??undefined,initialHeight,initialVelocity,typeLabel:launchAngle<10?'GROUND':launchAngle<25?'LINER':launchAngle<50?'FLY':'POPUP',maximumHeight,freeLandingTime,freeLandingPoint,landingTime,landingPoint,landingVelocity,landingRetention,rollingInitialSpeed,rollingDirection,rollingDuration:currentTime-landingTime,rollingDistance,stopTime:currentTime,stopPoint:currentPoint,segments,fenceEvents});
+ }
+ function sample(plan,time){
+  number(time,'time');object(plan,'plan');
+  const verified=create(plan.profile,plan);
+  // Value validation also accepts a serialized plan; missing optional boundary is equivalent to undefined.
+  const expected={...verified};if(!Object.hasOwn(plan,'parkBoundary')&&expected.parkBoundary===undefined)delete expected.parkBoundary;
+  if(!same(plan,expected))throw new TypeError('inconsistent metric ball plan');
+  const fenceOutcome=verified.fenceEvents.filter(e=>e.time<=time).at(-1)?.kind??null,hasGroundContact=time>=verified.landingTime;
+  if(time<verified.startTime)return {position:[...verified.origin],height:verified.initialHeight,velocity:[0,0,0],phase:'WAITING',hasGroundContact:false,fenceOutcome:null};
+  if(time>=verified.stopTime)return {position:[...verified.stopPoint],height:0,velocity:[0,0,0],phase:'STOPPED',hasGroundContact:true,fenceOutcome};
+  const segment=verified.segments.find(s=>time>=s.startTime&&time<s.endTime);
+  if(!segment)throw new RangeError('no representable segment at sample time');
+  const elapsed=time-segment.startTime;let state;
+  if(segment.phase==='AIRBORNE')state=airState(segment.origin,segment.height,segment.velocity,elapsed);
+  else{
+   const speed=Math.max(0,segment.speed-constants.rollingDeceleration*elapsed),distance=Math.min(segment.distance,Math.max(0,segment.speed*elapsed-.5*constants.rollingDeceleration*elapsed*elapsed));
+   state={position:pointAt(segment.origin,segment.direction,distance),height:0,velocity:[segment.direction[0]*speed,segment.direction[1]*speed,0]};
+  }
+  const event=verified.fenceEvents.find(e=>e.time===time);
+  if(event){state.position=[...event.position];state.height=event.height;state.velocity=[...event.outgoingVelocity];}
+  if(time===verified.landingTime){state.position=[...verified.landingPoint];state.height=0;}
+  return {...state,height:Math.max(0,state.height),phase:segment.phase,hasGroundContact,fenceOutcome};
+ }
+ SL_FIELDING.metricBall=Object.freeze({...metadata,profile,create,sample});
+})();
