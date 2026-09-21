@@ -15,6 +15,8 @@
  // Unused STANDARD park definition; angles and distances are the source of the fence geometry.
  const standardFenceControls=Object.freeze([[-45,100],[-33.75,108.5],[-22.5,115],[-11.25,119.5],[0,122],[11.25,119.5],[22.5,115],[33.75,108.5],[45,100]].map(([angleDeg,distanceM])=>Object.freeze({angleDeg,distanceM})));
  const standardPark=Object.freeze({parkId:'STANDARD',coordinateSpace:metricLayout.coordinateSpace,fenceControlPoints:standardFenceControls,
+  // Unused, no runners/no shift: meter positions in this park's baseball-metric-v1 coordinateSpace.
+  defaultFielderPositions:Object.freeze(Object.fromEntries(Object.entries({P:[0,18.4404],C:[0,-2],'1B':[25,27],'2B':[15,31],'3B':[-26,28],SS:[-16,31],LF:[-42,74],CF:[0,93],RF:[42,74]}).map(([position,point])=>[position,Object.freeze(point)]))),
   fencePolyline:Object.freeze(standardFenceControls.map(({angleDeg,distanceM})=>{const radians=angleDeg*Math.PI/180;return Object.freeze([distanceM*Math.sin(radians),distanceM*Math.cos(radians)]);} ))});
  // Force follows the uninterrupted occupied chain behind a runner, never the result.
  function forcePlan(bases,batter){let forced=true;return [{runner:identity(batter),fromBase:0,toBase:1,force:true},...bases.flatMap((r,i)=>{forced=forced&&!!r;return r?[{runner:identity(r),fromBase:i+1,toBase:forced?i+2:i+1,force:forced}]:[];})];}
