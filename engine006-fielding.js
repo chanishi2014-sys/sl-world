@@ -651,3 +651,59 @@
  }
  F.process={naturalAt,baseNeeds,redistributeTransfer,redistribute,interceptEstimate,handlingAt,pursueAir,generate,ballAt,geometry,play,classify,runTime,speed,reaction,throwSpeed,defensePlan,moveTrack,coverTime,turnDelay,receiverFor,flyObservation,flyRunningRead,runnerAt,retouchAfterCatch,runningTargets,outAtTransfer,retireOnTransfer};
 })();
+
+/* Unconnected metric movement: no live match, fielding AI, or viewer calls this API. */
+(() => {
+ 'use strict';
+ const metadata=Object.freeze({modelId:'metric-fielder-movement-v1',coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second'});
+ const bound=(value,low,high)=>Math.max(low,Math.min(high,value));
+ function number(value,name){if(!Number.isFinite(value))throw new TypeError(name+' must be a finite number');return value;}
+ function object(value,name){if(!value||typeof value!=='object'||Array.isArray(value))throw new TypeError(name+' must be an object');return value;}
+ function vector(value,name){if(!Array.isArray(value)||value.length!==2)throw new TypeError(name+' must be a two-number vector');return Object.freeze([number(value[0],name+'[0]'),number(value[1],name+'[1]')]);}
+ function identity(value){object(value,'profile');for(const [key,expected] of Object.entries(metadata))if(value[key]!==expected)throw new TypeError('unsupported '+key);}
+ function profile(player={}){
+  object(player,'player');const source=player.profile==null?{}:object(player.profile,'player.profile'),batting=source.batting==null?{}:object(source.batting,'player.profile.batting');
+  const speed=bound(number(batting.speed??10,'speed'),1,20),fielding=bound(number(batting.fielding??10,'fielding'),1,20);
+  return Object.freeze({...metadata,maxSpeed:6+3*(speed-1)/19,acceleration:4.5,reaction:.18+.42*(1-(fielding-1)/19)});
+ }
+ function plan(movement,request){
+  identity(movement);object(request,'request');
+  if(request.coordinateSpace!==metadata.coordinateSpace)throw new TypeError('unsupported coordinateSpace');
+  const maxSpeed=number(movement.maxSpeed,'maxSpeed'),acceleration=number(movement.acceleration,'acceleration'),reaction=number(movement.reaction,'reaction');
+  if(maxSpeed<6||maxSpeed>9||acceleration!==4.5||reaction<.18||reaction>.60)throw new RangeError('invalid metric movement profile');
+  const from=vector(request.from,'from'),to=vector(request.to,'to'),velocity=vector(request.velocity,'velocity');
+  const startTime=number(request.startTime,'startTime'),readyAt=number(request.readyAt,'readyAt'),moveAt=Math.max(startTime,readyAt);
+  const currentSpeed=number(Math.hypot(...velocity),'currentSpeed');
+  // A supplied state must be physically valid; the projection below only removes components.
+  if(currentSpeed>maxSpeed+Number.EPSILON*maxSpeed*4)throw new RangeError('velocity exceeds maxSpeed');
+  const dx=number(to[0]-from[0],'deltaX'),dy=number(to[1]-from[1],'deltaY'),distance=number(Math.hypot(dx,dy),'distance');
+  if(distance>0&&moveAt>startTime&&currentSpeed>0)throw new RangeError('reaction waiting requires zero velocity');
+  const direction=Object.freeze(distance?[dx/distance,dy/distance]:[0,0]);
+  const initialSpeed=distance?bound(velocity[0]*direction[0]+velocity[1]*direction[1],0,maxSpeed):0;
+  const accelerationTime=(maxSpeed-initialSpeed)/acceleration,accelerationDistance=(maxSpeed-initialSpeed)*(maxSpeed+initialSpeed)/(2*acceleration);
+  // Rationalized acceleration time avoids cancellation for a small distance at nonzero speed.
+  const reachedSpeed=distance<=accelerationDistance?Math.sqrt(initialSpeed*initialSpeed+2*acceleration*distance):maxSpeed;
+  const moveDuration=distance===0?0:distance<=accelerationDistance?2*distance/(reachedSpeed+initialSpeed):accelerationTime+(distance-accelerationDistance)/maxSpeed;
+  const arrivalTime=distance===0?startTime:moveAt+moveDuration,arrivalSpeed=distance===0?currentSpeed:Math.min(maxSpeed,reachedSpeed);
+  number(moveDuration,'moveDuration');number(arrivalTime,'arrivalTime');
+  if(moveDuration<0||distance>0&&(moveDuration===0||arrivalTime<=moveAt))throw new RangeError('movement is not representable at this time scale');
+  const arrivalVelocity=Object.freeze(distance===0?[...velocity]:direction.map(component=>component*arrivalSpeed));
+  return Object.freeze({...metadata,profile:Object.freeze({...metadata,maxSpeed,acceleration,reaction}),from,to,velocity,startTime,readyAt,moveAt,distance,direction,initialSpeed,accelerationTime,accelerationDistance,moveDuration,arrivalTime,arrivalSpeed,arrivalVelocity});
+ }
+ function sample(movement,time){
+  object(movement,'plan');identity(movement);number(time,'time');
+  // Validate value-based plans too, without a mutable registry or trusting stale derived fields.
+  const verified=plan(movement.profile,movement);
+  for(const key of ['moveAt','distance','initialSpeed','accelerationTime','accelerationDistance','moveDuration','arrivalTime','arrivalSpeed'])if(movement[key]!==verified[key])throw new TypeError('inconsistent plan '+key);
+  for(const key of ['direction','arrivalVelocity']){const value=vector(movement[key],key);if(value.some((component,index)=>component!==verified[key][index]))throw new TypeError('inconsistent plan '+key);}
+  const {from,to,moveAt,distance,direction,initialSpeed,accelerationTime,accelerationDistance,arrivalTime}=verified,{maxSpeed,acceleration}=verified.profile;
+  // Arrival means reaching the point, not a finite braking maneuver. Preserve approach speed on plan.
+  if(time>=arrivalTime)return {position:[...to],velocity:[0,0],state:'ARRIVED'};
+  if(time<moveAt||distance===0)return {position:[...from],velocity:[0,0],state:'WAITING'};
+  const elapsed=time-moveAt,speed=Math.min(maxSpeed,initialSpeed+acceleration*elapsed);
+  const travelled=elapsed<=accelerationTime?initialSpeed*elapsed+.5*acceleration*elapsed*elapsed:accelerationDistance+maxSpeed*(elapsed-accelerationTime);
+  const fraction=Math.min(1,travelled/distance);
+  return {position:from.map((component,index)=>(1-fraction)*component+fraction*to[index]),velocity:direction.map(component=>component*speed),state:'MOVING'};
+ }
+ SL_FIELDING.metricFielderMovement=Object.freeze({...metadata,profile,plan,sample});
+})();
