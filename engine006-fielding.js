@@ -707,3 +707,45 @@
  }
  SL_FIELDING.metricFielderMovement=Object.freeze({...metadata,profile,plan,sample});
 })();
+
+/* Unconnected effective-XY throw: release-to-receiver travel only, no preparation or receiving delays. */
+(() => {
+ 'use strict';
+ const metadata=Object.freeze({modelId:'metric-throw-v1',coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second',speedUnit:'meter/second',speedMeaning:'effective-xy'});
+ function number(value,name){if(!Number.isFinite(value))throw new TypeError(name+' must be a finite number');return value;}
+ function object(value,name){if(!value||typeof value!=='object'||Array.isArray(value))throw new TypeError(name+' must be an object');return value;}
+ function vector(value,name){if(!Array.isArray(value)||value.length!==2)throw new TypeError(name+' must be a two-number vector');return Object.freeze([number(value[0],name+'[0]'),number(value[1],name+'[1]')]);}
+ function identity(value){object(value,'metric throw');for(const [key,expected] of Object.entries(metadata))if(value[key]!==expected)throw new TypeError('unsupported '+key);}
+ function profile(player={}){
+  object(player,'player');const source=player.profile===undefined?{}:object(player.profile,'player.profile'),batting=source.batting===undefined?{}:object(source.batting,'player.profile.batting');
+  const arm=Math.max(1,Math.min(20,number(batting.arm===undefined?10:batting.arm,'arm'))),normalizedArm=(arm-1)/19;
+  return Object.freeze({...metadata,normalizedArm,speed:28+10*normalizedArm});
+ }
+ function plan(throwing,request){
+  identity(throwing);object(request,'request');
+  if(request.coordinateSpace!==metadata.coordinateSpace)throw new TypeError('unsupported coordinateSpace');
+  const normalizedArm=number(throwing.normalizedArm,'normalizedArm'),speed=number(throwing.speed,'speed');
+  if(normalizedArm<0||normalizedArm>1||speed!==28+10*normalizedArm)throw new RangeError('invalid metric throw profile');
+  const from=vector(request.from,'from'),to=vector(request.to,'to'),releaseTime=number(request.releaseTime,'releaseTime');
+  const dx=number(to[0]-from[0],'deltaX'),dy=number(to[1]-from[1],'deltaY'),distance=number(Math.hypot(dx,dy),'distance');
+  const direction=Object.freeze(distance?[dx/distance,dy/distance]:[0,0]),travelTime=distance/speed,arrivalTime=number(releaseTime+travelTime,'arrivalTime');
+  if(distance>0&&(travelTime===0||arrivalTime<=releaseTime))throw new RangeError('throw is not representable at this time scale');
+  return Object.freeze({...metadata,normalizedArm,from,to,distance,direction,releaseTime,speed,travelTime,arrivalTime});
+ }
+ function sample(throwing,time){
+  number(time,'time');
+  // Reconstruct value-based plans to reject corrupt or stale derived fields, without a mutable registry.
+  const verified=plan(throwing,throwing);
+  for(const key of ['distance','travelTime','arrivalTime'])if(throwing[key]!==verified[key])throw new TypeError('inconsistent plan '+key);
+  const suppliedDirection=vector(throwing.direction,'direction');
+  if(suppliedDirection.some((value,index)=>value!==verified.direction[index]))throw new TypeError('inconsistent plan direction');
+  const {from,to,releaseTime,arrivalTime,travelTime,direction,speed}=verified;
+  if(time<releaseTime)return {position:[...from],velocity:[0,0],state:'WAITING'};
+  if(time>=arrivalTime)return {position:[...to],velocity:[0,0],state:'ARRIVED'};
+  const fraction=Math.min(1,(time-releaseTime)/travelTime);
+  // Convex interpolation uses the same travel duration and avoids intermediate distance overflow.
+  const position=from.map((value,index)=>number((1-fraction)*value+fraction*to[index],'position'));
+  return {position,velocity:direction.map(value=>value*speed),state:'FLYING'};
+ }
+ SL_FIELDING.metricThrow=Object.freeze({...metadata,profile,plan,sample});
+})();
