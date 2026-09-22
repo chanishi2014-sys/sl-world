@@ -978,3 +978,184 @@
  function assertMatchExecutable(ctx){context(ctx);if(ctx.coordinateSpace===metricSpace&&!ctx.metricEnabled)throw new TypeError('metric match execution is not enabled');return ctx;}
  F.coordinateContext=Object.freeze({create,assertCompatible,assertModelCompatibility,assertMatchExecutable});
 })();
+
+
+/* Unconnected metric catch opportunities; no RNG, possession, rules, or handling.
+ * These fixed reach values are SL WORLD metric-v1 design values, not measurements.
+ */
+(() => {
+ 'use strict';
+ const F=SL_FIELDING,B=F.metricBall,M=F.metricFielderMovement,C=F.coordinateContext;
+ const contract=Object.freeze({modelId:'metric-catch-v1',coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second',
+  catchRadius:.5,catchHeight:2.5,minimumHeight:0,scanStep:.04,refinementTolerance:1e-5,
+  targetPolicy:'radial-near-edge',geometryEpsilon:1e-9,arrivalTimeEpsilon:1e-9});
+ // Epsilons cover floating-point boundaries only (one nanometer / nanosecond).
+ const {catchRadius:R,catchHeight:H,geometryEpsilon:EPS,arrivalTimeEpsilon:TIME_EPS}=contract;
+ const MAX_SAMPLES=8192,MAX_INTERVALS=32768,MAX_DEPTH=64,MIN_WIDTH=1e-12;
+ function profile(){return contract;}
+ function object(value,name){if(!value||typeof value!=='object'||Array.isArray(value))throw new TypeError(name+' must be an object');return value;}
+ function number(value,name){if(!Number.isFinite(value))throw new TypeError(name+' must be finite');return value;}
+ function vector(value,name){if(!Array.isArray(value)||value.length!==2)throw new TypeError(name+' must be an XY vector');return [number(value[0],name),number(value[1],name)];}
+ function index(value){if(!Number.isInteger(value)||value<0||value>8)throw new RangeError('invalid fielderIndex');return value;}
+ function distance(a,b){return number(Math.hypot(a[0]-b[0],a[1]-b[1]),'distance');}
+ function metadata(value,expected){object(value,'metric input');for(const [key,v] of Object.entries(expected))if(value[key]!==v)throw new TypeError('incompatible '+key);}
+ function compatible(context,ballPlan,movement){
+  C.assertCompatible(context,contract,ballPlan,movement);
+  metadata(context,{coordinateSpace:contract.coordinateSpace,distanceUnit:'meter',timeUnit:'second'});
+  metadata(ballPlan,{modelId:'metric-ball-v1',coordinateSpace:contract.coordinateSpace,distanceUnit:'meter',timeUnit:'second',speedUnit:'meter/second',accelerationUnit:'meter/second^2',angleUnit:'degree'});
+  // Existing movement profiles/plans declare distance/time units, not speedUnit.
+  metadata(movement,{modelId:'metric-fielder-movement-v1',coordinateSpace:contract.coordinateSpace,distanceUnit:'meter',timeUnit:'second'});
+  if(Object.hasOwn(movement,'speedUnit')&&movement.speedUnit!=='meter/second')throw new TypeError('incompatible speedUnit');
+ }
+ function parkCompatible(context,ballPlan){
+  const park=ballPlan.parkBoundary;if(park===undefined)return; // An explicitly unbounded ball plan remains unbounded.
+  if(park.parkId!==context.parkId||park.fencePolyline.length!==context.parkBoundary.length||
+   park.fencePolyline.some((p,i)=>p.some((v,j)=>v!==context.parkBoundary[i][j])))throw new TypeError('ball park/context mismatch');
+  // wallHeight belongs to the validated ball plan; the context has no default.
+ }
+ function frozenCopy(value,ancestors=new Set()){
+  if(value===null||typeof value!=='object'){if(typeof value==='function')throw new TypeError('non-data plan');return value;}
+  if(ancestors.has(value))throw new TypeError('cyclic plan');ancestors.add(value);
+  const copy=Array.isArray(value)?Array.from(value,v=>frozenCopy(v,ancestors)):Object.fromEntries(Object.entries(value).map(([k,v])=>[k,frozenCopy(v,ancestors)]));
+  ancestors.delete(value);return Object.freeze(copy);
+ }
+ function eligible(ball,time,startTime,readyAt){
+  return time>=startTime&&time>=readyAt&&ball.phase!=='WAITING'&&ball.fenceOutcome!=='OVER_FENCE'&&ball.height>=0&&ball.height<=H+EPS;
+ }
+ function contact(ball,fielder,time,plan,readyAt){
+  return eligible(ball,time,plan.startTime,readyAt)&&distance(fielder.position,ball.position)<=R+EPS;
+ }
+ function result(ballPlan,plan,ball,fielder,time,fielderIndex,readyAt,diagnostics){
+  // A plan's arrival is an instantaneous endpoint, not a braking simulation.
+  // Preserve its left-limit velocity only at that endpoint; later waiting is zero.
+  const arrivalBoundary=Math.abs(time-plan.arrivalTime)<=TIME_EPS;
+  return frozenCopy({...contract,status:'REACHABLE',time,catchKind:ball.hasGroundContact?'GROUND_FIELD':'AIR_CATCH',
+   ballPosition:ball.position,ballHeight:ball.height,ballVelocity:ball.velocity,ballPhase:ball.phase,
+   fielderIndex,fielderPosition:fielder.position,fielderVelocity:arrivalBoundary?plan.arrivalVelocity:fielder.velocity,
+   approachVelocity:time<plan.arrivalTime-TIME_EPS?fielder.velocity:plan.arrivalVelocity,readyAt,groundContactBeforeCatch:ball.hasGroundContact,
+   wallContactBeforeCatch:ballPlan.fenceEvents.some(e=>e.kind==='WALL'&&e.time<=time),fenceOutcome:ball.fenceOutcome,
+   movementPlan:plan,...(diagnostics?{searchDiagnostics:diagnostics}:{})});
+ }
+ // Evaluate the supplied, adopted path. Never replace it with a predicted path.
+ // null means no contact at this time; invalid inputs always throw.
+ function evaluate(context,ballPlan,movementPlan,request){
+  compatible(context,ballPlan,movementPlan);object(request,'request');
+  const time=number(request.time,'time'),readyAt=number(request.readyAt,'readyAt'),fielderIndex=index(request.fielderIndex);
+  if(readyAt!==movementPlan.readyAt)throw new TypeError('readyAt/movementPlan mismatch');
+  const ball=B.sample(ballPlan,time),fielder=M.sample(movementPlan,time);
+  parkCompatible(context,ballPlan);
+  return contact(ball,fielder,time,movementPlan,readyAt)?result(ballPlan,movementPlan,ball,fielder,time,fielderIndex,readyAt):null;
+ }
+ function unresolved(reason){
+  const error=new RangeError('metricCatch search unresolved: '+reason);error.code='METRIC_CATCH_SEARCH_UNRESOLVED';throw error;
+ }
+ // Search one fielder only. Radial near-edge targeting is intentional even with
+ // initial velocity: this is not an optimization over every point of the disk.
+ function findOpportunity(context,ballPlan,movementProfile,request){
+  compatible(context,ballPlan,movementProfile);object(request,'request');
+  const fielderIndex=index(request.fielderIndex),from=vector(request.from,'from'),velocity=vector(request.velocity,'velocity');
+  const startTime=number(request.startTime,'startTime'),readyAt=number(request.readyAt,'readyAt');
+  const searchStartTime=number(request.searchStartTime,'searchStartTime'),searchEndTime=number(request.searchEndTime,'searchEndTime');
+  if(searchEndTime<searchStartTime)throw new RangeError('searchEndTime precedes searchStartTime');
+  const seed={coordinateSpace:contract.coordinateSpace,from,velocity,startTime,readyAt};
+  // Validate the existing movement contract even if the search window is empty.
+  M.plan(movementProfile,{...seed,to:from});
+  const initialSpeed=number(Math.hypot(...velocity),'initial speed');
+  if(readyAt>startTime&&initialSpeed>0)throw new RangeError('reaction waiting requires zero velocity');
+  const initialBall=B.sample(ballPlan,searchStartTime);parkCompatible(context,ballPlan);
+  const start=Math.max(searchStartTime,startTime,readyAt,ballPlan.startTime),end=searchEndTime;
+  if(start>end)return null;
+  if(!Number.isFinite(end-start)||(end-start)/contract.scanStep>MAX_INTERVALS)unresolved('search range budget');
+  const cache=new Map([[searchStartTime,{ball:initialBall}]]),diagnostics={ballSamples:1,intervals:0,prunedIntervals:0,refinementSteps:0};
+  let uncertainStart=null;
+  function sample(time){
+   if(!cache.has(time)){
+    if(cache.size>=MAX_SAMPLES)unresolved('sample budget');
+    cache.set(time,{ball:B.sample(ballPlan,time)});diagnostics.ballSamples++;
+   }
+   return cache.get(time);
+  }
+  function probe(time){
+   const entry=sample(time);if(Object.hasOwn(entry,'reachable'))return entry;
+   entry.reachable=false;
+   if(!eligible(entry.ball,time,startTime,readyAt))return entry;
+   const d=distance(from,entry.ball.position),ratio=d>R?(d-R)/d:0;
+   const to=from.map((v,i)=>number(v+(entry.ball.position[i]-v)*ratio,'target'));
+   const plan=M.plan(movementProfile,{...seed,to});
+   if(plan.arrivalTime>time)return entry;
+   const fielder=M.sample(plan,time);
+   if(contact(entry.ball,fielder,time,plan,readyAt)){entry.reachable=true;entry.plan=plan;entry.fielder=fielder;}
+   return entry;
+  }
+  function finish(time,lower){
+   if(uncertainStart!==null)lower=Math.min(lower,uncertainStart);
+   if(time-lower>contract.refinementTolerance)unresolved('earliest contact not isolated');
+   diagnostics.timeBracket=[lower,time];
+   const entry=probe(time);
+   return result(ballPlan,entry.plan,entry.ball,entry.fielder,time,fielderIndex,readyAt,diagnostics);
+  }
+  function refine(a,b,lower){
+   // This bracket is already <= refinementTolerance and has a false left /
+   // true right endpoint. Local bisection refines a transition, without claiming
+   // the predicate is globally monotone. Any earlier unresolved contact lies
+   // inside the reported first-contact bracket.
+   for(let n=0;n<48&&b-a>MIN_WIDTH;n++){
+    const mid=a+(b-a)/2;if(mid===a||mid===b)break;
+    diagnostics.refinementSteps++;if(probe(mid).reachable)b=mid;else a=mid;
+   }
+   return finish(b,lower);
+  }
+  function impossible(a,b){
+   const left=sample(a).ball,right=sample(b).ball,mid=a+(b-a)/2,center=sample(mid).ball;
+   if(left.fenceOutcome==='OVER_FENCE')return true;
+   // Each interval stays inside one validated ball segment. Its height has no
+   // interior minimum; its XY speed cannot increase before the next event.
+   const heightRoundoff=16*Number.EPSILON*Math.max(1,Math.abs(left.height),Math.abs(right.height));
+   if(Math.min(left.height,right.height)-heightRoundoff>H+EPS)return true;
+   const vBall=Math.max(Math.hypot(...left.velocity.slice(0,2)),Math.hypot(...right.velocity.slice(0,2)));
+   const coordinateRoundoff=16*Number.EPSILON*Math.max(1,...from.map(Math.abs),...center.position.map(Math.abs));
+   const travel=number(vBall*(b-a)/2+coordinateRoundoff,'ball travel bound'),d=distance(from,center.position);
+   const dLower=Math.max(0,d-travel-R-EPS);
+   // Bound the velocity projection over all directions the ball can occupy in
+   // this interval. The bound converges to the actual radial projection.
+   const projection=d?velocity.reduce((s,v,i)=>s+v*((center.position[i]-from[i])/d),0):0;
+   const directionChange=d>travel?Math.min(2,2*travel/(d-travel)):2;
+   const vUpper=Math.min(movementProfile.maxSpeed,Math.max(0,d<=travel?initialSpeed:projection+initialSpeed*directionChange)+16*Number.EPSILON*Math.max(1,initialSpeed));
+   // Ask the existing movement model for an optimistic ETA; do not duplicate
+   // its acceleration or speed equations. For waiting, initialSpeed is zero.
+   const bound=M.plan(movementProfile,{coordinateSpace:contract.coordinateSpace,from:[0,0],to:[dLower,0],
+    velocity:[initialSpeed===0?0:vUpper,0],startTime,readyAt});
+   const timeRoundoff=16*Number.EPSILON*Math.max(1,Math.abs(b),Math.abs(bound.arrivalTime));
+   return bound.arrivalTime>b+TIME_EPS+timeRoundoff;
+  }
+  function visit(a,b,depth=0){
+   if(++diagnostics.intervals>MAX_INTERVALS)unresolved('interval budget');
+   if(uncertainStart!==null&&a-uncertainStart>contract.refinementTolerance)unresolved('unresolved earlier interval');
+   if(probe(a).reachable)return finish(a,a);
+   if(a===b)return null;
+   if(impossible(a,b)){diagnostics.prunedIntervals++;return null;}
+   const mid=a+(b-a)/2,width=b-a;
+   if(width<=contract.refinementTolerance){
+    if(probe(mid).reachable)return refine(a,mid,a);
+    if(probe(b).reachable)return refine(a,b,a);
+   }
+   // Both endpoints being false never proves the interior is false.
+   if(width<=MIN_WIDTH||depth>=MAX_DEPTH||mid===a||mid===b){
+    uncertainStart??=a;return null;
+   }
+   return visit(a,mid,depth+1)||visit(mid,b,depth+1);
+  }
+  // Known discontinuities are processed by metricBall.sample's right-sided
+  // convention: landing is grounded; WALL history and OVER_FENCE apply at t.
+  const boundaries=[start,end,readyAt,ballPlan.landingTime,ballPlan.stopTime,
+   ...ballPlan.segments.flatMap(s=>[s.startTime,s.endTime]),...ballPlan.fenceEvents.map(e=>e.time)];
+  const count=Math.ceil((end-start)/contract.scanStep);
+  for(let i=1;i<count;i++){const time=start+i*contract.scanStep;if(time>=end)break;if(time<=start)unresolved('unrepresentable scan step');boundaries.push(time);}
+  const times=[...new Set(boundaries.filter(t=>t>=start&&t<=end))].sort((a,b)=>a-b);
+  if(probe(start).reachable)return finish(start,start);
+  for(let i=1;i<times.length;i++){const found=visit(times[i-1],times[i]);if(found)return found;}
+  if(uncertainStart!==null)unresolved('contact boundary could not be resolved');
+  return null;
+ }
+ F.metricCatch=Object.freeze({...contract,profile,findOpportunity,evaluate});
+})();
