@@ -1300,3 +1300,77 @@
  }
  F.metricHandling=Object.freeze({...metadata,...constants,profile,secure,prepareThrow,sample});
 })();
+
+
+/* Unconnected single-base ETA queries. No base needs, role eligibility policy,
+ * assignment, runner state, receiving, handling, stopping or throw simulation.
+ */
+(() => {
+ 'use strict';
+ const F=SL_FIELDING,C=F.coordinateContext,M=F.metricFielderMovement;
+ const contract=Object.freeze({modelId:'metric-base-cover-v1',coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second',speedUnit:'meter/second',rankingResolution:1e-6});
+ const movementIdentity=Object.freeze({modelId:'metric-fielder-movement-v1',coordinateSpace:contract.coordinateSpace,distanceUnit:'meter',timeUnit:'second'});
+ function object(v,name){if(!v||typeof v!=='object'||Array.isArray(v))throw new TypeError(name+' must be an object');return v;}
+ function number(v,name){if(!Number.isFinite(v))throw new TypeError(name+' must be finite');return v;}
+ function vector(v,name){if(!Array.isArray(v)||v.length!==2)throw new TypeError(name+' must be an XY vector');return Object.freeze(Array.from(v,x=>number(x,name)));}
+ function identity(v,expected){object(v,'metric input');for(const [k,x] of Object.entries(expected))if(v[k]!==x)throw new TypeError('incompatible '+k);}
+ function optionalSpace(v){if(Object.hasOwn(v,'coordinateSpace')&&v.coordinateSpace!==contract.coordinateSpace)throw new TypeError('incompatible coordinateSpace');}
+ function profile(){return contract;}
+ function destination(context,request){
+  C.assertCompatible(context,contract);identity(context,{coordinateSpace:contract.coordinateSpace,distanceUnit:'meter',timeUnit:'second'});
+  object(request,'request');optionalSpace(request);
+  const baseIndex=request.baseIndex;
+  if(!Number.isInteger(baseIndex)||baseIndex<1||baseIndex>4)throw new RangeError('baseIndex must be 1..4 (HOME=4)');
+  return {baseIndex,target:vector(context.basePoint(baseIndex),'target')};
+ }
+ function candidate(input,target){
+  object(input,'candidate');optionalSpace(input);
+  const fielderIndex=input.fielderIndex;
+  if(!Number.isInteger(fielderIndex)||fielderIndex<0||fielderIndex>8)throw new RangeError('fielderIndex must be 0..8');
+  if(Object.hasOwn(input,'excluded')&&typeof input.excluded!=='boolean')throw new TypeError('excluded must be boolean');
+  const p=input.movementProfile;identity(p,movementIdentity);
+  if(Object.hasOwn(p,'speedUnit')&&p.speedUnit!==contract.speedUnit)throw new TypeError('incompatible speedUnit');
+  // Check the existing movement input domain even when excluded, without
+  // constructing a plan. All eligible ETA calculations remain in M.plan().
+  const maxSpeed=number(p.maxSpeed,'maxSpeed'),acceleration=number(p.acceleration,'acceleration'),reaction=number(p.reaction,'reaction');
+  if(maxSpeed<6||maxSpeed>9||acceleration!==4.5||reaction<.18||reaction>.60)throw new RangeError('invalid metric movement profile');
+  const position=vector(input.position,'position'),velocity=vector(input.velocity,'velocity'),startTime=number(input.startTime,'startTime'),readyAt=number(input.readyAt,'readyAt');
+  const speed=number(Math.hypot(...velocity),'velocity magnitude');
+  if(speed>maxSpeed+Number.EPSILON*maxSpeed*4)throw new RangeError('velocity exceeds maxSpeed');
+  const distance=number(Math.hypot(number(target[0]-position[0],'deltaX'),number(target[1]-position[1],'deltaY')),'distance');
+  if(distance>0&&readyAt>startTime&&speed>0)throw new RangeError('reaction waiting requires zero velocity');
+  return {fielderIndex,movementProfile:p,position,velocity,startTime,readyAt,excluded:input.excluded===true};
+ }
+ function evaluate(base,c){
+  const result={...contract,...base,fielderIndex:c.fielderIndex,startTime:c.startTime,readyAt:c.readyAt,position:c.position,velocity:c.velocity};
+  if(c.excluded)return Object.freeze({...result,eligible:false,reason:'EXCLUDED',arrivalTime:null,coverReadyAt:null,movementPlan:null});
+  const movementPlan=M.plan(c.movementProfile,{coordinateSpace:contract.coordinateSpace,from:c.position,to:base.target,velocity:c.velocity,startTime:c.startTime,readyAt:c.readyAt});
+  return Object.freeze({...result,eligible:true,reason:'EVALUATED',arrivalTime:movementPlan.arrivalTime,coverReadyAt:Math.max(movementPlan.arrivalTime,c.readyAt),movementPlan});
+ }
+ function evaluateCandidate(context,request){
+  const base=destination(context,request);return evaluate(base,candidate(request.candidate,base.target));
+ }
+ function rankCandidates(context,request){
+  const base=destination(context,request);
+  if(!Array.isArray(request.candidates))throw new TypeError('candidates must be an array');
+  const seen=new Set(),candidates=Array.from(request.candidates,input=>{
+   const c=candidate(input,base.target);
+   if(seen.has(c.fielderIndex))throw new TypeError('duplicate fielderIndex');
+   seen.add(c.fielderIndex);return c;
+  });
+  const ranked=[],excluded=[];
+  for(const c of candidates){
+   const result=evaluate(base,c);
+   if(!result.eligible){excluded.push(result);continue;}
+   const tick=Math.round(result.coverReadyAt*1e6);
+   // Reject unrepresentable microsecond keys rather than silently lose ordering.
+   if(!Number.isSafeInteger(tick))throw new RangeError('coverReadyAt exceeds safe microsecond ranking range');
+   ranked.push({tick,result});
+  }
+  ranked.sort((a,b)=>a.tick-b.tick||a.result.fielderIndex-b.result.fielderIndex);
+  excluded.sort((a,b)=>a.fielderIndex-b.fielderIndex);
+  const rankedCandidates=Object.freeze(ranked.map(x=>x.result));
+  return Object.freeze({...contract,...base,rankedCandidates,bestCandidate:rankedCandidates[0]??null,excludedCandidates:Object.freeze(excluded)});
+ }
+ F.metricBaseCover=Object.freeze({...contract,profile,evaluateCandidate,rankCandidates});
+})();
