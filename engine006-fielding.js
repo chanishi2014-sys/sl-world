@@ -1159,3 +1159,144 @@
  }
  F.metricCatch=Object.freeze({...contract,profile,findOpportunity,evaluate});
 })();
+
+
+/* Unconnected successful-contact handling. Values are SL WORLD metric-v1 design
+ * choices, not measurements. No match state, error RNG, catch search or throw flight.
+ */
+(() => {
+ 'use strict';
+ const F=SL_FIELDING,C=F.coordinateContext;
+ const metadata=Object.freeze({modelId:'metric-handling-v1',coordinateSpace:'baseball-metric-v1',distanceUnit:'meter',timeUnit:'second',speedUnit:'meter/second',accelerationUnit:'meter/second^2'});
+ const constants=Object.freeze({handlingBraking:9,maxReferenceSpeed:9,maxTurnDuration:.18});
+ const plans=new WeakSet(); // Like coordinateContext: accept plans issued by this API only.
+ const SPEED_EPS=Number.EPSILON*9*4,GEOMETRY_EPS=1e-9;
+ function object(v,name){if(!v||typeof v!=='object'||Array.isArray(v))throw new TypeError(name+' must be an object');return v;}
+ function number(v,name){if(!Number.isFinite(v))throw new TypeError(name+' must be finite');return v;}
+ function vector(v,n,name){if(!Array.isArray(v)||v.length!==n)throw new TypeError(name+' has invalid dimensions');return Array.from(v,x=>number(x,name));}
+ function identity(v,expected){object(v,'metric input');for(const [k,x] of Object.entries(expected))if(v[k]!==x)throw new TypeError('incompatible '+k);}
+ function copy(v){
+  if(v===null||typeof v!=='object')return v;
+  return Object.freeze(Array.isArray(v)?v.map(copy):Object.fromEntries(Object.entries(v).map(([k,x])=>[k,copy(x)])));
+ }
+ function compatible(ctx){C.assertCompatible(ctx,metadata);identity(ctx,{coordinateSpace:metadata.coordinateSpace,distanceUnit:'meter',timeUnit:'second'});}
+ function speed(v){const s=number(Math.hypot(...v),'speed');if(s>9+SPEED_EPS)throw new RangeError('contact speed exceeds 9 m/s');return s;}
+ function later(t,d,name){const end=number(t+d,name);if(d>0&&end<=t)throw new RangeError(name+' is not representable');return end;}
+ function profile(player={}){
+  object(player,'player');const p=player.profile===undefined?{}:object(player.profile,'player.profile'),b=p.batting===undefined?{}:object(p.batting,'player.profile.batting');
+  const fielding=number(b.fielding===undefined?10:b.fielding,'fielding');
+  if(fielding<1||fielding>20)throw new RangeError('fielding must be 1..20');
+  const q=(20-fielding)/19;
+  return copy({...metadata,...constants,fielding,q,airSecureDuration:.08+.04*q,groundSecureDuration:.20+.10*q,transferDuration:.18+.08*q});
+ }
+ function verifiedProfile(p){
+  identity(p,metadata);const expected=profile({profile:{batting:{fielding:number(p.fielding,'fielding')}}});
+  identity(p,expected);return expected;
+ }
+ function opportunity(o){
+  identity(o,{modelId:'metric-catch-v1',coordinateSpace:metadata.coordinateSpace,distanceUnit:'meter',timeUnit:'second',status:'REACHABLE'});
+  // Validate the supplied event contract, not whether the ball could be caught.
+  // In particular, do not sample ball/movement or repeat radius/height/ETA tests.
+  identity(o,F.metricCatch.profile());
+  for(const k of ['speedUnit','accelerationUnit'])if(Object.hasOwn(o,k)&&o[k]!==metadata[k])throw new TypeError('incompatible '+k);
+  const time=number(o.time,'contactTime'),readyAt=number(o.readyAt,'readyAt');
+  if(time<readyAt)throw new TypeError('contact precedes readyAt');
+  if(!Number.isInteger(o.fielderIndex)||o.fielderIndex<0||o.fielderIndex>8)throw new RangeError('invalid fielderIndex');
+  if(typeof o.groundContactBeforeCatch!=='boolean'||typeof o.wallContactBeforeCatch!=='boolean')throw new TypeError('invalid contact history');
+  if(o.catchKind!==(o.groundContactBeforeCatch?'GROUND_FIELD':'AIR_CATCH'))throw new TypeError('inconsistent catchKind');
+  if(!['AIRBORNE','ROLLING','STOPPED'].includes(o.ballPhase)||o.groundContactBeforeCatch!==(o.ballPhase!=='AIRBORNE'))throw new TypeError('invalid ball phase');
+  if(![null,'WALL'].includes(o.fenceOutcome)||o.wallContactBeforeCatch!==(o.fenceOutcome==='WALL'))throw new TypeError('invalid fence history');
+  const fielderPosition=vector(o.fielderPosition,2,'fielderPosition'),fielderVelocity=vector(o.fielderVelocity,2,'fielderVelocity'),approachVelocity=vector(o.approachVelocity,2,'approachVelocity');
+  speed(fielderVelocity);speed(approachVelocity);
+  const ballPosition=vector(o.ballPosition,2,'ballPosition'),ballVelocity=vector(o.ballVelocity,3,'ballVelocity'),ballHeight=number(o.ballHeight,'ballHeight');
+  if(ballHeight<0||o.groundContactBeforeCatch&&ballHeight!==0)throw new RangeError('invalid ground/height history');
+  const m=object(o.movementPlan,'movementPlan');
+  identity(m,{modelId:'metric-fielder-movement-v1',coordinateSpace:metadata.coordinateSpace,distanceUnit:'meter',timeUnit:'second'});
+  const startTime=number(m.startTime,'movement startTime'),arrivalTime=number(m.arrivalTime,'arrivalTime');
+  if(number(m.readyAt,'movement readyAt')!==readyAt||time<startTime||arrivalTime<startTime)throw new TypeError('inconsistent movement clock');
+  const movementReference={modelId:m.modelId,coordinateSpace:m.coordinateSpace,startTime,readyAt,arrivalTime,from:vector(m.from,2,'movement from'),to:vector(m.to,2,'movement to')};
+  return {...metadata,modelId:o.modelId,status:o.status,time,readyAt,fielderIndex:o.fielderIndex,catchKind:o.catchKind,fielderPosition,fielderVelocity,approachVelocity,
+   ballPosition,ballHeight,ballVelocity,ballPhase:o.ballPhase,groundContactBeforeCatch:o.groundContactBeforeCatch,wallContactBeforeCatch:o.wallContactBeforeCatch,fenceOutcome:o.fenceOutcome,movementReference};
+ }
+ function motion(p,elapsed){
+  const u=Math.max(0,Math.min(elapsed,p.brakingDuration)),travel=p.contactSpeed*u-.5*constants.handlingBraking*u*u;
+  return {position:p.contactPosition.map((x,i)=>number(x+p.direction[i]*travel,'handling position')),
+   velocity:u>=p.brakingDuration?[0,0]:p.direction.map(x=>x*Math.max(0,p.contactSpeed-constants.handlingBraking*u))};
+ }
+ function boundary(p,polyline){
+  if(!p.contactSpeed)return null;
+  const length=number(p.contactSpeed*p.brakingDuration/2,'braking distance'),end=motion(p,p.brakingDuration).position,d=end.map((x,i)=>x-p.contactPosition[i]);
+  if(length>0&&Math.hypot(...d)===0)throw new RangeError('handling displacement is not representable');
+  const cross=(a,b)=>number(a[0]*b[1]-a[1]*b[0],'boundary cross product');
+  let fraction=Infinity;
+  // Only consecutive fence segments. Never close the open polyline along foul lines.
+  for(let i=0;i+1<polyline.length;i++){
+   const a=polyline[i],b=polyline[i+1],edge=b.map((x,j)=>x-a[j]),relative=a.map((x,j)=>x-p.contactPosition[j]),den=cross(d,edge);
+   const other=b.map((x,j)=>x-p.contactPosition[j]);
+   // One-nanometer tolerance only. Check collinearity before dividing by a
+   // near-zero determinant: rounding a point on a fence must not skip contact.
+   if(Math.abs(cross(relative,d))<=GEOMETRY_EPS*length&&Math.abs(cross(other,d))<=GEOMETRY_EPS*length){
+    const dot=x=>x[0]*p.direction[0]+x[1]*p.direction[1],s1=dot(relative),s2=dot(other);
+    const near=Math.max(0,Math.min(s1,s2)),far=Math.min(length,Math.max(s1,s2));
+    if(near<=far+GEOMETRY_EPS)fraction=Math.min(fraction,Math.min(1,near/length));
+   }else if(den!==0){
+    const t=cross(relative,edge)/den,u=cross(relative,d)/den;
+    const te=GEOMETRY_EPS/length,ue=GEOMETRY_EPS/Math.hypot(...edge);
+    if(t>=-te&&t<=1+te&&u>=-ue&&u<=1+ue)fraction=Math.min(fraction,Math.max(0,Math.min(1,t)));
+   }
+  }
+  if(fraction===Infinity)return null;
+  const distance=length*fraction;
+  // Rationalized quadratic root remains stable for a boundary near contact.
+  const duration=distance===0?0:2*distance/(p.contactSpeed+Math.sqrt(Math.max(0,p.contactSpeed*p.contactSpeed-18*distance)));
+  const time=Math.min(p.stopTime,later(p.contactTime,duration,'boundaryTime'));
+  return {time,position:motion(p,duration).position};
+ }
+ function issue(p){const result=copy(p);plans.add(result);return result;}
+ function plan(p,kind){if(!plans.has(p)||kind&&p.planKind!==kind)throw new TypeError('expected plan issued by metricHandling');return p;}
+ function secure(context,input,handlingProfile,request){
+  compatible(context);object(request,'request');
+  if(request.outcome!=='CONTACT_SUCCESS')throw new TypeError('CONTACT_SUCCESS required');
+  const h=verifiedProfile(handlingProfile),o=opportunity(input),contactTime=o.time,contactSpeed=speed(o.fielderVelocity);
+  const secureDuration=o.catchKind==='AIR_CATCH'?h.airSecureDuration:h.groundSecureDuration,brakingDuration=contactSpeed/h.handlingBraking;
+  const candidateSecureTime=later(contactTime,secureDuration,'secureTime'),stopTime=later(contactTime,brakingDuration,'stopTime');
+  const p={...metadata,planKind:'SECURE_PLAN',status:'SECURE_PLAN',parkId:context.parkId,parkBoundary:context.parkBoundary,
+   fielderIndex:o.fielderIndex,catchKind:o.catchKind,contactTime,contactPosition:o.fielderPosition,contactVelocity:o.fielderVelocity,approachVelocity:o.approachVelocity,
+   contactSpeed,direction:contactSpeed?o.fielderVelocity.map(x=>x/contactSpeed):[0,0],secureDuration,brakingDuration,stopTime,
+   ballPosition:o.ballPosition,ballHeight:o.ballHeight,ballVelocity:o.ballVelocity,ballPhase:o.ballPhase,
+   groundContactBeforeCatch:o.groundContactBeforeCatch,wallContactBeforeCatch:o.wallContactBeforeCatch,fenceOutcome:o.fenceOutcome,
+   opportunityReference:o,handlingProfile:h,outcome:'CONTACT_SUCCESS'};
+  const hit=boundary(p,context.parkBoundary),secureTime=hit&&hit.time<=candidateSecureTime?null:candidateSecureTime;
+  return issue({...p,status:hit?'BOUNDARY_REQUIRES_RESOLUTION':p.status,candidateSecureTime,secureTime,securePosition:secureTime===null?null:motion(p,secureDuration).position,
+   // stopTime is the free-motion endpoint, not an assertion of stopping at a wall.
+   stopPosition:hit?null:motion(p,brakingDuration).position,boundaryTime:hit?.time??null,boundaryPosition:hit?.position??null});
+ }
+ function prepareThrow(context,securePlan,request){
+  compatible(context);const p=plan(securePlan,'SECURE_PLAN');C.assertCompatible(context,p);object(request,'request');
+  if(p.parkId!==context.parkId||JSON.stringify(p.parkBoundary)!==JSON.stringify(context.parkBoundary))throw new TypeError('handling park mismatch');
+  const target=vector(request.target,2,'target'),targetDecisionTime=number(request.targetDecisionTime,'targetDecisionTime'),transferDuration=p.handlingProfile.transferDuration;
+  const transferEnd=p.secureTime===null?null:later(p.secureTime,transferDuration,'transferFinish');
+  const out={...p,planKind:'THROW_PLAN',target,targetDecisionTime,transferDuration,transferStart:p.secureTime,
+   transferFinish:p.boundaryTime!==null&&(transferEnd===null||transferEnd>=p.boundaryTime)?null:transferEnd};
+  if(p.boundaryTime!==null)return issue({...out,status:'BOUNDARY_REQUIRES_RESOLUTION',turnDuration:null,alignmentStart:null,throwReadyTime:null,releaseTime:null,throwPosition:null,throwRequest:null});
+  const throwPosition=p.stopPosition,delta=target.map((x,i)=>number(x-throwPosition[i],'target delta')),distance=number(Math.hypot(...delta),'target distance');
+  const cosine=p.contactSpeed&&distance?Math.max(-1,Math.min(1,p.direction[0]*(delta[0]/distance)+p.direction[1]*(delta[1]/distance))):1;
+  // Only a few machine epsilons above 9 m/s were accepted; do not clamp other input speeds.
+  const turnDuration=constants.maxTurnDuration*Math.min(1,p.contactSpeed/constants.maxReferenceSpeed)*(1-cosine)/2;
+  const alignmentStart=Math.max(p.secureTime,p.stopTime,targetDecisionTime),alignmentFinish=later(alignmentStart,turnDuration,'alignment finish'),throwReadyTime=Math.max(transferEnd,alignmentFinish);
+  return issue({...out,status:'THROW_PLAN',turnDuration,alignmentStart,alignmentFinish,throwReadyTime,releaseTime:throwReadyTime,throwPosition,
+   throwRequest:{coordinateSpace:metadata.coordinateSpace,from:throwPosition,to:target,releaseTime:throwReadyTime}});
+ }
+ function sample(input,time){
+  const p=plan(input);number(time,'time');
+  const base={...metadata,time,fielderIndex:p.fielderIndex};
+  // Priority: boundary > waiting > release > secure > contact/secure-in-progress.
+  // At release equality phase is THROW_READY, but possession is already RELEASED.
+  if(p.boundaryTime!==null&&time>=p.boundaryTime)return copy({...base,phase:'BOUNDARY_REQUIRES_RESOLUTION',motionPhase:'UNRESOLVED',position:time===p.boundaryTime?p.boundaryPosition:null,velocity:null,possession:'UNRESOLVED',boundaryTime:p.boundaryTime,boundaryPosition:p.boundaryPosition});
+  if(time<p.contactTime)return copy({...base,phase:'WAITING',motionPhase:'UNSPECIFIED',position:null,velocity:null,possession:'NONE'});
+  const state=motion(p,time>=p.stopTime?p.brakingDuration:number(time-p.contactTime,'elapsed')),released=p.releaseTime!=null&&time>=p.releaseTime;
+  const phase=released?(time===p.releaseTime?'THROW_READY':'RELEASED'):p.secureTime!==null&&time>=p.secureTime?'SECURED':time===p.contactTime?'CONTACT':'SECURING';
+  return copy({...base,...state,phase,motionPhase:time<p.stopTime?'BRAKING':'STOPPED',possession:released?'RELEASED':p.secureTime!==null&&time>=p.secureTime?'DEFENSE_POSSESSION':'CONTROL_PENDING'});
+ }
+ F.metricHandling=Object.freeze({...metadata,...constants,profile,secure,prepareThrow,sample});
+})();
