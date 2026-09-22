@@ -705,7 +705,7 @@
   const fraction=Math.min(1,travelled/distance);
   return {position:from.map((component,index)=>(1-fraction)*component+fraction*to[index]),velocity:direction.map(component=>component*speed),state:'MOVING'};
  }
- SL_FIELDING.metricFielderMovement=Object.freeze({...metadata,profile,plan,sample});
+ SL_FIELDING.metricFielderMovement=Object.freeze({...metadata,speedUnit:'meter/second',profile,plan,sample});
 })();
 
 /* Unconnected effective-XY throw: release-to-receiver travel only, no preparation or receiving delays. */
@@ -916,4 +916,65 @@
   return {...state,height:Math.max(0,state.height),phase:segment.phase,hasGroundContact,fenceOutcome};
  }
  SL_FIELDING.metricBall=Object.freeze({...metadata,profile,create,sample});
+})();
+
+/* Coordinate contracts only. No match entry point consumes these contexts yet. */
+(() => {
+ 'use strict';
+ const F=SL_FIELDING,legacy=F.layout,metric=F.metricLayout,park=F.standardPark;
+ const names=Object.freeze(['P','C','1B','2B','3B','SS','LF','CF','RF']);
+ const contexts=new WeakSet(),metricSpace='baseball-metric-v1',legacySpace='field-800x500-v1';
+ function object(value){if(!value||typeof value!=='object'||Array.isArray(value))throw new TypeError('expected coordinate contract object');return value;}
+ function space(value){if(value!==legacySpace&&value!==metricSpace)throw new TypeError('unknown or missing coordinateSpace');return value;}
+ function point(value){if(!Array.isArray(value)||value.length!==2||!Number.isFinite(value[0])||!Number.isFinite(value[1]))throw new TypeError('invalid coordinate point');return Object.freeze([...value]);}
+ function points(value,count){if(!Array.isArray(value)||value.length!==count)throw new TypeError('invalid coordinate point count');return Object.freeze(Array.from(value,point));}
+ function index(value,max){if(!Number.isInteger(value)||value<0||value>max)throw new RangeError('invalid coordinate index');return value;}
+ function context(value){if(!contexts.has(value))throw new TypeError('expected context created by coordinateContext.create');return value;}
+ function assertCompatible(ctx,...items){
+  context(ctx);if(!items.length)throw new TypeError('missing coordinate object');
+  for(const item of items)if(space(object(item).coordinateSpace)!==ctx.coordinateSpace)throw new TypeError('coordinateSpace mismatch');
+  return ctx;
+ }
+ // Inspect metadata only: never call movement, throw, or ball simulation methods.
+ function modelMetadata(models){
+  object(models);const out={};
+  for(const [role,modelId] of Object.entries({movement:'metric-fielder-movement-v1',throw:'metric-throw-v1',ball:'metric-ball-v1'})){
+   const model=object(models[role]),expected={modelId,coordinateSpace:metricSpace,distanceUnit:'meter',timeUnit:'second',speedUnit:'meter/second'};
+   if(role==='ball')expected.accelerationUnit='meter/second^2';
+   for(const [key,value] of Object.entries(expected))if(model[key]!==value)throw new TypeError(role+' model '+key+' mismatch');
+   out[role]=Object.freeze(expected);
+  }
+  return Object.freeze(out);
+ }
+ function assertModelCompatibility(ctx,models){context(ctx);if(ctx.coordinateSpace!==metricSpace)throw new TypeError('metric models require metric context');return modelMetadata(models);}
+ function create(options){
+  object(options);const coordinateSpace=space(options.coordinateSpace),isMetric=coordinateSpace===metricSpace;
+  // LEGACY identifies the existing layout only; it does not invent park geometry.
+  const parkId=isMetric?'STANDARD':'LEGACY';
+  if(Object.hasOwn(options,'parkId')&&options.parkId!==parkId)throw new TypeError('unknown parkId');
+  const source=isMetric?metric:legacy;
+  if(source.coordinateSpace!==coordinateSpace)throw new TypeError('layout coordinateSpace mismatch');
+  const BASES=points(isMetric?source.bases:source.bases.slice(0,4),4),HOME=BASES[0];
+  const defaultFielderPositions=points(isMetric?names.map(name=>park.defaultFielderPositions[name]):legacy.positions,9);
+  let parkBoundary=null,models=null,axisMetadata=null;
+  if(isMetric){
+   if(source.distanceUnit!=='meter'||source.timeUnit!=='second'||park.coordinateSpace!==coordinateSpace||park.parkId!==parkId)throw new TypeError('metric layout/park mismatch');
+   if(HOME[0]!==0||HOME[1]!==0||BASES[1][0]<=0||BASES[1][0]!==BASES[1][1]||BASES[2][0]!==0||BASES[2][1]!==2*BASES[1][1]||BASES[3][0]!==-BASES[1][0]||BASES[3][1]!==BASES[1][1])throw new TypeError('invalid metric diamond');
+   if(!Number.isFinite(source.baseDistance))throw new TypeError('invalid metric base distance');
+   for(let i=0;i<4;i++)if(Math.abs(Math.hypot(BASES[i][0]-BASES[(i+1)%4][0],BASES[i][1]-BASES[(i+1)%4][1])-source.baseDistance)>1e-9)throw new TypeError('invalid metric base distance');
+   parkBoundary=points(park.fencePolyline,9);
+   models=modelMetadata({movement:F.metricFielderMovement,throw:F.metricThrow,ball:F.metricBall});
+   axisMetadata=Object.freeze({HOME:'origin',positiveX:'first/RF side',positiveY:'center field',sprayAngleZero:'+Y',positiveSpray:'RF side',negativeSpray:'LF side'});
+  }
+  // Null means unavailable/unestablished, including legacy metric model IDs.
+  const ctx=Object.freeze({coordinateSpace,distanceUnit:isMetric?'meter':'field-coordinate',timeUnit:'second',HOME,BASES,defaultFielderPositions,parkId,parkBoundary,
+   movementModelId:models?.movement.modelId??null,throwModelId:models?.throw.modelId??null,ballModelId:models?.ball.modelId??null,models,axisMetadata,metricEnabled:false,
+   basePoint(baseIndex){index(baseIndex,4);return baseIndex===4?HOME:BASES[baseIndex];},
+   fielderPosition(fielderIndex){return defaultFielderPositions[index(fielderIndex,8)];}});
+  contexts.add(ctx);return ctx;
+ }
+ // Call before obtaining/mutating game state or consuming either RNG. This guard
+ // accepts no game or callback, and cannot enable metric execution.
+ function assertMatchExecutable(ctx){context(ctx);if(ctx.coordinateSpace===metricSpace&&!ctx.metricEnabled)throw new TypeError('metric match execution is not enabled');return ctx;}
+ F.coordinateContext=Object.freeze({create,assertCompatible,assertModelCompatibility,assertMatchExecutable});
 })();
